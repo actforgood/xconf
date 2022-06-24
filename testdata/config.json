@@ -1,0 +1,10 @@
+{
+  "json_foo": "bar",
+  "json_year": 2022,
+  "json_temperature": 37.5,
+  "json_shopping_list": [
+    "bread",
+    "milk",
+    "eggs"
+  ]
+}

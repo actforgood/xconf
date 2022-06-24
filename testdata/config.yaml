@@ -1,0 +1,9 @@
+---
+yaml_foo: bar
+yaml_year: 2022
+yaml_temperature: 37.5
+yaml_shopping_list:
+  - bread
+  - milk
+  - eggs
+#yaml_commented_config: should not be taken into account

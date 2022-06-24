@@ -1,0 +1,90 @@
+name: Build
+
+on:
+  push:
+    branches: ['*']
+    tags: ['v*']
+  pull_request:
+    branches: ['*']
+
+jobs:
+  build:
+    name: Build
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        go-version: [1.16.x, 1.17.x, 1.18.x]
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
+    
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: ${{ matrix.go-version }}
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Load cached dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Download dependencies
+      run: make setup
+
+    - name: Run linter
+      run: make lint
+
+    - name: Run unit tests
+      run: make clean cover
+
+    - name: Upload coverage to coveralls.io
+      if: matrix.platform == 'ubuntu-latest' && matrix.go-version == '1.18.x'
+      uses: shogo82148/actions-goveralls@v1
+      with:
+        path-to-profile: cover.out
+        flag-name: ${{ runner.os }}/Go-${{ matrix.go-version }}
+
+  integrationTest:
+    name: Integration Test
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    container: golang:1.18.3-bullseye
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: SetUp dockers
+      run: ./scripts/setup_dockers_deb.sh
+
+    - name: Load cached dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Run integration tests
+      run: |
+        go mod download
+        make cover-integration
+      env:
+          CONSUL_HTTP_ADDR: integration-consul:8500
+          ETCD_ENDPOINTS: integration-etcd:2379
+
+    - name: TearDown dockers
+      run: ./scripts/teardown_dockers.sh
+
+    - name: Upload coverage to coveralls.io
+      uses: shogo82148/actions-goveralls@v1
+      with:
+        path-to-profile: cover-integration.out
+        flag-name: integration-test

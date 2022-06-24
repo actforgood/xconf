@@ -1,0 +1,7 @@
+foo: bar
+year: 2022
+temperature: 37.5
+shopping_list:
+  - bread
+  - milk
+  - eggs

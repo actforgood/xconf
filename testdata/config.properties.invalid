@@ -1,0 +1,2 @@
+foo=bar
+baz=${foo invalid properties content
