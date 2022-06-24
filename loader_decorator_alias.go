@@ -9,7 +9,7 @@ import "errors"
 
 // ErrAliasPairBroken is an error returned by AliasLoader when the variadic list of aliases
 // and their keys consists of odd no. of elements.
-var ErrAliasPairBroken = errors.New("aliases and the keys they're for list has odd elements")
+var ErrAliasPairBroken = errors.New("alias - missing key")
 
 // AliasLoader decorates another loader to set aliases for keys.
 // The aliases will be added to decorated loader's configuration map.
