@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -25,6 +26,7 @@ func TestNewDefaultConfig(t *testing.T) {
 
 	t.Run("valid object", testNewDefaultConfigReturnsValidObject)
 	t.Run("error", testNewDefaultConfigReturnsError)
+	t.Run("finalizer is called", testNewDefaultConfigFinalizerIsCalled)
 }
 
 func testNewDefaultConfigReturnsValidObject(t *testing.T) {
@@ -66,6 +68,35 @@ func testNewDefaultConfigReturnsError(t *testing.T) {
 	// assert
 	assertTrue(t, errors.Is(err, expectedErr))
 	assertNil(t, result)
+}
+
+func testNewDefaultConfigFinalizerIsCalled(t *testing.T) {
+	t.Parallel()
+
+	// test finalizer is called if we "forget" to call Close.
+	// arrange
+	var (
+		callsCnt uint32
+		loader   = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+			atomic.AddUint32(&callsCnt, 1)
+			if atomic.LoadUint32(&callsCnt) == 1 {
+				return map[string]interface{}{"foo": "bar"}, nil
+			}
+
+			return map[string]interface{}{"foo": "baz"}, nil
+		})
+		_, err = xconf.NewDefaultConfig(
+			loader,
+			xconf.DefaultConfigWithReloadInterval(700*time.Millisecond),
+		)
+	)
+	requireNil(t, err)
+
+	// act
+	runtime.GC()
+	time.Sleep(900 * time.Millisecond)
+
+	assertEqual(t, uint32(1), atomic.LoadUint32(&callsCnt))
 }
 
 func TestDefaultConfig_Get(t *testing.T) {
@@ -1566,8 +1597,8 @@ func TestDefaultConfig_RegisterObserver(t *testing.T) {
 
 	// setup 2 observers
 	observer1CallsCnt, observer2CallsCnt := 0, 0
-	subject.RegisterObserver(configObserverFactory(t, subject, &observer1CallsCnt))
-	subject.RegisterObserver(configObserverFactory(t, subject, &observer2CallsCnt))
+	subject.RegisterObserver(configObserverFactory(t, &observer1CallsCnt))
+	subject.RegisterObserver(configObserverFactory(t, &observer2CallsCnt))
 
 	// first act & assert
 	result1 := subject.Get("XCONF_TEST_DEFAULT_CONFIG_FOO_UPDATED")
@@ -1606,12 +1637,12 @@ func TestDefaultConfig_RegisterObserver(t *testing.T) {
 	assertEqual(t, 1, observer2CallsCnt)
 }
 
-func configObserverFactory(t *testing.T, expectedCfg xconf.Config, observerCallsCount *int) xconf.ConfigObserver {
+func configObserverFactory(t *testing.T, observerCallsCount *int) xconf.ConfigObserver {
 	return func(cfg xconf.Config, changedKeys ...string) {
 		*observerCallsCount++
 
 		// check params
-		assertEqual(t, expectedCfg, cfg)
+		assertNotNil(t, cfg)
 		expectedChangedKeys := map[string]struct{}{
 			"XCONF_TEST_DEFAULT_CONFIG_FOO_UPDATED": {},
 			"XCONF_TEST_DEFAULT_CONFIG_FOO_DELETED": {},

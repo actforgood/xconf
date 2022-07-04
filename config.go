@@ -7,6 +7,7 @@ package xconf
 
 import (
 	"reflect"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -30,6 +31,10 @@ type Config interface {
 // Is implements io.Closer interface and thus Close should be called at
 // your application shutdown in order to avoid memory leaks.
 type DefaultConfig struct {
+	*defaultConfig // so we can use finalizer
+}
+
+type defaultConfig struct {
 	// loader to retrieve configuration from.
 	loader Loader
 	// configMap the loaded key-value configuration map.
@@ -58,10 +63,10 @@ type DefaultConfig struct {
 // The first parameter is the loader used as a source of getting the key-value configuration map.
 // The second parameter represents a list of optional functions to configure the object.
 func NewDefaultConfig(loader Loader, opts ...DefaultConfigOption) (*DefaultConfig, error) {
-	config := &DefaultConfig{
+	config := &DefaultConfig{&defaultConfig{
 		loader: loader,
 		mu:     new(sync.RWMutex),
-	}
+	}}
 
 	// apply options, if any.
 	for _, opt := range opts {
@@ -79,6 +84,9 @@ func NewDefaultConfig(loader Loader, opts ...DefaultConfigOption) (*DefaultConfi
 		config.closed = make(chan struct{}, 1)
 		config.wg.Add(1)
 		go config.reloadAsync()
+		// register also a finalizer, just in case, user forgets to call Close().
+		// Note: user should do not rely on this, it's recommended to explicitly call Close().
+		runtime.SetFinalizer(config, (*DefaultConfig).Close)
 	}
 
 	return config, nil
@@ -93,7 +101,7 @@ func NewDefaultConfig(loader Loader, opts ...DefaultConfigOption) (*DefaultConfi
 // Only basic types (string, bool, int, uint, float, and their flavours),
 // time.Duration, time.Time, []int, []string are covered.
 // If a cast error occurs, the defaultValue is returned.
-func (cfg *DefaultConfig) Get(key string, def ...interface{}) interface{} {
+func (cfg *defaultConfig) Get(key string, def ...interface{}) interface{} {
 	if cfg.ignoreCaseSensitivity {
 		key = strings.ToUpper(key)
 	}
@@ -122,7 +130,7 @@ func (cfg *DefaultConfig) Get(key string, def ...interface{}) interface{} {
 }
 
 // RegisterObserver adds a new observer that will get notified of keys changes.
-func (cfg *DefaultConfig) RegisterObserver(observer ConfigObserver) {
+func (cfg *defaultConfig) RegisterObserver(observer ConfigObserver) {
 	cfg.mu.Lock()
 	if cfg.observers == nil {
 		cfg.observers = []ConfigObserver{observer}
@@ -133,7 +141,7 @@ func (cfg *DefaultConfig) RegisterObserver(observer ConfigObserver) {
 }
 
 // setConfigMap loads the config map.
-func (cfg *DefaultConfig) setConfigMap() error {
+func (cfg *defaultConfig) setConfigMap() error {
 	newConfigMap, err := cfg.loader.Load()
 	if err != nil {
 		return err
@@ -154,7 +162,7 @@ func (cfg *DefaultConfig) setConfigMap() error {
 
 // notifyObservers computes changed (updated/deleted/new) keys on a config reload,
 // and notifies registered observers about them, if there are any changed keys and observers.
-func (cfg *DefaultConfig) notifyObservers(oldConfigMap, newConfigMap map[string]interface{}) {
+func (cfg *defaultConfig) notifyObservers(oldConfigMap, newConfigMap map[string]interface{}) {
 	cfg.mu.RLock()
 	defer cfg.mu.RUnlock()
 
@@ -184,7 +192,7 @@ func (cfg *DefaultConfig) notifyObservers(oldConfigMap, newConfigMap map[string]
 
 // reloadAsync reloads the config map asynchronous, interval based.
 // Calling Close() will stop this goroutine.
-func (cfg *DefaultConfig) reloadAsync() {
+func (cfg *defaultConfig) reloadAsync() {
 	defer cfg.wg.Done()
 
 	for {
@@ -201,13 +209,21 @@ func (cfg *DefaultConfig) reloadAsync() {
 	}
 }
 
+// close stops the underlying ticker used to reload config, avoiding memory leaks.
+func (cfg *defaultConfig) close() {
+	if cfg != nil {
+		close(cfg.closed)
+		cfg.wg.Wait()
+	}
+}
+
 // Close stops the underlying ticker used to reload config, avoiding memory leaks.
 // It should be called at your application shutdown.
 // It implements io.Closer interface, and the returned error can be disregarded (is nil all the time).
 func (cfg *DefaultConfig) Close() error {
-	if cfg.reloadInterval > 0 {
-		close(cfg.closed)
-		cfg.wg.Wait()
+	if cfg != nil && cfg.reloadInterval > 0 {
+		cfg.close()
+		runtime.SetFinalizer(cfg, nil)
 	}
 
 	return nil
