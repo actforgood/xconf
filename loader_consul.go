@@ -286,8 +286,10 @@ func ConsulLoaderWithHTTPClient(client *http.Client) ConsulLoaderOption {
 // By default, is set to "http://127.0.0.1:8500".
 // Consul host can also be set through CONSUL_HTTP_ADDR and CONSUL_HTTP_SSL
 // ENV as in official hashicorp's client.
+//
 // Example:
-//		xconf.ConsulLoaderWithHost("http://consul.example.com:8500")
+//
+//	xconf.ConsulLoaderWithHost("http://consul.example.com:8500")
 func ConsulLoaderWithHost(host string) ConsulLoaderOption {
 	return func(loader *ConsulLoader) {
 		loader.reqInfo.baseURL = host
@@ -305,8 +307,10 @@ func ConsulLoaderWithContext(ctx context.Context) ConsulLoaderOption {
 // ConsulLoaderWithQueryDataCenter specifies the datacenter to query.
 // This will default to the datacenter of the agent being queried.
 // See also official doc https://www.consul.io/api-docs/kv#read-key .
+//
 // Example:
-//		xconf.ConsulLoaderWithQueryDataCenter("my-dc")
+//
+//	xconf.ConsulLoaderWithQueryDataCenter("my-dc")
 func ConsulLoaderWithQueryDataCenter(dc string) ConsulLoaderOption {
 	return func(loader *ConsulLoader) {
 		loader.reqInfo.setQuery(consulQueryParamDataCenter, dc)
@@ -319,8 +323,10 @@ func ConsulLoaderWithQueryDataCenter(dc string) ConsulLoaderOption {
 // may be specified as '*' and then results will be returned for all namespaces.
 // Added in Consul 1.7.0.
 // See also official doc https://www.consul.io/api-docs/kv#read-key .
+//
 // Example:
-//		xconf.ConsulLoaderWithQueryNamespace("my-ns")
+//
+//	xconf.ConsulLoaderWithQueryNamespace("my-ns")
 func ConsulLoaderWithQueryNamespace(ns string) ConsulLoaderOption {
 	return func(loader *ConsulLoader) {
 		loader.reqInfo.setQuery(consulQueryParamNamespace, ns)
@@ -337,10 +343,12 @@ func ConsulLoaderWithPrefix() ConsulLoaderOption {
 
 // ConsulLoaderWithRequestHeader adds a request header.
 // You can set the auth token for example:
-// 		xconf.ConsulLoaderWithRequestHeader(xconf.ConsulHeaderAuthToken, "someSecretToken")
-// or some basic auth header:
-// 		xconf.ConsulLoaderWithRequestHeader("Authorization", "Basic " + base64.StdEncoding.EncodeToString([]byte(usr + ":" + pwd))
 //
+//	xconf.ConsulLoaderWithRequestHeader(xconf.ConsulHeaderAuthToken, "someSecretToken")
+//
+// or some basic auth header:
+//
+//	xconf.ConsulLoaderWithRequestHeader("Authorization", "Basic " + base64.StdEncoding.EncodeToString([]byte(usr + ":" + pwd))
 func ConsulLoaderWithRequestHeader(hName, hValue string) ConsulLoaderOption {
 	return func(loader *ConsulLoader) {
 		loader.reqInfo.headers[hName] = hValue

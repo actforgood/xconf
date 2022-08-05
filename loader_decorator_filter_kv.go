@@ -32,11 +32,12 @@ type FilterKV interface {
 // with the appropriate signature, FilterKVWhitelistFunc(fn) is a
 // FilterKV that calls fn of type FilterTypeWhitelist.
 // fn should return true if the KV is whitelisted.
-// Example:
-//		xconf.FilterKVWhitelistFunc(func(key string, _ interface{}) bool {
-//			return key == "KEEP_ME_1" || key == "KEEP_ME_2"
-//		})
 //
+// Example:
+//
+//	xconf.FilterKVWhitelistFunc(func(key string, _ interface{}) bool {
+//		return key == "KEEP_ME_1" || key == "KEEP_ME_2"
+//	})
 type FilterKVWhitelistFunc func(key string, value interface{}) bool
 
 // IsAllowed returns true if a key-value is whitelisted.
@@ -54,11 +55,12 @@ func (filter FilterKVWhitelistFunc) Type() FilterType {
 // with the appropriate signature, FilterKVBlacklistFunc(fn) is a
 // FilterKV that calls fn and has type FilterTypeBlacklist.
 // fn should return true if the KV is blacklisted.
-// Example:
-//		xconf.FilterKVBlacklistFunc(func(key string, _ interface{}) bool {
-//			return key == "DENY_ME_1" || key == "DENY_ME_2"
-//		})
 //
+// Example:
+//
+//	xconf.FilterKVBlacklistFunc(func(key string, _ interface{}) bool {
+//		return key == "DENY_ME_1" || key == "DENY_ME_2"
+//	})
 type FilterKVBlacklistFunc func(key string, value interface{}) bool
 
 // IsAllowed returns false if a key-value is blacklisted.
@@ -136,9 +138,9 @@ func FilterKVLoader(loader Loader, filters ...FilterKV) Loader {
 
 // FilterKeyWithPrefix returns true if a key has given prefix.
 // It can be used as a FilterKV like:
-// 		xconf.FilterKVWhitelistFunc(xconf.FilterKeyWithPrefix(prefix))
-// 		xconf.FilterKVBlacklistFunc(xconf.FilterKeyWithPrefix(prefix))
 //
+//	xconf.FilterKVWhitelistFunc(xconf.FilterKeyWithPrefix(prefix))
+//	xconf.FilterKVBlacklistFunc(xconf.FilterKeyWithPrefix(prefix))
 func FilterKeyWithPrefix(prefix string) func(key string, _ interface{}) bool {
 	return func(key string, _ interface{}) bool {
 		return strings.HasPrefix(key, prefix)
@@ -147,9 +149,9 @@ func FilterKeyWithPrefix(prefix string) func(key string, _ interface{}) bool {
 
 // FilterKeyWithSuffix returns true if a key has given suffix.
 // It can be used as a FilterKV like:
-// 		xconf.FilterKVWhitelistFunc(xconf.FilterKeyWithSuffix(suffix))
-// 		xconf.FilterKVBlacklistFunc(xconf.FilterKeyWithSuffix(suffix))
 //
+//	xconf.FilterKVWhitelistFunc(xconf.FilterKeyWithSuffix(suffix))
+//	xconf.FilterKVBlacklistFunc(xconf.FilterKeyWithSuffix(suffix))
 func FilterKeyWithSuffix(suffix string) func(key string, _ interface{}) bool {
 	return func(key string, _ interface{}) bool {
 		return strings.HasSuffix(key, suffix)
@@ -158,9 +160,9 @@ func FilterKeyWithSuffix(suffix string) func(key string, _ interface{}) bool {
 
 // FilterExactKeys returns true if a key is present in the provided list.
 // It can be used as a FilterKV like:
-// 		xconf.FilterKVWhitelistFunc(xconf.FilterExactKeys(key1, key2))
-// 		xconf.FilterKVBlacklistFunc(xconf.FilterExactKeys(key1, key2))
 //
+//	xconf.FilterKVWhitelistFunc(xconf.FilterExactKeys(key1, key2))
+//	xconf.FilterKVBlacklistFunc(xconf.FilterExactKeys(key1, key2))
 func FilterExactKeys(keys ...string) func(key string, _ interface{}) bool {
 	return func(key string, _ interface{}) bool {
 		for _, k := range keys {
@@ -175,8 +177,8 @@ func FilterExactKeys(keys ...string) func(key string, _ interface{}) bool {
 
 // FilterEmptyValue returns true if a value is nil or "".
 // It can be used as a FilterKV like:
-// 		xconf.FilterKVBlacklistFunc(xconf.FilterEmptyValue)
 //
+//	xconf.FilterKVBlacklistFunc(xconf.FilterEmptyValue)
 func FilterEmptyValue(_ string, value interface{}) bool {
 	if value == nil {
 		return true

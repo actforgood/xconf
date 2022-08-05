@@ -21,12 +21,13 @@ type MockConfig struct {
 
 // NewMockConfig instantiates new mocked Config with given key-values configuration.
 // Make sure you pass an even number of elements and that the keys are strings.
-// Usage example:
-//		mock := xconf.NewMockConfig(
-//			"foo", "bar",
-//			"year", 2022,
-//		)
 //
+// Usage example:
+//
+//	mock := xconf.NewMockConfig(
+//		"foo", "bar",
+//		"year", 2022,
+//	)
 func NewMockConfig(kv ...interface{}) *MockConfig {
 	mock := &MockConfig{
 		configMap: make(map[string]interface{}),
@@ -71,20 +72,21 @@ func (mock *MockConfig) SetKeyValues(kv ...interface{}) {
 
 // SetGetCallback sets the given callback to be executed inside Get() method.
 // You can inject yourself to make assertions upon passed parameter(s) this way.
-// Usage example:
-// 		mock.SetGetCallback(func(key string, def ...interface{}) {
-// 			switch mock.GetCallsCount() {
-// 			case 1:
-//				if key != "expectedKeyAtCall1" {
-//					t.Error("...")
-//				}
-//			case 2:
-//				if key != "expectedKeyAtCall2" {
-//					t.Error("...")
-//				}
-//			}
-//		})
 //
+// Usage example:
+//
+//	mock.SetGetCallback(func(key string, def ...interface{}) {
+//		switch mock.GetCallsCount() {
+//		case 1:
+//			if key != "expectedKeyAtCall1" {
+//				t.Error("...")
+//			}
+//		case 2:
+//			if key != "expectedKeyAtCall2" {
+//				t.Error("...")
+//			}
+//		}
+//	})
 func (mock *MockConfig) SetGetCallback(callback func(key string, def ...interface{})) {
 	mock.getCallback = callback
 }

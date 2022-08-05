@@ -17,19 +17,11 @@ import (
 func assertEqual(t *testing.T, expected interface{}, actual interface{}) bool {
 	t.Helper()
 	if !reflect.DeepEqual(expected, actual) {
-		expectedType, actualType := "nil", "nil"
-		expectedT, actualT := reflect.TypeOf(expected), reflect.TypeOf(actual)
-		if expectedT != nil {
-			expectedType = expectedT.String()
-		}
-		if actualT != nil {
-			actualType = actualT.String()
-		}
 		t.Errorf(
-			"\n\t"+`expected "%+v" (%s),`+
-				"\n\t"+`but got  "%+v" (%s)`+"\n",
-			expected, expectedType,
-			actual, actualType,
+			"\n\t"+`expected "%+v" (%T),`+
+				"\n\t"+`but got  "%+v" (%T)`+"\n",
+			expected, expected,
+			actual, actual,
 		)
 
 		return false

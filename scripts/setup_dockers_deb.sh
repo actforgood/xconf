@@ -39,21 +39,23 @@ network=$(docker inspect --format '{{json .NetworkSettings.Networks}}' `hostname
 echo "network = ${network}"
 
 echo ">>> Run Consul Docker Image"
-docker pull -q consul:1.12.2
+DOCKER_CONSUL_IMAGE_VER=consul:1.12.3
+docker pull -q $DOCKER_CONSUL_IMAGE_VER
 docker run -d \
     --name=integration-consul \
     -p 8500:8500 \
     --network "${network}" \
     -e CONSUL_BIND_INTERFACE=eth0 \
-    consul:1.12.2
+    $DOCKER_CONSUL_IMAGE_VER
 
 echo ">>> Run Etcd Docker Image"
-docker pull -q quay.io/coreos/etcd:v3.5.4
+DOCKER_ETCD_IMAGE_VER=quay.io/coreos/etcd:v3.5.4
+docker pull -q $DOCKER_ETCD_IMAGE_VER
 docker run -d \
     --name=integration-etcd \
     -p 2379:2379 \
     --network "${network}" \
-    quay.io/coreos/etcd:v3.5.4 \
+    $DOCKER_ETCD_IMAGE_VER \
     /usr/local/bin/etcd -advertise-client-urls http://integration-etcd:2379 -listen-client-urls http://0.0.0.0:2379
 
 echo ">>> Show Running Docker Containers"

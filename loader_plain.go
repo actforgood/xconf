@@ -18,7 +18,6 @@ package xconf
 // any other configuration...)
 //
 // - to provide any application hardcoded configs.
-//
 func PlainLoader(configMap map[string]interface{}) Loader {
 	// make a copy to preserve state at current time.
 	// (prevents user modification of configMap from outside while using the loader).

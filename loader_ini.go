@@ -78,10 +78,10 @@ func IniFileLoaderWithLoadOptions(iniLoadOpts ini.LoadOptions) IniFileLoaderOpti
 // for a different section from default is used.
 //
 // You may want for example to provide a custom function that ignores the section:
-//		xconf.IniFileLoaderWithSectionKeyFunc(func(_, key string) string {
-//			return key
-// 		})
 //
+//	xconf.IniFileLoaderWithSectionKeyFunc(func(_, key string) string {
+//		return key
+//	})
 func IniFileLoaderWithSectionKeyFunc(keyFunc func(section, key string) string) IniFileLoaderOption {
 	return func(loader *IniFileLoader) {
 		loader.keyFunc = keyFunc
@@ -92,9 +92,9 @@ func IniFileLoaderWithSectionKeyFunc(keyFunc func(section, key string) string) I
 // in the final configuration key-value map for an ini key under a section.
 // Example: given the ini content:
 //
-// 		foo=bar
-// 		[time]
-// 		year=2022
+//	foo=bar
+//	[time]
+//	year=2022
 //
 // it will produce "foo" and "time/year" for the 2 above keys.
 var defaultIniKeyFunc = func(section, key string) string {

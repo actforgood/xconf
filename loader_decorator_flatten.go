@@ -9,14 +9,15 @@ import "github.com/spf13/cast"
 
 // FlattenLoader decorates another loader to add shortcuts to leaves' information
 // in a nested configuration key.
+//
 // Example, given the configuration:
 //
-// 		{
-//		  "mysql": {
-//		    "host": "127.0.0.1",
-//		    "port": 3306
-//		  }
-//		}
+//	{
+//	  "mysql": {
+//	    "host": "127.0.0.1",
+//	    "port": 3306
+//	  }
+//	}
 //
 // 2 additional flat keys will be added to above standard configuration: "mysql.host", "mysql.port"
 // for easy access of leaf-keys.

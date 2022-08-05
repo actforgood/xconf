@@ -305,9 +305,9 @@ type DefaultConfigOption func(*DefaultConfig)
 // By default, configuration reload is disabled.
 //
 // Usage example:
-//		// enable config reload at an interval of 5 minutes:
-//		cfg, err := xconf.NewDefaultConfig(loader, xconf.DefaultConfigWithReloadInterval(5 * time.Minute))
 //
+//	// enable config reload at an interval of 5 minutes:
+//	cfg, err := xconf.NewDefaultConfig(loader, xconf.DefaultConfigWithReloadInterval(5 * time.Minute))
 func DefaultConfigWithReloadInterval(reloadInterval time.Duration) DefaultConfigOption {
 	return func(config *DefaultConfig) {
 		config.reloadInterval = reloadInterval
@@ -320,15 +320,15 @@ func DefaultConfigWithReloadInterval(reloadInterval time.Duration) DefaultConfig
 // will return Foo's value.
 //
 // Usage example:
-//		cfg, err := xconf.NewDefaultConfig(loader, xconf.DefaultConfigWithIgnoreCaseSensitivity())
-//		if err != nil {
-//			panic(err)
-//		}
-//		value1 := cfg.Get("foo")
-//		value2 := cfg.Get("FOO")
-//		value3 := cfg.Get("foO")
-//		// all values are equal
 //
+//	cfg, err := xconf.NewDefaultConfig(loader, xconf.DefaultConfigWithIgnoreCaseSensitivity())
+//	if err != nil {
+//		panic(err)
+//	}
+//	value1 := cfg.Get("foo")
+//	value2 := cfg.Get("FOO")
+//	value3 := cfg.Get("foO")
+//	// all values are equal
 func DefaultConfigWithIgnoreCaseSensitivity() DefaultConfigOption {
 	return func(config *DefaultConfig) {
 		config.ignoreCaseSensitivity = true

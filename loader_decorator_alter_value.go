@@ -39,7 +39,6 @@ func AlterValueLoader(loader Loader, transformation AlterValueFunc, keys ...stri
 // If the original value is not a string, the value remains unaltered.
 //
 // Example: "bread,eggs,milk" => ["bread", "eggs", "milk"].
-//
 func ToStringList(sep string) AlterValueFunc {
 	return func(value interface{}) interface{} {
 		if strValue, ok := value.(string); ok {
@@ -56,7 +55,6 @@ func ToStringList(sep string) AlterValueFunc {
 // If the original value is not a string, the value remains unaltered.
 //
 // Example: "10,100,1000" => [10, 100, 1000].
-//
 func ToIntList(sep string) AlterValueFunc {
 	return func(value interface{}) interface{} {
 		if strValue, ok := value.(string); ok {
