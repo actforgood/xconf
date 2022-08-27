@@ -233,7 +233,7 @@ type etcdWatcherLoadStrategy struct {
 	configMap map[string]interface{} // "live" configuration map
 	client    *clientv3.Client       // underlying client
 	mErr      *xerr.MultiError       // error(s) occurred during watching, between 2 Loads.
-	mu        sync.RWMutex           // concurrency semapthore
+	mu        sync.RWMutex           // concurrency semaphore
 	wg        sync.WaitGroup         // wait group to wait for watching goroutine to finish
 }
 

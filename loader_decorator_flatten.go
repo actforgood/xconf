@@ -61,7 +61,7 @@ func (decorator FlattenLoader) Load() (map[string]interface{}, error) {
 }
 
 // getFlatKey returns a flat key representing the concatenation of
-// provious (level) key and current (level) key.
+// previous (level) key and current (level) key.
 func (decorator FlattenLoader) getFlatKey(lvl uint, prevKey, currKey string) string {
 	if lvl > 0 {
 		return prevKey + decorator.separator + currKey

@@ -33,7 +33,7 @@ func TestMockConfig(t *testing.T) {
 				assertEqual(t, 2099, def[0])
 			}
 		case 3:
-			assertEqual(t, "non-existen-key", key)
+			assertEqual(t, "non-existent-key", key)
 			if assertEqual(t, 1, len(def)) {
 				assertEqual(t, "default value", def[0])
 			}
@@ -49,7 +49,7 @@ func TestMockConfig(t *testing.T) {
 	// act
 	resultFoo := subject.Get("foo")
 	resultYear := subject.Get("year", 2099)
-	resultDefault := subject.Get("non-existen-key", "default value")
+	resultDefault := subject.Get("non-existent-key", "default value")
 	resultNil := subject.Get("odd number of elements")
 	subject.SetKeyValues("foo", "baz") // reset a key
 	resultFooReset := subject.Get("foo")

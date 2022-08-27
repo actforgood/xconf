@@ -36,7 +36,7 @@ Upon above loaders there are available decorators which can help you achieve mor
 - `FilterKVLoader` - filters other loader's configurations (based on keys and or their values).  
 Example of applicability: I load configurations from environment, but I only want the ones prefixed with "MY_APP_" - I can apply this loader with `FilterKVWhitelistFunc(FilterKeyWithPrefix("MY_APP_")` filter function.
 - `AlterValueLoader` - changes the value for a configuration key.  
-Example of applicability: I load configurations from environment and for a given key I want its value to be a slice (not a string as envs are read/stored by default - I can apply this loader with `ToStringList` altering function.
+Example of applicability: I load configurations from environment and for a given key I want its value to be a slice (not a string as envs are read/stored by default) - I can apply this loader with `ToStringList` altering function.
 - `IgnoreErrorLoader` - ignores the error returned by another loader.  
 Example of applicability: I load configuration from environment and from file (using a `MultiLoader`), but it's not mandatory for that file to exist (file it's just an auxiliary source for my configurations, that may exist) - I can use this loader to ignore "file does not exist" error.
 - `FileCacheLoader` - caches configuration from a `[X]FileLoader` until file gets modified (to be used if loader is called multiple times).
@@ -47,13 +47,13 @@ Example of applicability: I load configuration from environment and from file (u
 ### Configuration contract
 The main configuration contract this package provides looks like:
 
-```golang
+```go
 type Config interface {
 	Get(key string, def ...interface{}) interface{}
 }
 ```
 with a default implementation obtained with:
-```golang
+```go
 // NewDefaultConfig instantiates a new default config object.
 // The first parameter is the loader used as a source of getting the key-value configuration map.
 // The second parameter represents a list of optional functions to configure the object.
@@ -68,7 +68,7 @@ There are 2 (proposed) ways of working with it:
 - registering your class as an observer to get notified about config changes.
 
 Example of usage (first case) (note: code does not compile):
-```golang
+```go
 // cart_service.go
 const (
 	defaultMaxQtyCfgVal uint = 100
@@ -126,7 +126,7 @@ func main() {
 
 
 Example of usage (second case) (note: code does not compile):
-```golang
+```go
 // redis_wrapper.go
 const (
 	RedisHostCfgKey = "REDIS_HOST"
@@ -203,7 +203,7 @@ func main() {
 ### Unmarshal configuration map to structs
 This is not the subject of this package, but as a mention, you can achieve that if needed, with a package like github.com/mitchellh/mapstructure.  
 Example:
-```golang
+```go
 package main
 
 import (
@@ -273,7 +273,7 @@ Things that can be added to package, extended:
 
 - Support more formats (like HCL)  
 - Add also a writer/persister functionality (currently you can only read configurations) to different sources and formats (JSONFileWriter/YAMLFileWriter/EtcdWriter/ConsulWriter/...) implementing a common contract like:
-```golang
+```go
 type ConfigWriter interface {
 	Write(configMap map[string]interface{}) error
 }

@@ -32,7 +32,7 @@ func testFilterKVLoaderWithMixedFilters(t *testing.T) {
 			"FOO_1": "whitelisted by filter 1",
 			"FOO_2": "whitelisted by filter 1",
 			"FOO_3": "whitelisted by filter 2",
-			"FOO_4": "backlisted by filter 3",
+			"FOO_4": "blacklisted by filter 3",
 			"FOO_5": "ignored, not blacklisted and not whitelisted",
 		})
 		filter1 = xconf.FilterKVWhitelistFunc(func(key string, _ interface{}) bool {

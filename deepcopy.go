@@ -7,7 +7,7 @@ package xconf
 
 // DeepCopyConfigMap is a utility function to make a deep "copy"/clone of a config map.
 func DeepCopyConfigMap(src map[string]interface{}) map[string]interface{} {
-	// Note: Implemententation is opinionated to basic types/types produced by current loaders/decoders.
+	// Note: Implementation is opinionated to basic types/types produced by current loaders/decoders.
 	// In json you can have as value a nested structure which ends up being a map[string]interface{}.
 	// In yaml you can have as value a nested structure which ends up being either a map[string]interface{}, or map[interface{}]interface{}.
 	// In json and yaml array-values end up being []interface{}.

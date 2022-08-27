@@ -184,7 +184,7 @@ func TestFileCacheLoader_concurrency(t *testing.T) {
 	go func(fPath string, stop <-chan struct{}, stopped chan<- struct{}) {
 		for {
 			select {
-			case <-stop: // stop this goroutiine
+			case <-stop: // stop this goroutine
 				close(stopped)
 
 				return

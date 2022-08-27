@@ -20,7 +20,7 @@ if [ "$1" != "" ]; then
     CONSUL=$1
 fi
 
-SCRIPT_PATH=$(dirname $(readlink -f $0))
+SCRIPT_PATH=$(dirname "$(readlink -f "$0")")
 
 checkConsulSaveKeyResponse() {
     out=$1
@@ -37,6 +37,6 @@ for key in "${KEYS[@]}"
 do
 	echo "${key}"
     out=$(curl -s -S -X PUT --data-binary "@${SCRIPT_PATH}/../testdata/integration/${DATA_FILES[$i]}" "${CONSUL}/v1/kv/${key}")
-    checkConsulSaveKeyResponse $out
+    checkConsulSaveKeyResponse "$out"
     i=$i+1
 done

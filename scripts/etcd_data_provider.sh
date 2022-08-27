@@ -11,7 +11,7 @@
 #
 
 
-SCRIPT_PATH=$(dirname $(readlink -f $0))
+SCRIPT_PATH=$(dirname "$(readlink -f "$0")")
 
 checkEtcdSaveKeyResponse() {
     out=$1
@@ -29,6 +29,6 @@ do
 	echo "${key}"
     value=$(cat "${SCRIPT_PATH}/../testdata/integration/${DATA_FILES[$i]}")
     out=$(docker exec integration-etcd /bin/sh -c "export ETCDCTL_API=3 && /usr/local/bin/etcdctl put ${key} '${value}'")
-    checkEtcdSaveKeyResponse $out
+    checkEtcdSaveKeyResponse "$out"
     i=$i+1
 done

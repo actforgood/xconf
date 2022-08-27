@@ -76,7 +76,7 @@ func (filter FilterKVBlacklistFunc) Type() FilterType {
 // FilterKVLoader decorates another loader to whitelist/blacklist key-values.
 //
 // A blacklist filter has more weight than a whitelist filter, as if a blacklist denies a KV
-// and a whitelist allows it, that KV will not be retuned in the configuration map.
+// and a whitelist allows it, that KV will not be returned in the configuration map.
 //
 // If there are only whitelist filters, a KV will be returned into the configuration map
 // if at least one filter allows it.
@@ -86,7 +86,7 @@ func (filter FilterKVBlacklistFunc) Type() FilterType {
 func FilterKVLoader(loader Loader, filters ...FilterKV) Loader {
 	// make 2 buckets of filters.
 	var (
-		backlistFilters  = make([]FilterKV, 0, len(filters))
+		blacklistFilters = make([]FilterKV, 0, len(filters))
 		whitelistFilters = make([]FilterKV, 0, len(filters))
 	)
 	for _, filter := range filters {
@@ -94,7 +94,7 @@ func FilterKVLoader(loader Loader, filters ...FilterKV) Loader {
 		case FilterTypeWhitelist:
 			whitelistFilters = append(whitelistFilters, filter)
 		case FilterTypeBlacklist:
-			backlistFilters = append(backlistFilters, filter)
+			blacklistFilters = append(blacklistFilters, filter)
 		}
 	}
 
@@ -104,14 +104,14 @@ func FilterKVLoader(loader Loader, filters ...FilterKV) Loader {
 			return configMap, err
 		}
 
-	KV_LOOP:
+	KvLoop:
 		for key, value := range configMap {
 			// check if KV is blacklisted
-			for _, blFilter := range backlistFilters {
+			for _, blFilter := range blacklistFilters {
 				if !blFilter.IsAllowed(key, value) {
 					delete(configMap, key)
 
-					continue KV_LOOP
+					continue KvLoop
 				}
 			}
 
