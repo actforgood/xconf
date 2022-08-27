@@ -4,7 +4,7 @@
 # This script provides the data used in integration tests for Consul.
 #
 # Example of running a local Consul instance (https://hub.docker.com/_/consul): 
-# docker run -d --name=integration-consul -p 8500:8500 -e CONSUL_BIND_INTERFACE=eth0 consul:1.12.3
+# docker run -d --name=integration-consul -p 8500:8500 -e CONSUL_BIND_INTERFACE=eth0 consul:1.13.1
 #
 # Example of usage of this script:
 # ./path/to/scripts/consul_data_provider.sh

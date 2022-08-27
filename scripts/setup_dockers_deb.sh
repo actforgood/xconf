@@ -39,7 +39,7 @@ network=$(docker inspect --format '{{json .NetworkSettings.Networks}}' `hostname
 echo "network = ${network}"
 
 echo ">>> Run Consul Docker Image"
-DOCKER_CONSUL_IMAGE_VER=consul:1.12.3
+DOCKER_CONSUL_IMAGE_VER=consul:1.13.1
 docker pull -q $DOCKER_CONSUL_IMAGE_VER
 docker run -d \
     --name=integration-consul \
