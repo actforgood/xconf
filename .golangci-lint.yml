@@ -9,7 +9,6 @@ linters:
     - govet
     - staticcheck
     - revive
-    - deadcode
     - gosimple
     - ineffassign
     - unused
@@ -20,7 +19,6 @@ linters:
     - nlreturn
     - noctx
     - whitespace
-    - varcheck
 
 issues:
   exclude-use-default: false
