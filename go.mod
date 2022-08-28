@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/actforgood/xerr v1.0.0
-	github.com/actforgood/xlog v1.0.0
+	github.com/actforgood/xlog v1.1.0
 	github.com/joho/godotenv v1.4.0
 	github.com/magiconair/properties v1.8.6
 	github.com/spf13/cast v1.5.0
