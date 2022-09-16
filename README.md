@@ -15,7 +15,7 @@ Supported formats are json, yaml, ini, (java) properties, plain.
 ### Installation
 
 ```shell
-$ go get -u github.com/actforgood/xdi
+$ go get -u github.com/actforgood/xconf
 ```
 
 
