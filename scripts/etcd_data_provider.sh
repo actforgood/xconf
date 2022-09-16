@@ -4,7 +4,7 @@
 # This script provides the data used in integration tests for Etcd.
 #
 # Example of running a local Etcd instance (https://etcd.io/docs/v3.5/op-guide/container/): 
-# docker run -d --name=integration-etcd -p 2379:2379 quay.io/coreos/etcd:v3.5.4 /usr/local/bin/etcd -advertise-client-urls http://integration-etcd:2379 -listen-client-urls http://0.0.0.0:2379
+# docker run -d --name=integration-etcd -p 2379:2379 quay.io/coreos/etcd:v3.5.5 /usr/local/bin/etcd -advertise-client-urls http://integration-etcd:2379 -listen-client-urls http://0.0.0.0:2379
 #
 # Example of usage of this script:
 # ./path/to/scripts/etcd_data_provider.sh

@@ -1,7 +1,7 @@
-// Copyright 2022 Bogdan Constantinescu.
+// Copyright The ActForGood Authors.
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
-// https://github.com/actforgood/xconf/LICENSE.
+// https://github.com/actforgood/xconf/blob/main/LICENSE.
 
 package xconf
 
@@ -36,19 +36,25 @@ const (
 	// Added in Consul 1.7.0.
 	consulQueryParamNamespace = "ns"
 	// ConsulHeaderAuthToken is the header name for setting a token.
-	// See also https://www.consul.io/api-docs#authentication .
+	// See also [Consul API Ref].
+	//
+	// [Consul API Ref]: https://www.consul.io/api-docs#authentication
 	ConsulHeaderAuthToken = "X-Consul-Token"
 )
 
 const (
 	// consulHTTPAddrEnvName defines an environment variable name which sets
 	// the HTTP address.
-	// Note: complied with official client: https://github.com/hashicorp/consul/blob/v1.12.0/api/api.go#L28
+	// Note: complied with [official client].
+	//
+	// [official client]: https://github.com/hashicorp/consul/blob/v1.12.0/api/api.go#L28
 	consulHTTPAddrEnvName = "CONSUL_HTTP_ADDR"
 
 	// consulHTTPSSLEnvName defines an environment variable name which sets
 	// whether or not to use HTTPS.
-	// Note: complied with official client: https://github.com/hashicorp/consul/blob/v1.12.0/api/api.go#L44
+	// Note: complied with [official client].
+	//
+	// [official client]: https://github.com/hashicorp/consul/blob/v1.12.0/api/api.go#L44
 	consulHTTPSSLEnvName = "CONSUL_HTTP_SSL"
 )
 
@@ -306,11 +312,12 @@ func ConsulLoaderWithContext(ctx context.Context) ConsulLoaderOption {
 
 // ConsulLoaderWithQueryDataCenter specifies the datacenter to query.
 // This will default to the datacenter of the agent being queried.
-// See also official doc https://www.consul.io/api-docs/kv#read-key .
-//
+// See also [official doc].
 // Example:
 //
 //	xconf.ConsulLoaderWithQueryDataCenter("my-dc")
+//
+// [official doc]: https://www.consul.io/api-docs/kv#read-key
 func ConsulLoaderWithQueryDataCenter(dc string) ConsulLoaderOption {
 	return func(loader *ConsulLoader) {
 		loader.reqInfo.setQuery(consulQueryParamDataCenter, dc)
@@ -322,11 +329,13 @@ func ConsulLoaderWithQueryDataCenter(dc string) ConsulLoaderOption {
 // or will default to the default namespace. For recursive lookups, the namespace
 // may be specified as '*' and then results will be returned for all namespaces.
 // Added in Consul 1.7.0.
-// See also official doc https://www.consul.io/api-docs/kv#read-key .
+// See also [official doc].
 //
 // Example:
 //
 //	xconf.ConsulLoaderWithQueryNamespace("my-ns")
+//
+// [official doc]: https://www.consul.io/api-docs/kv#read-key
 func ConsulLoaderWithQueryNamespace(ns string) ConsulLoaderOption {
 	return func(loader *ConsulLoader) {
 		loader.reqInfo.setQuery(consulQueryParamNamespace, ns)

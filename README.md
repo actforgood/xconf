@@ -12,6 +12,13 @@ Configurations can be extracted from a file / env / remote system.
 Supported formats are json, yaml, ini, (java) properties, plain.
 
 
+### Installation
+
+```shell
+$ go get -u github.com/actforgood/xdi
+```
+
+
 ### Configuration loaders
 You can create your own configuration retriever implementing `Loader` interface.
 Package provides these Loaders for you:  

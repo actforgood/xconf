@@ -48,7 +48,7 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
 
-    container: golang:1.19.0-bullseye
+    container: golang:1.19.1-bullseye
 
     steps:
     - name: Checkout code

@@ -49,7 +49,7 @@ docker run -d \
     $DOCKER_CONSUL_IMAGE_VER
 
 echo ">>> Run Etcd Docker Image"
-DOCKER_ETCD_IMAGE_VER=quay.io/coreos/etcd:v3.5.4
+DOCKER_ETCD_IMAGE_VER=quay.io/coreos/etcd:v3.5.5
 docker pull -q $DOCKER_ETCD_IMAGE_VER
 docker run -d \
     --name=integration-etcd \
