@@ -1575,14 +1575,8 @@ func TestDefaultConfig_RegisterObserver(t *testing.T) {
 		if envName == "XCONF_TEST_DEFAULT_CONFIG_FOO_NEW" {
 			continue
 		}
-		_ = setUpEnv(envName, value)
+		t.Setenv(envName, value)
 	}
-	// tear down set envs
-	defer func() {
-		for envName := range envNames {
-			tearDownEnv(envName, "")
-		}
-	}()
 
 	loader := xconf.FilterKVLoader(
 		xconf.EnvLoader(),
@@ -1742,11 +1736,11 @@ func TestDefaultConfig_concurrency(t *testing.T) {
 	go func(envName string, waitGr *sync.WaitGroup) {
 		for i := 0; i < 5; i++ {
 			envVal := "this is a test: " + strconv.FormatInt(time.Now().UnixNano(), 10)
-			_ = setUpEnv(envName, envVal)
+			_ = os.Setenv(envName, envVal)
 			time.Sleep(150 * time.Millisecond)
 		}
 
-		tearDownEnv(envName, "")
+		_ = os.Unsetenv(envName)
 		waitGr.Done()
 	}(customEnv, &wg)
 

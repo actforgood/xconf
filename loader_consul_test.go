@@ -390,8 +390,6 @@ func testConsulLoaderRequestQueryAndHeaders(t *testing.T) {
 }
 
 func testConsulLoaderWithBaseURLTakenFromEnv(t *testing.T) {
-	// Note: do not run this test with t.Parallel() as it can affect others by setting ENVs.
-
 	// arrange
 	format := xconf.RemoteValuePlain
 	withPrefix := false
@@ -401,14 +399,8 @@ func testConsulLoaderWithBaseURLTakenFromEnv(t *testing.T) {
 	svr := startConsulKVMockServer(t, key, content, withPrefix)
 	defer svr.Close()
 
-	addrEnvName := "CONSUL_HTTP_ADDR"
-	prevAddrEnvVal := setUpEnv(addrEnvName, strings.TrimPrefix(svr.URL, "http://"))
-	sslEnvName := "CONSUL_HTTP_SSL"
-	prevSSLEnvVal := setUpEnv(sslEnvName, "false")
-	defer func() {
-		tearDownEnv(addrEnvName, prevAddrEnvVal)
-		tearDownEnv(sslEnvName, prevSSLEnvVal)
-	}()
+	t.Setenv("CONSUL_HTTP_ADDR", strings.TrimPrefix(svr.URL, "http://"))
+	t.Setenv("CONSUL_HTTP_SSL", strings.TrimPrefix(svr.URL, "false"))
 
 	subject := xconf.NewConsulLoader(key)
 

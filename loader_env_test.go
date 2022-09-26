@@ -25,8 +25,7 @@ func testEnvLoaderSuccess(t *testing.T) {
 	// arrange
 	subject := xconf.EnvLoader()
 	envName := getRandomEnvName()
-	prevValue := setUpEnv(envName, "bar")
-	defer tearDownEnv(envName, prevValue)
+	t.Setenv(envName, "bar")
 
 	// act
 	config, err := subject.Load()
@@ -42,8 +41,7 @@ func testEnvLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	// arrange
 	subject := xconf.EnvLoader()
 	envName := getRandomEnvName()
-	prevValue := setUpEnv(envName, "bar")
-	defer tearDownEnv(envName, prevValue)
+	t.Setenv(envName, "bar")
 
 	// act
 	config1, err1 := subject.Load()
@@ -60,6 +58,7 @@ func testEnvLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	// act
 	config2, err2 := subject.Load()
 
+	// assert
 	assertNil(t, err2)
 	if assertTrue(t, len(config1) >= 1) {
 		assertEqual(t, "bar", config2[envName])
@@ -68,7 +67,6 @@ func testEnvLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 // setUpEnv sets OS env with provided value.
 // Returns the previous value, if env name already exists.
-// Note: Since go1.17 there is a t.Setenv.
 func setUpEnv(envName, value string) string {
 	prevValue := os.Getenv(envName)
 	_ = os.Setenv(envName, value)

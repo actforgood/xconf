@@ -432,8 +432,6 @@ func testEtcdLoaderWithAuth(t *testing.T) {
 }
 
 func testEtcdLoaderWithEndpointsTakenFromEnv(t *testing.T) {
-	// Note: do not run this test with t.Parallel() as it can affect others by setting ENVs.
-
 	// arrange
 	format := xconf.RemoteValuePlain
 	withPrefix := false
@@ -443,10 +441,7 @@ func testEtcdLoaderWithEndpointsTakenFromEnv(t *testing.T) {
 	svr, addr := startEtcdKVMockServer(t, key, content, nil)
 	defer svr.Stop()
 
-	// setup env
-	envName := "ETCD_ENDPOINTS"
-	prevValue := setUpEnv(envName, addr)
-	defer tearDownEnv(envName, prevValue)
+	t.Setenv("ETCD_ENDPOINTS", addr)
 
 	subject := xconf.NewEtcdLoader(key)
 	defer subject.Close()
