@@ -17,10 +17,19 @@ import (
 )
 
 var iniConfigMap = map[string]interface{}{
-	"ini_foo":                    "bar",
+	"ini_foo": "bar",
+	// deprecation, to be removed - start
 	"time/ini_year":              "2022",
 	"temperature/ini_celsius":    "37.5",
 	"temperature/ini_fahrenheit": "99.5",
+	// deprecation, to be removed - stop
+	"time": map[string]interface{}{
+		"ini_year": "2022",
+	},
+	"temperature": map[string]interface{}{
+		"ini_celsius":    "37.5",
+		"ini_fahrenheit": "99.5",
+	},
 }
 
 const iniFilePath = "testdata/config.ini"
@@ -104,6 +113,7 @@ func testIniFileLoaderWithCustomIniLoadOptions(t *testing.T) {
 	assertEqual(t, 0, len(config))
 }
 
+// Deprecated: to be removed.
 func testIniFileLoaderWithCustomKeyFuncOption(t *testing.T) {
 	t.Parallel()
 
@@ -131,6 +141,14 @@ func testIniFileLoaderWithCustomKeyFuncOption(t *testing.T) {
 			"INI_YEAR":       "2022",
 			"INI_CELSIUS":    "37.5",
 			"INI_FAHRENHEIT": "99.5",
+			"ini_foo":        "bar",
+			"time": map[string]interface{}{
+				"ini_year": "2022",
+			},
+			"temperature": map[string]interface{}{
+				"ini_celsius":    "37.5",
+				"ini_fahrenheit": "99.5",
+			},
 		},
 		config,
 	)
@@ -163,10 +181,19 @@ func testIniFileLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	assertEqual(
 		t,
 		map[string]interface{}{
-			"ini_foo":                    "bar",
+			"ini_foo": "bar",
+			// deprecation, to be removed - start
 			"time/ini_year":              "2022",
 			"temperature/ini_celsius":    "37.5",
 			"temperature/ini_fahrenheit": "99.5",
+			// deprecation, to be removed - stop
+			"time": map[string]interface{}{
+				"ini_year": "2022",
+			},
+			"temperature": map[string]interface{}{
+				"ini_celsius":    "37.5",
+				"ini_fahrenheit": "99.5",
+			},
 		},
 		iniConfigMap,
 	)
@@ -193,13 +220,12 @@ func ExampleIniFileLoader() {
 	if err != nil {
 		panic(err)
 	}
-	for key, value := range configMap {
-		fmt.Println(key+":", value)
-	}
+	fmt.Println(configMap["ini_foo"])
+	fmt.Println(configMap["temperature"].(map[string]interface{})["ini_celsius"])
+	fmt.Println(configMap["temperature"].(map[string]interface{})["ini_fahrenheit"])
 
 	// Unordered output:
-	// ini_foo: bar
-	// time/ini_year: 2022
-	// temperature/ini_celsius: 37.5
-	// temperature/ini_fahrenheit: 99.5
+	// bar
+	// 37.5
+	// 99.5
 }
