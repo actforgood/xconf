@@ -22,7 +22,7 @@ import "github.com/spf13/cast"
 // 2 additional flat keys will be added to above standard configuration: "mysql.host", "mysql.port"
 // for easy access of leaf-keys.
 // Note: original nested configuration is still kept by default, if you want to remove it, apply
-// FlattenLoaderWithFlatKeysOnly option.
+// [FlattenLoaderWithFlatKeysOnly] option.
 type FlattenLoader struct {
 	loader    Loader // original, decorated loader.
 	flatOnly  bool   // flag that indicates whether nested keys should be removed and only their flat version should be kept.
