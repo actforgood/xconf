@@ -35,6 +35,7 @@ Package provides these Loaders for you:
 - `ConsulLoader` - loads json/yaml/plain configuration from a remote Consul KV Store.
 - `EtcdLoader` - loads json/yaml/plain configuration from a remote Etcd KV Store.
 - `PlainLoader` - explicit configuration provider.
+- `FileLoader` -  factory for `<JSON|YAML|Ini|DotEnv|Properties>FileLoader`s based on file extension.
 - `MultiLoader` - loads (and merges, if configured) configuration from multiple loaders.
 
 
