@@ -10,7 +10,7 @@
 
 Package `xconf` provides a configuration registry for an application.  
 Configurations can be extracted from a file / env / remote system.  
-Supported formats are json, yaml, ini, (java) properties, plain.
+Supported formats are json, yaml, ini, (java) properties, toml, plain.
 
 
 ### Installation
@@ -24,19 +24,21 @@ $ go get -u github.com/actforgood/xconf
 You can create your own configuration retriever implementing `Loader` interface.
 Package provides these Loaders for you:  
 
-- `EnvLoader` - loads environment variables.
-- `DotEnvFileLoader` - loads configuration from a .env file.
-- `JSONFileLoader` - loads json configuration from a file.
-- `JSONReaderLoader` - loads json configuration from a `io.Reader`.
-- `YAMLFileLoader` - loads yaml configuration from a file.
-- `YAMLReaderLoader` - loads yaml configuration from a `io.Reader`.
-- `IniFileLoader` -  loads ini configuration from a file.
-- `PropertiesFileLoader` - loads java style properties configuration from a file.
-- `PropertiesBytesLoader` - loads java style properties configuration from a bytes slice.
-- `ConsulLoader` - loads json/yaml/plain configuration from a remote Consul KV Store.
-- `EtcdLoader` - loads json/yaml/plain configuration from a remote Etcd KV Store.
+- `EnvLoader` - loads *environment variables*.
+- `DotEnvFileLoader` - loads configuration from a *.env* file.
+- `JSONFileLoader` - loads *json* configuration from a file.
+- `JSONReaderLoader` - loads *json* configuration from a `io.Reader`.
+- `YAMLFileLoader` - loads *yaml* configuration from a file.
+- `YAMLReaderLoader` - loads *yaml* configuration from a `io.Reader`.
+- `IniFileLoader` -  loads *ini* configuration from a file.
+- `PropertiesFileLoader` - loads java style *properties* configuration from a file.
+- `PropertiesBytesLoader` - loads java style *properties* configuration from a bytes slice.
+- `TOMLFileLoader` - loads *toml* configuration from a file.
+- `TOMLReaderLoader` - loads *toml* configuration from a `io.Reader`.
+- `ConsulLoader` - loads *json/yaml/plain* configuration from a remote Consul KV Store.
+- `EtcdLoader` - loads *json/yaml/plain* configuration from a remote Etcd KV Store.
 - `PlainLoader` - explicit configuration provider.
-- `FileLoader` -  factory for `<JSON|YAML|Ini|DotEnv|Properties>FileLoader`s based on file extension.
+- `FileLoader` -  factory for `<JSON|YAML|Ini|DotEnv|Properties|TOML>FileLoader`s based on file extension.
 - `MultiLoader` - loads (and merges, if configured) configuration from multiple loaders.
 
 

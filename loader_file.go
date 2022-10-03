@@ -16,7 +16,7 @@ var ErrUnknownConfigFileExt = errors.New("unknown configuration file extension")
 
 // FileLoader is a factory for appropriate XFileLoader based on file's extension.
 // This is useful when you don't want to tie an application to a certain config format.
-// Supported extensions are: .json, .yml, .yaml, .ini, .properties, .env.
+// Supported extensions are: .json, .yml, .yaml, .ini, .properties, .env, .toml.
 func FileLoader(filePath string) Loader {
 	fileExtension := filepath.Ext(filePath)
 	switch fileExtension {
@@ -30,6 +30,8 @@ func FileLoader(filePath string) Loader {
 		return DotEnvFileLoader(filePath)
 	case ".ini":
 		return NewIniFileLoader(filePath)
+	case ".toml":
+		return TOMLFileLoader(filePath)
 	case ".properties":
 		return PropertiesFileLoader(filePath)
 	}

@@ -21,6 +21,7 @@ func TestFileLoader(t *testing.T) {
 	t.Run("success - with .yml", testFileLoaderWithYML)
 	t.Run("success - with .env", testFileLoaderWithDotEnv)
 	t.Run("success - with .ini", testFileLoaderWithIni)
+	t.Run("success - with .toml", testFileLoaderWithTOML)
 	t.Run("success - with .properties", testFileLoaderWithProperties)
 	t.Run("error - unknown extension", testFileLoaderWithUnknownExt)
 }
@@ -93,6 +94,20 @@ func testFileLoaderWithIni(t *testing.T) {
 	// assert
 	assertNil(t, err)
 	assertEqual(t, iniConfigMap, config)
+}
+
+func testFileLoaderWithTOML(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	subject := xconf.FileLoader(tomlFilePath)
+
+	// act
+	config, err := subject.Load()
+
+	// assert
+	assertNil(t, err)
+	assertEqual(t, tomlConfigMap, config)
 }
 
 func testFileLoaderWithProperties(t *testing.T) {

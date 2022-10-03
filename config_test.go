@@ -1684,6 +1684,7 @@ func TestDefaultConfig_concurrency(t *testing.T) {
 				xconf.YAMLFileLoader(yamlFilePath),
 				xconf.NewIniFileLoader(iniFilePath),
 				xconf.PropertiesFileLoader(propertiesFilePath),
+				xconf.FileLoader(tomlFilePath),
 				xconf.AlterValueLoader(
 					xconf.DotEnvFileLoader(dotEnvFilePath),
 					xconf.ToStringList(","),

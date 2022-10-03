@@ -1,0 +1,22 @@
+toml_foo = "bar"
+toml_year = 2022
+toml_temperature = 37.5
+toml_shopping_list = [
+    "bread",
+    "milk",
+    "eggs"
+]
+toml_enabled = true
+toml_dob = 1990-05-28T07:32:00+02:00
+
+[toml_servers]
+
+    [toml_servers.alpha]
+    ip = "10.0.0.1"
+    role = "frontend"
+
+    [toml_servers.beta]
+    ip = "10.0.0.2"
+    role = "backend"
+
+#toml_commented_config = "should not be taken into account"
