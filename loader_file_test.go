@@ -174,6 +174,7 @@ func ExampleFileLoader() {
 		"testdata/.env",
 		"testdata/config.ini",
 		"testdata/config.properties",
+		"testdata/config.toml",
 	}
 	for _, filePath := range exampleFiles {
 		loader := xconf.FileLoader(filePath)
@@ -191,4 +192,5 @@ func ExampleFileLoader() {
 	// 4
 	// 6
 	// 4
+	// 7
 }
