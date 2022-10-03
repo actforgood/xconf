@@ -304,6 +304,7 @@ Other 3rd party packages directly used by this package are released under their 
 * github.com/magiconair/properties - [BSD (2 Clause) License](https://github.com/magiconair/properties/blob/main/LICENSE.md)  
 * gopkg.in/ini.v1 - [Apache 2.0 License](https://github.com/go-ini/ini/blob/main/LICENSE)  
 * gopkg.in/yaml.v3 - [MIT And Apache License](https://github.com/go-yaml/yaml/blob/v3.0.1/LICENSE)  
+* github.com/pelletier/go-toml/v2 - [MIT License](https://github.com/pelletier/go-toml/blob/v2/LICENSE)  
 * go.etcd.io/etcd/client/v3 - [Apache 2.0 License](https://github.com/etcd-io/etcd/blob/main/LICENSE)  
 * github.com/spf13/cast - [MIT License](https://github.com/spf13/cast/blob/master/LICENSE)  
 * github.com/actforgood/xerr - [MIT License](https://github.com/actforgood/xerr/blob/main/LICENSE)  
