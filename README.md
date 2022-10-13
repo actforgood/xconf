@@ -9,7 +9,7 @@
 ---
 
 Package `xconf` provides a configuration registry for an application.  
-Configurations can be extracted from a file / env / remote system.  
+Configurations can be extracted from a file / env / flag set / remote system.  
 Supported formats are json, yaml, ini, (java) properties, toml, plain.
 
 
@@ -38,7 +38,8 @@ Package provides these Loaders for you:
 - `ConsulLoader` - loads *json/yaml/plain* configuration from a remote Consul KV Store.
 - `EtcdLoader` - loads *json/yaml/plain* configuration from a remote Etcd KV Store.
 - `PlainLoader` - explicit configuration provider.
-- `FileLoader` -  factory for `<JSON|YAML|Ini|DotEnv|Properties|TOML>FileLoader`s based on file extension.
+- `FileLoader` - factory for `<JSON|YAML|Ini|DotEnv|Properties|TOML>FileLoader`s based on file extension.
+- `FlagSetLoader` - extracts configuration from a `flag.FlagSet`.
 - `MultiLoader` - loads (and merges, if configured) configuration from multiple loaders.
 
 
