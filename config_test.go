@@ -1662,6 +1662,8 @@ func TestDefaultConfig_concurrency(t *testing.T) {
 	t.Parallel()
 
 	// arrange
+	flgSet, flgSetParseErr := setUpFlagSet()
+	requireNil(t, flgSetParseErr)
 	var (
 		customEnv = "XCONF_" + strings.ToUpper(t.Name()) // we update it
 		loader    = xconf.AliasLoader(
@@ -1694,6 +1696,7 @@ func TestDefaultConfig_concurrency(t *testing.T) {
 					xconf.PropertiesFileLoader("/this/properties/config/path/does/not/exist"),
 					os.ErrNotExist,
 				),
+				xconf.FlagSetLoader(flgSet),
 			),
 			"alias_for_json_foo", "json_foo",
 			"alias_for_yaml_year", "yaml_year",

@@ -13,10 +13,6 @@ package xconf
 // -  in a MultiLoader (with allowing keys overwrite) as the first loader
 // in order to specify default configurations.
 //
-// - in a MultiLoader  (with allowing keys overwrite) as the last loader
-// and provided config map to contain cmd parsed flags (like flags should overwrite
-// any other configuration...)
-//
 // - to provide any application hardcoded configs.
 func PlainLoader(configMap map[string]interface{}) Loader {
 	// make a copy to preserve state at current time.
