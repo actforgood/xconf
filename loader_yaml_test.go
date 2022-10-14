@@ -12,9 +12,8 @@ import (
 	"os"
 	"testing"
 
-	"gopkg.in/yaml.v3"
-
 	"github.com/actforgood/xconf"
+	"gopkg.in/yaml.v3"
 )
 
 var yamlConfigMap = map[string]interface{}{

@@ -73,8 +73,7 @@ func NewDefaultConfig(loader Loader, opts ...DefaultConfigOption) (*DefaultConfi
 		opt(config)
 	}
 
-	err := config.setConfigMap()
-	if err != nil {
+	if err := config.setConfigMap(); err != nil {
 		return nil, err
 	}
 

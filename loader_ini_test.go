@@ -11,9 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"gopkg.in/ini.v1"
-
 	"github.com/actforgood/xconf"
+	"gopkg.in/ini.v1"
 )
 
 var iniConfigMap = map[string]interface{}{
@@ -118,15 +117,13 @@ func testIniFileLoaderWithCustomKeyFuncOption(t *testing.T) {
 	t.Parallel()
 
 	// arrange
-	var (
-		subject = xconf.NewIniFileLoader(
-			iniFilePath,
-			xconf.IniFileLoaderWithSectionKeyFunc(func(_, key string) string {
-				// we ignore the section and transform the keys
-				// to uppercase for testing purpose.
-				return strings.ToUpper(key)
-			}),
-		)
+	subject := xconf.NewIniFileLoader(
+		iniFilePath,
+		xconf.IniFileLoaderWithSectionKeyFunc(func(_, key string) string {
+			// we ignore the section and transform the keys
+			// to uppercase for testing purpose.
+			return strings.ToUpper(key)
+		}),
 	)
 
 	// act

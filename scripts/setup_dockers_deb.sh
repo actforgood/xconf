@@ -1,4 +1,4 @@
-#!/bin/sh -eux
+#!/bin/sh
 
 #
 # This script is used in Github Workflow to run integration tests.
@@ -9,15 +9,45 @@
 # I got inspired from here: https://stackoverflow.com/questions/60849745/how-can-i-run-a-command-in-github-action-service-containers
 #
 
+# checkIsHealthy checks if consul/etcd containers are healthy after bringing them up.
+checkIsHealthy() {
+    container=$1
+    retryNo=0
+    maxRetries=5
+    echo ">>> Checking $container's health..."
+    while true ; do
+        if [ "$container" = "xconf-consul" ]; then
+            reply=$(curl -sS "http://$container:8500/v1/health/node/consul0?filter=Status==passing" | grep '"Status": "passing"')
+        elif [ "$container" = "xconf-etcd" ]; then
+            reply=$(curl -sS "http://$container:2379/health" | grep '"health":"true"')
+        else 
+            reply=$(curl -sS --cacert "$GITHUB_WORKSPACE/scripts/tls/certs/ca_cert.pem" "https://$container:2389/health" | grep '"health":"true"')
+        fi
+        if [ "$reply" != "" ]; then
+            echo ">>> $container is healthy"
+            break
+        else
+            echo ">>> $container is not healthy"    
+        fi
+        retryNo=$(( retryNo + 1 ))
+        if [ $retryNo -eq $maxRetries ]; then
+            printf '\033[0;31mFAIL\033[0m >>> %s is not healthy (%d retries)' "$container" "$retryNo"
+            exit 1
+        fi
+        echo ">>> Sleeping ${retryNo}s and retrying..."
+        sleep "$retryNo"
+    done
+}
+
 echo ">>> Install deps"
 # we need docker, curl and jq
 # docker install: https://docs.docker.com/engine/install/debian/
 apt-get update
-apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release \
+apt-get install -y --no-install-recommends  \
+    ca-certificates                         \
+    curl                                    \
+    gnupg                                   \
+    lsb-release                             \
     jq
 
 mkdir -p /etc/apt/keyrings
@@ -28,10 +58,10 @@ echo \
   $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 apt-get update
-apt-get install -y --no-install-recommends \
-    docker-ce \
-    docker-ce-cli \
-    containerd.io \
+apt-get install -y --no-install-recommends  \
+    docker-ce                               \
+    docker-ce-cli                           \
+    containerd.io                           \
     docker-compose-plugin
 
 # find the network
@@ -39,25 +69,44 @@ network=$(docker inspect --format '{{json .NetworkSettings.Networks}}' `hostname
 echo "network = ${network}"
 
 echo ">>> Run Consul Docker Image"
-DOCKER_CONSUL_IMAGE_VER=consul:1.13.1
+DOCKER_CONSUL_IMAGE_VER=consul:1.13.2
 docker pull -q $DOCKER_CONSUL_IMAGE_VER
-docker run -d \
-    --name=integration-consul \
-    -p 8500:8500 \
-    --network "${network}" \
-    -e CONSUL_BIND_INTERFACE=eth0 \
+docker run -d                       \
+    --name=xconf-consul             \
+    --hostname=consul0              \
+    --network "${network}"          \
+    -e CONSUL_BIND_INTERFACE=eth0   \
     $DOCKER_CONSUL_IMAGE_VER
 
 echo ">>> Run Etcd Docker Image"
 DOCKER_ETCD_IMAGE_VER=quay.io/coreos/etcd:v3.5.5
 docker pull -q $DOCKER_ETCD_IMAGE_VER
-docker run -d \
-    --name=integration-etcd \
-    -p 2379:2379 \
-    --network "${network}" \
-    $DOCKER_ETCD_IMAGE_VER \
-    /usr/local/bin/etcd -advertise-client-urls http://integration-etcd:2379 -listen-client-urls http://0.0.0.0:2379
+docker run -d               \
+    --name=xconf-etcd       \
+    --hostname=member0      \
+    --network "${network}"  \
+    $DOCKER_ETCD_IMAGE_VER  \
+    /usr/local/bin/etcd -advertise-client-urls http://xconf-etcd:2379 -listen-client-urls http://0.0.0.0:2379
 
-echo ">>> Show Running Docker Containers"
-sleep 15
-docker ps
+echo ">>> Run Etcd (with TLS) Docker Image"
+if [ ! -d "$GITHUB_WORKSPACE/scripts/tls/certs" ]; then
+     echo ">>> Generating certificates"
+    "$GITHUB_WORKSPACE/scripts/tls/certs.sh"
+    chmod 0644 "$GITHUB_WORKSPACE"/scripts/tls/certs/*
+fi
+
+docker build -q                                                 \
+    -f "$GITHUB_WORKSPACE/scripts/Dockerfile.etcdtls.github"    \
+    -t xconf_etcds_image                                        \
+    "$GITHUB_WORKSPACE"
+docker run -d                       \
+    --name=xconf-etcds              \
+    -p 2389:2389                    \
+    --hostname=member0              \
+    --network "${network}"          \
+    xconf_etcds_image
+
+# Check healthiness
+checkIsHealthy "xconf-consul"
+checkIsHealthy "xconf-etcd"
+checkIsHealthy "xconf-etcds"

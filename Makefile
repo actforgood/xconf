@@ -1,4 +1,4 @@
-LINTER_VERSION=v1.49.0
+LINTER_VERSION=v1.50.0
 LINTER=./bin/golangci-lint
 ifeq ($(OS),Windows_NT)
 	LINTER=./bin/golangci-lint.exe
@@ -33,6 +33,7 @@ test-integration: setup-test-integration-data ## Run integration tests (with rac
 
 .PHONY: setup-test-integration-data
 setup-test-integration-data: ## Run integration tests data setup scripts.
+	./scripts/setup_dockers_local.sh
 	./scripts/consul_data_provider.sh
 	./scripts/etcd_data_provider.sh
 

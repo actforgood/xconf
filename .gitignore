@@ -10,3 +10,5 @@ bin/*
 
 cover*.out
 cover*.html
+
+scripts/tls/certs

@@ -48,7 +48,7 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
 
-    container: golang:1.19.1-bullseye
+    container: golang:1.19.2-bullseye
 
     steps:
     - name: Checkout code
@@ -70,8 +70,9 @@ jobs:
         go mod download
         make cover-integration
       env:
-          CONSUL_HTTP_ADDR: integration-consul:8500
-          ETCD_ENDPOINTS: integration-etcd:2379
+          CONSUL_HTTP_ADDR: xconf-consul:8500
+          ETCD_ENDPOINTS: xconf-etcd:2379
+          ETCDS_ENDPOINTS: xconf-etcds:2389
 
     - name: TearDown dockers
       run: ./scripts/teardown_dockers.sh

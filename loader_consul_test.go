@@ -615,6 +615,7 @@ func getConsulExpectedConfigMapByFormatAndPrefix(format string, withPrefix bool)
 
 func benchmarkConsulLoader(format string, withCache bool) func(b *testing.B) {
 	return func(b *testing.B) {
+		b.Helper()
 		content := consulResponseContent[format][true]
 		key := consulKeys[format]
 		svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

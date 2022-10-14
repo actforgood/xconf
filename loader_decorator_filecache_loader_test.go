@@ -34,7 +34,7 @@ func testFileCacheLoaderSuccess(t *testing.T) {
 	// setup a file for which we will play with its modification time.
 	filePath, err := setUpTmpFile("xconf-filecacheloader-*.json", `{"foo":"bar"}`+"\n")
 	if err != nil {
-		t.Skip("prerequisite failed", err)
+		t.Fatal("prerequisite failed:", err)
 	}
 	defer tearDownTmpFile(filePath)
 
@@ -174,7 +174,7 @@ func TestFileCacheLoader_concurrency(t *testing.T) {
 	// setup a file for which we will play with its modification time.
 	filePath, err := setUpTmpFile("xconf-filecacheloader-concurrency-*.json", `{"foo":"bar"}`+"\n")
 	if err != nil {
-		t.Skip("prerequisite failed", err)
+		t.Fatal("prerequisite failed:", err)
 	}
 	defer tearDownTmpFile(filePath)
 
@@ -251,7 +251,7 @@ func tearDownTmpFile(filePath string) {
 
 // writeToFile writes given content to the specified file.
 func writeToFile(filePath, content string) error {
-	f, err := os.OpenFile(filePath, os.O_WRONLY, 0644)
+	f, err := os.OpenFile(filePath, os.O_WRONLY, 0o644)
 	if err != nil {
 		return err
 	}
@@ -264,6 +264,7 @@ func writeToFile(filePath, content string) error {
 
 func benchmarkFileCacheLoader(loader xconf.Loader) func(b *testing.B) {
 	return func(b *testing.B) {
+		b.Helper()
 		b.ReportAllocs()
 		b.ResetTimer()
 

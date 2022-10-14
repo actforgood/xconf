@@ -23,7 +23,7 @@ var tomlConfigMap = map[string]interface{}{
 	"toml_temperature":   37.5,
 	"toml_shopping_list": []interface{}{"bread", "milk", "eggs"},
 	"toml_enabled":       true,
-	"toml_dob":           time.Date(1990, 5, 28, 7, 32, 00, 0, time.FixedZone("", 2*3600)),
+	"toml_dob":           time.Date(1990, 5, 28, 7, 32, 0, 0, time.FixedZone("", 2*3600)),
 	"toml_servers": map[string]interface{}{
 		"alpha": map[string]interface{}{
 			"ip":   "10.0.0.1",
@@ -244,7 +244,7 @@ func testTOMLFileLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 			"toml_temperature":   37.5,
 			"toml_shopping_list": []interface{}{"bread", "milk", "eggs"},
 			"toml_enabled":       true,
-			"toml_dob":           time.Date(1990, 5, 28, 7, 32, 00, 0, time.FixedZone("", 2*3600)),
+			"toml_dob":           time.Date(1990, 5, 28, 7, 32, 0, 0, time.FixedZone("", 2*3600)),
 			"toml_servers": map[string]interface{}{
 				"alpha": map[string]interface{}{
 					"ip":   "10.0.0.1",

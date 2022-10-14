@@ -20,8 +20,8 @@ import (
 // Note: data from this test file can be generated with ./scripts/consul_data_provider.sh
 
 func TestConsulLoader_withJSON_integration(t *testing.T) {
-	key := "json-key"
-	format := xconf.RemoteValueJSON
+	const key = "json-key"
+	const format = xconf.RemoteValueJSON
 
 	t.Run("single key", testConsulLoaderIntegration(format, key, false, ""))
 	t.Run("prefix key", testConsulLoaderIntegration(format, key, true, ""))
@@ -29,8 +29,8 @@ func TestConsulLoader_withJSON_integration(t *testing.T) {
 }
 
 func TestConsulLoader_withYAML_integration(t *testing.T) {
-	key := "yaml-key"
-	format := xconf.RemoteValueYAML
+	const key = "yaml-key"
+	const format = xconf.RemoteValueYAML
 
 	t.Run("single key", testConsulLoaderIntegration(format, key, false, ""))
 	t.Run("prefix key", testConsulLoaderIntegration(format, key, true, ""))
@@ -38,8 +38,8 @@ func TestConsulLoader_withYAML_integration(t *testing.T) {
 }
 
 func TestConsulLoader_withPlain_integration(t *testing.T) {
-	key := "plain-key"
-	format := xconf.RemoteValuePlain
+	const key = "plain-key"
+	const format = xconf.RemoteValuePlain
 
 	t.Run("single key", testConsulLoaderIntegration(format, key, false, ""))
 	t.Run("prefix key", testConsulLoaderIntegration(format, key, true, ""))

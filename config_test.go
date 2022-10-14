@@ -258,11 +258,11 @@ func testDefaultConfigWithReloadErrorHandler(t *testing.T) {
 		expectedErr    = errors.New("intentionally triggered Load error")
 		loader         = xconf.LoaderFunc(func() (map[string]interface{}, error) {
 			atomic.AddUint32(&loaderCallsCnt, 1)
-			if atomic.LoadUint32(&loaderCallsCnt) == 1 {
-				return map[string]interface{}{"foo": "bar"}, nil
+			if atomic.LoadUint32(&loaderCallsCnt) == 2 {
+				return nil, expectedErr
 			}
 
-			return nil, expectedErr
+			return map[string]interface{}{"foo": "bar"}, nil
 		})
 		errHandlerCallsCnt uint32
 		errHandler         = func(err error) {
@@ -1608,13 +1608,13 @@ func TestDefaultConfig_RegisterObserver(t *testing.T) {
 
 	// prepare second act
 	if err := os.Setenv("XCONF_TEST_DEFAULT_CONFIG_FOO_UPDATED", "foo got updated"); err != nil {
-		t.Skip("prerequisite failed", err)
+		t.Fatal("prerequisite failed:", err)
 	}
 	if err := os.Unsetenv("XCONF_TEST_DEFAULT_CONFIG_FOO_DELETED"); err != nil {
-		t.Skip("prerequisite failed", err)
+		t.Fatal("prerequisite failed:", err)
 	}
 	if err := os.Setenv("XCONF_TEST_DEFAULT_CONFIG_FOO_NEW", "foo to be added later"); err != nil {
-		t.Skip("prerequisite failed", err)
+		t.Fatal("prerequisite failed:", err)
 	}
 	time.Sleep(300 * time.Millisecond)
 
@@ -1766,6 +1766,7 @@ func benchmarkDefaultConfigGet(withReload, withDefValue bool) func(b *testing.B)
 	// The extra allocation between with/without default value comes from casting.
 	// TODO: maybe think at a solution not to have this allocation.
 	return func(b *testing.B) {
+		b.Helper()
 		var (
 			loader = xconf.PlainLoader(map[string]interface{}{
 				"foo": "bar",
