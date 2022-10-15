@@ -180,6 +180,7 @@ func testMultiLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 func benchmarkMultiLoader(allowKeyOverwrite bool) func(b *testing.B) {
 	return func(b *testing.B) {
+		b.Helper()
 		loader1 := xconf.PlainLoader(map[string]interface{}{
 			"loader_1": "Loader 1",
 		})

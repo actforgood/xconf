@@ -15,13 +15,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/actforgood/xconf"
 	pb "go.etcd.io/etcd/api/v3/etcdserverpb"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
 	"gopkg.in/yaml.v3"
-
-	"github.com/actforgood/xconf"
 )
 
 type etcdKVServer struct {
@@ -580,6 +579,7 @@ func getEtcdExpectedConfigMapByFormatAndPrefix(format string, withPrefix bool) m
 
 func benchmarkEtcdLoader(format string, withWatcher bool) func(b *testing.B) {
 	return func(b *testing.B) {
+		b.Helper()
 		content := etcdResponseKeys[format][true]
 		key := etcdKeys[format]
 		kvSvr := etcdKVServer{

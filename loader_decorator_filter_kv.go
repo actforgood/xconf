@@ -85,18 +85,7 @@ func (filter FilterKVBlacklistFunc) Type() FilterType {
 // if no filter denies it.
 func FilterKVLoader(loader Loader, filters ...FilterKV) Loader {
 	// make 2 buckets of filters.
-	var (
-		blacklistFilters = make([]FilterKV, 0, len(filters))
-		whitelistFilters = make([]FilterKV, 0, len(filters))
-	)
-	for _, filter := range filters {
-		switch filter.Type() {
-		case FilterTypeWhitelist:
-			whitelistFilters = append(whitelistFilters, filter)
-		case FilterTypeBlacklist:
-			blacklistFilters = append(blacklistFilters, filter)
-		}
-	}
+	blacklistFilters, whitelistFilters := filterBuckets(filters...)
 
 	return LoaderFunc(func() (map[string]interface{}, error) {
 		configMap, err := loader.Load()
@@ -117,23 +106,35 @@ func FilterKVLoader(loader Loader, filters ...FilterKV) Loader {
 
 			// check if it is whitelisted
 			if len(whitelistFilters) > 0 {
-				isAllowed := false
 				for _, wlFilter := range whitelistFilters {
 					if wlFilter.IsAllowed(key, value) {
-						isAllowed = true
-
-						break
+						continue KvLoop
 					}
 				}
-
-				if !isAllowed {
-					delete(configMap, key)
-				}
+				delete(configMap, key)
 			}
 		}
 
 		return configMap, nil
 	})
+}
+
+// filterBuckets splits provided filters into 2 buckets (black, white).
+func filterBuckets(filters ...FilterKV) ([]FilterKV, []FilterKV) {
+	var (
+		blacklistFilters = make([]FilterKV, 0, len(filters))
+		whitelistFilters = make([]FilterKV, 0, len(filters))
+	)
+	for _, filter := range filters {
+		switch filter.Type() {
+		case FilterTypeWhitelist:
+			whitelistFilters = append(whitelistFilters, filter)
+		case FilterTypeBlacklist:
+			blacklistFilters = append(blacklistFilters, filter)
+		}
+	}
+
+	return blacklistFilters, whitelistFilters
 }
 
 // FilterKeyWithPrefix returns true if a key has given prefix.

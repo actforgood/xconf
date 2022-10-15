@@ -7,6 +7,7 @@ package xconf
 
 import (
 	"context"
+	"crypto/tls"
 	"io"
 	"os"
 	"strings"
@@ -128,6 +129,14 @@ func EtcdLoaderWithAuth(username, pwd string) EtcdLoaderOption {
 	return func(loader *EtcdLoader) {
 		loader.strategyInfo.clientCfg.Username = username
 		loader.strategyInfo.clientCfg.Password = pwd
+	}
+}
+
+// EtcdLoaderWithTLS sets the TLS configuration for secure
+// communication between client and server.
+func EtcdLoaderWithTLS(tlsCfg *tls.Config) EtcdLoaderOption {
+	return func(loader *EtcdLoader) {
+		loader.strategyInfo.clientCfg.TLS = tlsCfg.Clone()
 	}
 }
 

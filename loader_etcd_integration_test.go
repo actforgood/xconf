@@ -10,8 +10,12 @@ package xconf_test
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"net"
 	"os"
 	"reflect"
 	"strings"
@@ -25,24 +29,24 @@ import (
 // Note: data from this test file can be generated with ./scripts/etcd_data_provider.sh
 
 func TestEtcdLoader_withJSON_integration(t *testing.T) {
-	key := "json-key"
-	format := xconf.RemoteValueJSON
+	const key = "json-key"
+	const format = xconf.RemoteValueJSON
 
 	t.Run("single key", testEtcdLoaderIntegration(format, key, false))
 	t.Run("prefix key", testEtcdLoaderIntegration(format, key, true))
 }
 
 func TestEtcdLoader_withYAML_integration(t *testing.T) {
-	key := "yaml-key"
-	format := xconf.RemoteValueYAML
+	const key = "yaml-key"
+	const format = xconf.RemoteValueYAML
 
 	t.Run("single key", testEtcdLoaderIntegration(format, key, false))
 	t.Run("prefix key", testEtcdLoaderIntegration(format, key, true))
 }
 
 func TestEtcdLoader_withPlain_integration(t *testing.T) {
-	key := "plain-key"
-	format := xconf.RemoteValuePlain
+	const key = "plain-key"
+	const format = xconf.RemoteValuePlain
 
 	t.Run("single key", testEtcdLoaderIntegration(format, key, false))
 	t.Run("prefix key", testEtcdLoaderIntegration(format, key, true))
@@ -59,14 +63,14 @@ func TestEtcdLoader_withWatcher_success(t *testing.T) {
 		DialTimeout: 10 * time.Second,
 	})
 	if err != nil {
-		t.Skip("prerequisites failed: could not setup etcd client", err)
+		t.Fatal("prerequisites failed: could not setup etcd client:", err)
 	}
 	defer setUpClient.Close()
 	if _, err := setUpClient.Put(ctx, "ETCD_TEST_INTEGRATION_WATCH_FOO", "foo"); err != nil {
-		t.Skip("prerequisites failed: could not create 'foo' key", err)
+		t.Fatal("prerequisites failed: could not create 'foo' key:", err)
 	}
 	if _, err := setUpClient.Put(ctx, "ETCD_TEST_INTEGRATION_WATCH_BAR", "bar"); err != nil {
-		t.Skip("prerequisites failed: could not create 'bar' key", err)
+		t.Fatal("prerequisites failed: could not create 'bar' key:", err)
 	}
 	defer func() { // remove the keys we played with.
 		_, _ = setUpClient.Delete(ctx, "ETCD_TEST_INTEGRATION_WATCH_FOO")
@@ -98,13 +102,13 @@ func TestEtcdLoader_withWatcher_success(t *testing.T) {
 
 	// update foo, delete bar, create baz
 	if _, err := setUpClient.Put(ctx, "ETCD_TEST_INTEGRATION_WATCH_FOO", "foo - updated"); err != nil {
-		t.Skip("prerequisites failed: could not update 'foo' key", err)
+		t.Fatal("prerequisites failed: could not update 'foo' key:", err)
 	}
 	if _, err := setUpClient.Delete(ctx, "ETCD_TEST_INTEGRATION_WATCH_BAR"); err != nil {
-		t.Skip("prerequisites failed: could not delete 'bar' key", err)
+		t.Fatal("prerequisites failed: could not delete 'bar' key:", err)
 	}
 	if _, err := setUpClient.Put(ctx, "ETCD_TEST_INTEGRATION_WATCH_BAZ", "baz"); err != nil {
-		t.Skip("prerequisites failed: could not create 'baz' key", err)
+		t.Fatal("prerequisites failed: could not create 'baz' key:", err)
 	}
 	expectedNewConfig := map[string]interface{}{
 		"ETCD_TEST_INTEGRATION_WATCH_FOO": "foo - updated",
@@ -142,13 +146,15 @@ func TestEtcdLoader_withWatcher_error(t *testing.T) {
 		DialTimeout: 10 * time.Second,
 	})
 	if err != nil {
-		t.Skip("prerequisites failed: could not setup etcd client", err)
+		t.Fatal("prerequisites failed: could not setup etcd client:", err)
 	}
 	defer setUpClient.Close()
 	if _, err := setUpClient.Put(ctx, "ETCD_TEST_INTEGRATION_WATCH_FOO_JSON", `{"etcd_foo":"bar"}`); err != nil {
-		t.Skip("prerequisites failed: could not create 'foo' json key", err)
+		t.Fatal("prerequisites failed: could not create 'foo' json key:", err)
 	}
-	defer setUpClient.Delete(ctx, "ETCD_TEST_INTEGRATION_WATCH_FOO_JSON") // rm the key we played with.
+	defer func() {
+		_, _ = setUpClient.Delete(ctx, "ETCD_TEST_INTEGRATION_WATCH_FOO_JSON") // rm the key we played with.
+	}()
 
 	opts := []xconf.EtcdLoaderOption{
 		xconf.EtcdLoaderWithValueFormat(xconf.RemoteValueJSON),
@@ -166,7 +172,7 @@ func TestEtcdLoader_withWatcher_error(t *testing.T) {
 
 	// we update foo, with corrupted json
 	if _, err := setUpClient.Put(ctx, "ETCD_TEST_INTEGRATION_WATCH_FOO_JSON", "{corrupted json"); err != nil {
-		t.Skip("prerequisites failed: could not update 'foo' json key", err)
+		t.Fatal("prerequisites failed: could not update 'foo' json key:", err)
 	}
 	// give watcher some time to act
 	maxTry := 4
@@ -191,7 +197,7 @@ func TestEtcdLoader_withWatcher_error(t *testing.T) {
 
 	// we update foo, fixing the json
 	if _, err := setUpClient.Put(ctx, "ETCD_TEST_INTEGRATION_WATCH_FOO_JSON", `{"etcd_foo":"baz"}`); err != nil {
-		t.Skip("prerequisites failed: could not update 'foo' json key", err)
+		t.Fatal("prerequisites failed: could not update 'foo' json key:", err)
 	}
 	// give watcher some time to act
 	sleep = time.Second
@@ -236,6 +242,33 @@ func testEtcdLoaderIntegration(format, key string, withPrefix bool) func(t *test
 	}
 }
 
+func TestEtcdLoader_withTLS_integration(t *testing.T) {
+	// arrange
+	endpoints, tlsConfig, err := getEtcdTLSInfo()
+	if err != nil {
+		t.Fatal(err)
+	}
+	const key = "plain-key"
+	const format = xconf.RemoteValuePlain
+	ctx, cancelCtx := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancelCtx()
+	opts := []xconf.EtcdLoaderOption{
+		xconf.EtcdLoaderWithValueFormat(format),
+		xconf.EtcdLoaderWithContext(ctx),
+		xconf.EtcdLoaderWithPrefix(),
+		xconf.EtcdLoaderWithEndpoints(endpoints),
+		xconf.EtcdLoaderWithTLS(tlsConfig),
+	}
+	subject := xconf.NewEtcdLoader(key, opts...)
+
+	// act
+	config, err := subject.Load()
+
+	// assert
+	assertNil(t, err)
+	assertEqual(t, getEtcdExpectedConfigMapIntegration(format, true), config)
+}
+
 // getEtcdExpectedConfigMapIntegration returns expected config maps for integration tests.
 func getEtcdExpectedConfigMapIntegration(format string, withPrefix bool) map[string]interface{} {
 	return getConsulExpectedConfigMapIntegration(format, withPrefix) // same as consul...
@@ -243,13 +276,53 @@ func getEtcdExpectedConfigMapIntegration(format string, withPrefix bool) map[str
 
 // getDefaultEtcdEndpoints tries to get etcd endpoints from ENV.
 // It defaults on localhost address.
-func getDefaultEtcdEndpoints() []string {
-	endpoints := []string{"127.0.0.1:2379"}
-
+func getDefaultEtcdEndpoints() (endpoints []string) {
 	// try to get from env variables
 	if eps := os.Getenv("ETCD_ENDPOINTS"); eps != "" {
 		endpoints = strings.Split(eps, ",")
+	} else {
+		endpoints = []string{"127.0.0.1:2379"}
 	}
 
-	return endpoints
+	return
+}
+
+// getEtcdTLSInfo returns etcd endpoint and config.
+func getEtcdTLSInfo() ([]string, *tls.Config, error) {
+	var (
+		tlsCfg         = new(tls.Config)
+		endpoints      []string
+		caCertFilePath string
+	)
+	const defaultCaCertFilePath = "scripts/tls/certs/ca_cert.pem"
+
+	if eps := os.Getenv("ETCDS_ENDPOINTS"); eps != "" {
+		endpoints = strings.Split(eps, ",")
+		hostname, _, err := net.SplitHostPort(endpoints[0])
+		if err != nil {
+			return nil, nil, fmt.Errorf("could not parse address %q: %w", endpoints[0], err)
+		}
+		tlsCfg.ServerName = hostname
+		caCertFilePath = fmt.Sprintf(
+			"%s%c%s",
+			os.Getenv("GITHUB_WORKSPACE"), os.PathSeparator, defaultCaCertFilePath,
+		)
+	} else {
+		endpoints = []string{"localhost:2389"}
+		tlsCfg.ServerName = "localhost"
+		caCertFilePath = defaultCaCertFilePath
+	}
+
+	certContent, err := os.ReadFile(caCertFilePath)
+	if err != nil {
+		return nil, nil, fmt.Errorf("could not read CA cert: %w", err)
+	}
+	certPool := x509.NewCertPool()
+	if ok := certPool.AppendCertsFromPEM(certContent); !ok {
+		return nil, nil, fmt.Errorf("could not parse PEM CA certificate %q", caCertFilePath)
+	}
+	tlsCfg.MinVersion = tls.VersionTLS12
+	tlsCfg.RootCAs = certPool
+
+	return endpoints, tlsCfg, nil
 }
