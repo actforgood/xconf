@@ -291,7 +291,7 @@ type ConfigWriter interface {
 ### Misc 
 * Feel free to use this pkg if you like it and fits your needs. Check also other packages like spf13/viper ...
 * To run unit tests: `make test` / `make cover` .
-* To run integration tests: `make test-integration` / `make cove-integration` : will setup Consul and Etcd docker containers with some keys in them, run `./scripts/teardown_dockers.sh` at the end to stop and remove containers).
+* To run integration tests: `make test-integration` / `make cover-integration` : will setup Consul and Etcd docker containers with some keys in them, run `./scripts/teardown_dockers.sh` at the end to stop and remove containers).
 * To run benchmarks: `make bench`.  
 * Project's class diagram can be found [here](docs/xconf.svg).  
 
