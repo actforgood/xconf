@@ -25,22 +25,18 @@ You can create your own configuration retriever implementing `Loader` interface.
 Package provides these Loaders for you:  
 
 - `EnvLoader` - loads *environment variables*.
-- `DotEnvFileLoader` - loads configuration from a *.env* file.
-- `JSONFileLoader` - loads *json* configuration from a file.
-- `JSONReaderLoader` - loads *json* configuration from a `io.Reader`.
-- `YAMLFileLoader` - loads *yaml* configuration from a file.
-- `YAMLReaderLoader` - loads *yaml* configuration from a `io.Reader`.
+- `DotEnvFileLoader`, `DotEnvReaderLoader` - loads configuration from a *.env* file / `io.Reader`.
+- `JSONFileLoader`, `JSONReaderLoader` - loads *json* configuration from a file / `io.Reader`.
+- `YAMLFileLoader`, `YAMLReaderLoader` - loads *yaml* configuration from a file / `io.Reader`.
 - `IniFileLoader` -  loads *ini* configuration from a file.
-- `PropertiesFileLoader` - loads java style *properties* configuration from a file.
-- `PropertiesBytesLoader` - loads java style *properties* configuration from a bytes slice.
-- `TOMLFileLoader` - loads *toml* configuration from a file.
-- `TOMLReaderLoader` - loads *toml* configuration from a `io.Reader`.
+- `PropertiesFileLoader`, `PropertiesBytesLoader` - loads java style *properties* configuration from a file / bytes slice.
+- `TOMLFileLoader`, `TOMLReaderLoader` - loads *toml* configuration from a file / `io.Reader`.
 - `ConsulLoader` - loads *json/yaml/plain* configuration from a remote Consul KV Store.
 - `EtcdLoader` - loads *json/yaml/plain* configuration from a remote Etcd KV Store.
 - `PlainLoader` - explicit configuration provider.
 - `FileLoader` - factory for `<JSON|YAML|Ini|DotEnv|Properties|TOML>FileLoader`s based on file extension.
 - `FlagSetLoader` - extracts configuration from a `flag.FlagSet`.
-- `MultiLoader` - loads (and merges, if configured) configuration from multiple loaders.
+- `MultiLoader` - loads (and merges, if configured) configuration from multiple loaders.  
 
 
 Upon above loaders there are available decorators which can help you achieve more sophisticated outcome:  
@@ -293,9 +289,11 @@ type ConfigWriter interface {
 - Add a typed struct with methods like `GetString`, `GetInt`...
 
 ### Misc 
-Feel free to use this pkg if you like it and fits your needs.  
-Check also other packages like spf13/viper ...
-
+* Feel free to use this pkg if you like it and fits your needs. Check also other packages like spf13/viper ...
+* To run unit tests: `make test` / `make cover` .
+* To run integration tests: `make test-integration` / `make cove-integration` : will setup Consul and Etcd docker containers with some keys in them, run `./scripts/teardown_dockers.sh` at the end to stop and remove containers).
+* To run benchmarks: `make bench`.  
+* Project's class diagram can be found [here](docs/xconf.svg).  
 
 ### License
 This package is released under a MIT license. See [LICENSE](LICENSE).  
