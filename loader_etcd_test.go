@@ -56,7 +56,10 @@ type etcdAuthServer struct {
 	authenticateCallback func(context.Context, *pb.AuthenticateRequest) (*pb.AuthenticateResponse, error)
 }
 
-func (svr etcdAuthServer) Authenticate(ctx context.Context, req *pb.AuthenticateRequest) (*pb.AuthenticateResponse, error) {
+func (svr etcdAuthServer) Authenticate(
+	ctx context.Context,
+	req *pb.AuthenticateRequest,
+) (*pb.AuthenticateResponse, error) {
 	if svr.authenticateCallback != nil {
 		return svr.authenticateCallback(ctx, req)
 	}
@@ -65,24 +68,28 @@ func (svr etcdAuthServer) Authenticate(ctx context.Context, req *pb.Authenticate
 }
 
 // startEtcdKVMockServer starts an etcd key-value grpc mock server.
-func startEtcdKVMockServer(t *testing.T, key string, returnedKvs []*mvccpb.KeyValue, returnedErr error) (*grpc.Server, string) {
+func startEtcdKVMockServer(
+	t *testing.T,
+	key string,
+	returnedKvs []*mvccpb.KeyValue,
+	returnedErr error,
+) (*grpc.Server, string) {
 	t.Helper()
 
-	kvSvr := etcdKVServer{
-		rangeCallback: func(ctxx context.Context, rr *pb.RangeRequest) (*pb.RangeResponse, error) {
-			assertEqual(t, key, string(rr.Key))
+	rangeCallback := func(_ context.Context, rr *pb.RangeRequest) (*pb.RangeResponse, error) {
+		assertEqual(t, key, string(rr.Key))
 
-			if returnedErr != nil {
-				return nil, returnedErr
-			}
+		if returnedErr != nil {
+			return nil, returnedErr
+		}
 
-			return &pb.RangeResponse{
-				Kvs:   returnedKvs,
-				More:  false,
-				Count: int64(len(returnedKvs)),
-			}, nil
-		},
+		return &pb.RangeResponse{
+			Kvs:   returnedKvs,
+			More:  false,
+			Count: int64(len(returnedKvs)),
+		}, nil
 	}
+	kvSvr := etcdKVServer{rangeCallback: rangeCallback}
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatal(err)
@@ -207,7 +214,10 @@ func TestEtcdLoader(t *testing.T) {
 	t.Run("success - with watcher - init client and config", testEtcdLoaderWithWatcher)
 	t.Run("error - with watcher - client init error", testEtcdLoaderReturnsClientInitErr(true))
 	t.Run("error - with watcher - grpc call fails", testEtcdLoaderReturnsResponseErr(true))
-	t.Run("error - with watcher - json value deserialization fails", testEtcdLoaderReturnsErrFromJSONValueDeserialization(true))
+	t.Run(
+		"error - with watcher - json value deserialization fails",
+		testEtcdLoaderReturnsErrFromJSONValueDeserialization(true),
+	)
 	t.Run("success - safe-mutable config map", testEtcdLoaderReturnsSafeMutableConfigMap)
 }
 

@@ -8,7 +8,6 @@ package xconf_test
 import (
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/actforgood/xconf"
@@ -17,11 +16,6 @@ import (
 
 var iniConfigMap = map[string]interface{}{
 	"ini_foo": "bar",
-	// deprecation, to be removed - start
-	"time/ini_year":              "2022",
-	"temperature/ini_celsius":    "37.5",
-	"temperature/ini_fahrenheit": "99.5",
-	// deprecation, to be removed - stop
 	"time": map[string]interface{}{
 		"ini_year": "2022",
 	},
@@ -40,7 +34,6 @@ func TestIniFileLoader_withValidFile(t *testing.T) {
 	t.Run("error - valid file,invalid content", testIniFileLoaderWithInvalidFileContent)
 	t.Run("error - not found file", testIniFileLoaderWithNotFoundFile)
 	t.Run("success - custom ini load options applied", testIniFileLoaderWithCustomIniLoadOptions)
-	t.Run("success - custom section key func", testIniFileLoaderWithCustomKeyFuncOption)
 	t.Run("success - safe-mutable config map", testIniFileLoaderReturnsSafeMutableConfigMap)
 }
 
@@ -112,45 +105,6 @@ func testIniFileLoaderWithCustomIniLoadOptions(t *testing.T) {
 	assertEqual(t, 0, len(config))
 }
 
-// Deprecated: to be removed.
-func testIniFileLoaderWithCustomKeyFuncOption(t *testing.T) {
-	t.Parallel()
-
-	// arrange
-	subject := xconf.NewIniFileLoader(
-		iniFilePath,
-		xconf.IniFileLoaderWithSectionKeyFunc(func(_, key string) string {
-			// we ignore the section and transform the keys
-			// to uppercase for testing purpose.
-			return strings.ToUpper(key)
-		}),
-	)
-
-	// act
-	config, err := subject.Load()
-
-	// assert
-	assertNil(t, err)
-	assertEqual(
-		t,
-		map[string]interface{}{
-			"INI_FOO":        "bar",
-			"INI_YEAR":       "2022",
-			"INI_CELSIUS":    "37.5",
-			"INI_FAHRENHEIT": "99.5",
-			"ini_foo":        "bar",
-			"time": map[string]interface{}{
-				"ini_year": "2022",
-			},
-			"temperature": map[string]interface{}{
-				"ini_celsius":    "37.5",
-				"ini_fahrenheit": "99.5",
-			},
-		},
-		config,
-	)
-}
-
 func testIniFileLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	t.Parallel()
 
@@ -179,11 +133,6 @@ func testIniFileLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 		t,
 		map[string]interface{}{
 			"ini_foo": "bar",
-			// deprecation, to be removed - start
-			"time/ini_year":              "2022",
-			"temperature/ini_celsius":    "37.5",
-			"temperature/ini_fahrenheit": "99.5",
-			// deprecation, to be removed - stop
 			"time": map[string]interface{}{
 				"ini_year": "2022",
 			},

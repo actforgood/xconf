@@ -112,7 +112,10 @@ func TestDeepCopyConfigMap(t *testing.T) {
 		result["map_interface_deep"].(map[interface{}]interface{})["slice_int"].([]int)[0] = 111
 		assertEqual(t, 1, input["map_interface_deep"].(map[interface{}]interface{})["slice_int"].([]int)[0])
 		result["map_interface_deep"].(map[interface{}]interface{})["map"].(map[interface{}]interface{})["en"] = "Hi"
-		assertEqual(t, "Hello", input["map_interface_deep"].(map[interface{}]interface{})["map"].(map[interface{}]interface{})["en"])
+		assertEqual(t,
+			"Hello",
+			input["map_interface_deep"].(map[interface{}]interface{})["map"].(map[interface{}]interface{})["en"],
+		)
 	}
 }
 

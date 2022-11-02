@@ -190,7 +190,7 @@ func ExampleFileLoader() {
 	// 4
 	// 4
 	// 4
-	// 6
+	// 3
 	// 4
 	// 7
 }
