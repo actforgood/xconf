@@ -20,6 +20,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+//nolint:lll
 var consulResponseContent = map[string]map[bool]string{
 	xconf.RemoteValueJSON: {
 		true: `[

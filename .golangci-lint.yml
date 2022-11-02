@@ -19,6 +19,7 @@ linters:
     - nlreturn
     - noctx
     - whitespace
+    - lll
 
 issues:
   exclude-use-default: false

@@ -12,7 +12,7 @@ if [ "$local" != "local" ]; then
     exit 0 # we're not locally
 fi
 
-DOCKER_CONSUL_IMAGE="consul:1.13.2"
+DOCKER_CONSUL_IMAGE="consul:1.13.3"
 DOCKER_ETCD_IMAGE="quay.io/coreos/etcd:v3.5.5"
 SCRIPT_PATH=$(dirname "$(readlink -f "$0")")
 
@@ -23,17 +23,17 @@ setUpLocalDocker() {
     if [ "$existing" != "" ]; then
         running=$(docker ps | awk '{print $NF}' | grep -E "^${container}$")
         if [ "$running" != "" ]; then
-            echo ">>> $container is up and running"
+            printf "\033[0;34m>>> %s is up and running\033[0m\n" "$container"
             checkIsHealthy "$container"
             return
         else
-            echo ">>> $container is stopped, resurrecting it..."
+            printf "\033[0;34m>>> %s is stopped, resurrecting it...\033[0m\n" "$container"
             docker rm "$container"
             dockerRun "$container"
             checkIsHealthy "$container"
         fi
     else
-        echo ">>> $container not found, bringing it up..."
+        printf "\033[0;34m>>> %s not found, bringing it up...\033[0m\n" "$container"
         dockerPull "$container"
         dockerRun "$container"
         checkIsHealthy "$container"
@@ -83,7 +83,7 @@ checkIsHealthy() {
     container=$1
     retryNo=0
     maxRetries=5
-    echo ">>> Checking $container's health..."
+    printf "\033[0;34m>>> Checking %s's health...\033[0m\n" "$container"
     while true ; do
         if [ "$container" == "xconf-consul" ]; then
             reply=$(curl -sS "http://localhost:8500/v1/health/node/consul0?filter=Status==passing" | grep '"Status": "passing"')
@@ -93,10 +93,10 @@ checkIsHealthy() {
             reply=$(curl -sS --cacert "$SCRIPT_PATH/tls/certs/ca_cert.pem" https://localhost:2389/health | grep '"health":"true"')
         fi
         if [ "$reply" != "" ]; then
-            echo ">>> $container is healthy"
+            printf "\033[0;34m>>> %s is healthy\033[0m\n" "$container"
             break
         else
-            echo ">>> $container is not healthy"    
+            echo ">>> $container is not healthy"  
         fi
         retryNo=$(( retryNo + 1 ))
         if [ $retryNo -eq $maxRetries ]; then

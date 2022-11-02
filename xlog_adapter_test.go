@@ -17,6 +17,7 @@ import (
 	"github.com/actforgood/xlog"
 )
 
+//nolint:lll
 func ExampleLogLevelProvider() {
 	const logLevelKey = "APP_LOG_LEVEL"
 	const defaultLogLevel = "WARN"
@@ -49,7 +50,7 @@ func ExampleLogLevelProvider() {
 	logger.Debug(xlog.MessageKey, "this message should not end up being logged as min level is INFO")
 
 	// Output:
-	// {"date":"2022-06-21T17:17:20Z","lvl":"INFO","msg":"log level is taken from xconf.Config","src":"/xlog_adapter_test.go:48"}
+	// {"date":"2022-06-21T17:17:20Z","lvl":"INFO","msg":"log level is taken from xconf.Config","src":"/xlog_adapter_test.go:49"}
 }
 
 func ExampleLogErrorHandler() {

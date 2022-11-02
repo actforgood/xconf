@@ -142,11 +142,14 @@ func EtcdLoaderWithTLS(tlsCfg *tls.Config) EtcdLoaderOption {
 
 // EtcdLoaderWithValueFormat sets the value format for a key.
 //
-// If is set to RemoteValueJSON, the key's value will be treated as JSON and configuration will be loaded from it.
+// If is set to RemoteValueJSON, the key's value will be treated as JSON
+// and configuration will be loaded from it.
 //
-// If is set to RemoteValueYAML, the key's value will be treated as YAML and configuration will be loaded from it.
+// If is set to RemoteValueYAML, the key's value will be treated as YAML
+// and configuration will be loaded from it.
 //
-// If is set to RemoteValuePlain, the key's value will be treated as plain content and configuration will contain the key and its plain value.
+// If is set to RemoteValuePlain, the key's value will be treated as plain content
+// and configuration will contain the key and its plain value.
 //
 // By default, is set to RemoteValuePlain.
 func EtcdLoaderWithValueFormat(valueFormat string) EtcdLoaderOption {

@@ -15,7 +15,7 @@ removeContainersByRegex() {
     containersRegex=$1
     existing=$(docker container ls -a | awk '{print $NF}' | grep -E "$containersRegex")
     if [ "$existing" != "" ]; then
-        echo ">>> Removing containers..."
+        printf "\033[0;34m>>> Removing containers...\033[0m\n"
         docker ps | awk '{print $NF}' | grep -E "$containersRegex" | xargs docker stop > /dev/null
         docker container ls -a | awk '{print $NF}' | grep -E "$containersRegex" | xargs docker rm
     fi

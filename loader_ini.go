@@ -16,11 +16,6 @@ type IniFileLoader struct {
 	filePath string
 	// loadOpts are the original package parse options.
 	loadOpts ini.LoadOptions
-	// keyFunc is a function that returns a flatten key name
-	// based on a section and a key under it.
-	// Deprecated: to be removed in a future release.
-	// [FlatternLoader] can be used to achieve what this function does.
-	keyFunc func(section, key string) string
 }
 
 // NewIniFileLoader instantiates a new IniFileLoader object that loads
@@ -30,7 +25,6 @@ func NewIniFileLoader(filePath string, opts ...IniFileLoaderOption) IniFileLoade
 	loader := IniFileLoader{
 		filePath: filePath,
 		loadOpts: ini.LoadOptions{},
-		keyFunc:  defaultIniKeyFunc,
 	}
 
 	// apply options, if any.
@@ -57,11 +51,6 @@ func (loader IniFileLoader) Load() (map[string]interface{}, error) {
 			configMap[section.Name()] = make(map[string]interface{}, len(sectionKeys))
 		}
 		for _, key := range sectionKeys {
-			// deprecation, to be removed - start
-			keyName := loader.keyFunc(section.Name(), key.Name())
-			configMap[keyName] = key.Value()
-			// deprecation, to be removed - stop
-
 			if section.Name() == ini.DefaultSection {
 				configMap[key.Name()] = key.Value()
 			} else {
@@ -83,38 +72,4 @@ func IniFileLoaderWithLoadOptions(iniLoadOpts ini.LoadOptions) IniFileLoaderOpti
 	return func(loader *IniFileLoader) {
 		loader.loadOpts = iniLoadOpts
 	}
-}
-
-// IniFileLoaderWithSectionKeyFunc sets given configuration key name provider based
-// on a key and the section it belongs to.
-//
-// Deprecated: do not use it anymore, it will be removed in a future release!
-// You can use [FlattenLoader] wrapper to get flatten keys when they belong to a section
-// different from 'default' section, if needed.
-// Neither current usage of accessing keys should be avoided.
-// Example: for a key "bar" in section "[foo]"" deprecated implementation gives access to a key "foo/bar".
-// This kind of key generation will be removed. You should use new implementation output in the form of map ({"foo": {"bar": ...}}).
-func IniFileLoaderWithSectionKeyFunc(keyFunc func(section, key string) string) IniFileLoaderOption {
-	return func(loader *IniFileLoader) {
-		loader.keyFunc = keyFunc
-	}
-}
-
-// defaultKeyFunc is the default implementation for providing the key name
-// in the final configuration key-value map for an ini key under a section.
-// Example: given the ini content:
-//
-//	foo=bar
-//	[time]
-//	year=2022
-//
-// it will produce "foo" and "time/year" for the 2 above keys.
-//
-// Deprecated: to be removed along with IniFileLoaderWithSectionKeyFunc logic.
-var defaultIniKeyFunc = func(section, key string) string {
-	if section == ini.DefaultSection {
-		return key
-	}
-
-	return section + "/" + key
 }
