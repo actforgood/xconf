@@ -9,22 +9,29 @@
 # I got inspired from here: https://stackoverflow.com/questions/60849745/how-can-i-run-a-command-in-github-action-service-containers
 #
 
+
+# debug prints the passed message in blue color.
+# Example: debug "Some debug message"
+debug() {
+    printf "\033[0;34m>>> %s\033[0m\n" "$1"
+}
+
 # checkIsHealthy checks if consul/etcd containers are healthy after bringing them up.
 checkIsHealthy() {
     container=$1
     retryNo=0
     maxRetries=5
-    echo ">>> Checking $container's health..."
+    debug "Checking ${container}'s health..."
     while true ; do
         if [ "$container" = "xconf-consul" ]; then
-            reply=$(curl -sS "http://$container:8500/v1/health/node/consul0?filter=Status==passing" | grep '"Status": "passing"')
+            reply=$(curl -sS "http://${container}:8500/v1/health/node/consul0?filter=Status==passing" | grep '"Status": "passing"')
         elif [ "$container" = "xconf-etcd" ]; then
-            reply=$(curl -sS "http://$container:2379/health" | grep '"health":"true"')
+            reply=$(curl -sS "http://${container}:2379/health" | grep '"health":"true"')
         else 
-            reply=$(curl -sS --cacert "$GITHUB_WORKSPACE/scripts/tls/certs/ca_cert.pem" "https://$container:2389/health" | grep '"health":"true"')
+            reply=$(curl -sS --cacert "${GITHUB_WORKSPACE}/scripts/tls/certs/ca_cert.pem" "https://${container}:2389/health" | grep '"health":"true"')
         fi
         if [ "$reply" != "" ]; then
-            echo ">>> $container is healthy"
+            debug "$container is healthy"
             break
         else
             echo ">>> $container is not healthy"    
@@ -39,7 +46,7 @@ checkIsHealthy() {
     done
 }
 
-echo ">>> Install deps"
+debug "Install deps"
 # we need docker, curl and jq
 # docker install: https://docs.docker.com/engine/install/debian/
 apt-get update
@@ -65,10 +72,11 @@ apt-get install -y --no-install-recommends  \
     docker-compose-plugin
 
 # find the network
-network=$(docker inspect --format '{{json .NetworkSettings.Networks}}' `hostname` | jq -r 'keys[0]')
-echo "network = ${network}"
+hostName=$(hostname)
+network=$(docker inspect --format '{{json .NetworkSettings.Networks}}' "${hostName}" | jq -r 'keys[0]')
+echo ">>> network = ${network}"
 
-echo ">>> Run Consul Docker Image"
+debug "Run Consul Docker Image"
 DOCKER_CONSUL_IMAGE_VER=consul:1.13.3
 docker pull -q $DOCKER_CONSUL_IMAGE_VER
 docker run -d                       \
@@ -78,7 +86,7 @@ docker run -d                       \
     -e CONSUL_BIND_INTERFACE=eth0   \
     $DOCKER_CONSUL_IMAGE_VER
 
-echo ">>> Run Etcd Docker Image"
+debug "Run Etcd Docker Image"
 DOCKER_ETCD_IMAGE_VER=quay.io/coreos/etcd:v3.5.5
 docker pull -q $DOCKER_ETCD_IMAGE_VER
 docker run -d               \
@@ -88,15 +96,12 @@ docker run -d               \
     $DOCKER_ETCD_IMAGE_VER  \
     /usr/local/bin/etcd -advertise-client-urls http://xconf-etcd:2379 -listen-client-urls http://0.0.0.0:2379
 
-echo ">>> Run Etcd (with TLS) Docker Image"
-if [ ! -d "$GITHUB_WORKSPACE/scripts/tls/certs" ]; then
-     echo ">>> Generating certificates"
-    "$GITHUB_WORKSPACE/scripts/tls/certs.sh"
-    chmod 0644 "$GITHUB_WORKSPACE"/scripts/tls/certs/*
+debug "Run Etcd (with TLS) Docker Image"
+if [ ! -d "${GITHUB_WORKSPACE}/scripts/tls/certs" ]; then
+    "${GITHUB_WORKSPACE}/scripts/tls/certs.sh"
 fi
-
 docker build -q                                                 \
-    -f "$GITHUB_WORKSPACE/scripts/Dockerfile.etcdtls.github"    \
+    -f "${GITHUB_WORKSPACE}/scripts/Dockerfile.etcdtls.github"  \
     -t xconf_etcds_image                                        \
     "$GITHUB_WORKSPACE"
 docker run -d                       \

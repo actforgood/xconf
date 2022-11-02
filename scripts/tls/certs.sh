@@ -7,6 +7,8 @@
 # ./path/to/scripts/tls/certs.sh
 #
 
+printf "\033[0;34m>>> Generating certificates\033[0m\n"
+
 SCRIPT_PATH=$(dirname "$(readlink -f "$0")")
 CERTS_PATH="${SCRIPT_PATH}/certs"
 mkdir -p "${CERTS_PATH}"

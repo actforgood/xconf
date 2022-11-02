@@ -54,17 +54,17 @@ dockerRun() {
             --hostname=member0              \
             -p 2379:2379                    \
             $DOCKER_ETCD_IMAGE              \
-            /usr/local/bin/etcd -advertise-client-urls "http://$container:2379" -listen-client-urls http://0.0.0.0:2379
+            /usr/local/bin/etcd -advertise-client-urls "http://${container}:2379" -listen-client-urls http://0.0.0.0:2379
     else
-        if [ ! -d "$SCRIPT_PATH/tls/certs" ]; then
-            "$SCRIPT_PATH/tls/certs.sh"
+        if [ ! -d "${SCRIPT_PATH}/tls/certs" ]; then
+            "${SCRIPT_PATH}/tls/certs.sh"
         fi
         docker run -d --name="$container"       \
             --hostname=member0                  \
             -p 2389:2389                        \
-            -v "$SCRIPT_PATH/tls/certs:/certs"  \
+            -v "${SCRIPT_PATH}/tls/certs:/certs"  \
             $DOCKER_ETCD_IMAGE                  \
-            /usr/local/bin/etcd -advertise-client-urls "https://$container:2389" -listen-client-urls https://0.0.0.0:2389 -cert-file /certs/etcd_server_cert.pem -key-file /certs/etcd_server_key.pem
+            /usr/local/bin/etcd -advertise-client-urls "https://${container}:2389" -listen-client-urls https://0.0.0.0:2389 -cert-file /certs/etcd_server_cert.pem -key-file /certs/etcd_server_key.pem
     fi
 }
 
@@ -90,7 +90,7 @@ checkIsHealthy() {
         elif [ "$container" == "xconf-etcd" ]; then
             reply=$(curl -sS http://localhost:2379/health | grep '"health":"true"')
         else 
-            reply=$(curl -sS --cacert "$SCRIPT_PATH/tls/certs/ca_cert.pem" https://localhost:2389/health | grep '"health":"true"')
+            reply=$(curl -sS --cacert "${SCRIPT_PATH}/tls/certs/ca_cert.pem" https://localhost:2389/health | grep '"health":"true"')
         fi
         if [ "$reply" != "" ]; then
             printf "\033[0;34m>>> %s is healthy\033[0m\n" "$container"
