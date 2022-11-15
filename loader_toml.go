@@ -26,7 +26,7 @@ func TOMLFileLoader(filePath string) Loader {
 	})
 }
 
-// TOMLReaderLoader loads TOML configuration from an io.Reader.
+// TOMLReaderLoader loads TOML configuration from an [io.Reader].
 func TOMLReaderLoader(reader io.Reader) Loader {
 	return LoaderFunc(func() (map[string]interface{}, error) {
 		if seekReader, ok := reader.(io.Seeker); ok {

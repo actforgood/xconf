@@ -26,7 +26,7 @@ func DotEnvFileLoader(filePath string) Loader {
 	})
 }
 
-// DotEnvReaderLoader loads .env configuration from an io.Reader.
+// DotEnvReaderLoader loads .env configuration from an [io.Reader].
 func DotEnvReaderLoader(reader io.Reader) Loader {
 	return LoaderFunc(func() (map[string]interface{}, error) {
 		if seekReader, ok := reader.(io.Seeker); ok {

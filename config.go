@@ -28,7 +28,7 @@ type Config interface {
 
 // DefaultConfig is the default implementation for the Config contract.
 // It is based on a Loader to retrieve configuration from.
-// Is implements io.Closer interface and thus Close should be called at
+// Is implements [io.Closer] and thus Close should be called at
 // your application shutdown in order to avoid memory leaks.
 type DefaultConfig struct {
 	*defaultConfig // so we can use finalizer
@@ -218,7 +218,7 @@ func (cfg *defaultConfig) close() {
 
 // Close stops the underlying ticker used to reload config, avoiding memory leaks.
 // It should be called at your application shutdown.
-// It implements io.Closer interface, and the returned error can be disregarded (is nil all the time).
+// It implements [io.Closer] and the returned error can be disregarded (is nil all the time).
 func (cfg *DefaultConfig) Close() error {
 	if cfg != nil && cfg.reloadInterval > 0 {
 		cfg.close()

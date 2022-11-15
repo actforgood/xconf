@@ -25,7 +25,7 @@ func JSONFileLoader(filePath string) Loader {
 	})
 }
 
-// JSONReaderLoader loads JSON configuration from an io.Reader.
+// JSONReaderLoader loads JSON configuration from an [io.Reader].
 func JSONReaderLoader(reader io.Reader) Loader {
 	return LoaderFunc(func() (map[string]interface{}, error) {
 		if seekReader, ok := reader.(io.Seeker); ok {

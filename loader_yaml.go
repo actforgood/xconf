@@ -26,7 +26,7 @@ func YAMLFileLoader(filePath string) Loader {
 	})
 }
 
-// YAMLReaderLoader loads YAML configuration from an io.Reader.
+// YAMLReaderLoader loads YAML configuration from an [io.Reader].
 func YAMLReaderLoader(reader io.Reader) Loader {
 	return LoaderFunc(func() (map[string]interface{}, error) {
 		if seekReader, ok := reader.(io.Seeker); ok {

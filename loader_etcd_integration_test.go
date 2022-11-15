@@ -1,5 +1,4 @@
 //go:build integration
-// +build integration
 
 // Copyright The ActForGood Authors.
 // Use of this source code is governed by an MIT-style

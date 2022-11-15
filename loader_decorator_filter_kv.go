@@ -28,9 +28,9 @@ type FilterKV interface {
 }
 
 // The FilterKVWhitelistFunc type is an adapter to allow the use of
-// ordinary functions as FilterKV of "whitelist" type. If fn is a function
+// ordinary functions as [FilterKV] of "whitelist" type. If fn is a function
 // with the appropriate signature, FilterKVWhitelistFunc(fn) is a
-// FilterKV that calls fn of type FilterTypeWhitelist.
+// [FilterKV] that calls fn of type [FilterTypeWhitelist].
 // fn should return true if the KV is whitelisted.
 //
 // Example:
@@ -45,15 +45,15 @@ func (filter FilterKVWhitelistFunc) IsAllowed(key string, value interface{}) boo
 	return filter(key, value)
 }
 
-// Type returns filter's type (FilterTypeWhitelist).
+// Type returns filter's type ([FilterTypeWhitelist]).
 func (filter FilterKVWhitelistFunc) Type() FilterType {
 	return FilterTypeWhitelist
 }
 
 // The FilterKVBlacklistFunc type is an adapter to allow the use of
-// ordinary functions as FilterKV of "blacklist" type. If fn is a function
+// ordinary functions as [FilterKV] of "blacklist" type. If fn is a function
 // with the appropriate signature, FilterKVBlacklistFunc(fn) is a
-// FilterKV that calls fn and has type FilterTypeBlacklist.
+// [FilterKV] that calls fn and has type [FilterTypeBlacklist].
 // fn should return true if the KV is blacklisted.
 //
 // Example:
@@ -68,7 +68,7 @@ func (filter FilterKVBlacklistFunc) IsAllowed(key string, value interface{}) boo
 	return !filter(key, value)
 }
 
-// Type returns filter's type (FilterTypeBlacklist).
+// Type returns filter's type ([FilterTypeBlacklist]).
 func (filter FilterKVBlacklistFunc) Type() FilterType {
 	return FilterTypeBlacklist
 }
@@ -138,7 +138,7 @@ func filterBuckets(filters ...FilterKV) ([]FilterKV, []FilterKV) {
 }
 
 // FilterKeyWithPrefix returns true if a key has given prefix.
-// It can be used as a FilterKV like:
+// It can be used as a [FilterKV] like:
 //
 //	xconf.FilterKVWhitelistFunc(xconf.FilterKeyWithPrefix(prefix))
 //	xconf.FilterKVBlacklistFunc(xconf.FilterKeyWithPrefix(prefix))
@@ -149,7 +149,7 @@ func FilterKeyWithPrefix(prefix string) func(key string, _ interface{}) bool {
 }
 
 // FilterKeyWithSuffix returns true if a key has given suffix.
-// It can be used as a FilterKV like:
+// It can be used as a [FilterKV] like:
 //
 //	xconf.FilterKVWhitelistFunc(xconf.FilterKeyWithSuffix(suffix))
 //	xconf.FilterKVBlacklistFunc(xconf.FilterKeyWithSuffix(suffix))
@@ -160,7 +160,7 @@ func FilterKeyWithSuffix(suffix string) func(key string, _ interface{}) bool {
 }
 
 // FilterExactKeys returns true if a key is present in the provided list.
-// It can be used as a FilterKV like:
+// It can be used as a [FilterKV] like:
 //
 //	xconf.FilterKVWhitelistFunc(xconf.FilterExactKeys(key1, key2))
 //	xconf.FilterKVBlacklistFunc(xconf.FilterExactKeys(key1, key2))
@@ -177,7 +177,7 @@ func FilterExactKeys(keys ...string) func(key string, _ interface{}) bool {
 }
 
 // FilterEmptyValue returns true if a value is nil or "".
-// It can be used as a FilterKV like:
+// It can be used as a [FilterKV] like:
 //
 //	xconf.FilterKVBlacklistFunc(xconf.FilterEmptyValue)
 func FilterEmptyValue(_ string, value interface{}) bool {

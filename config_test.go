@@ -1823,7 +1823,7 @@ func ExampleDefaultConfig() {
 	cfg, err := xconf.NewDefaultConfig(
 		loader,
 		xconf.DefaultConfigWithIgnoreCaseSensitivity(),
-		xconf.DefaultConfigWithReloadInterval(1*time.Minute),
+		xconf.DefaultConfigWithReloadInterval(time.Minute),
 	)
 	if err != nil {
 		panic(err)

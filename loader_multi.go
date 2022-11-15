@@ -46,7 +46,7 @@ type MultiLoader struct {
 // and merges configuration from multiple loaders.
 // The first parameter is a flag indicating whether a key is allowed to be overwritten,
 // if found more than once.
-// If not, a KeyConflictError will be returned.
+// If not, a [KeyConflictError] will be returned.
 // If yes, the order of loaders matters, meaning a later provided loader,
 // will overwrite a previous provided loader's same found key.
 // The rest of the parameters consist of the list of loaders configuration should be

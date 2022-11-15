@@ -10,7 +10,7 @@ package xconf
 //
 // It can be used for example:
 //
-// -  in a MultiLoader (with allowing keys overwrite) as the first loader
+// -  in a [MultiLoader] (with allowing keys overwrite) as the first loader
 // in order to specify default configurations.
 //
 // - to provide any application hardcoded configs.

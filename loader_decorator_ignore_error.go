@@ -11,8 +11,8 @@ import (
 
 // IgnoreErrorLoader decorates another loader to ignore the error returned by it,
 // if error is present in the list of errors passed as second parameter.
-// You can ignore, for example, os.ErrNotExist for a file based Loader if that file is not
-// mandatory to exist, or Consul's ErrConsulKeyNotFound, etc.
+// You can ignore, for example, [os.ErrNotExist] for a file based Loader if that file is not
+// mandatory to exist, or Consul's [ErrConsulKeyNotFound], etc.
 func IgnoreErrorLoader(loader Loader, errs ...error) Loader {
 	return LoaderFunc(func() (map[string]interface{}, error) {
 		configMap, err := loader.Load()

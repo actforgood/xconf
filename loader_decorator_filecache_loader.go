@@ -22,7 +22,7 @@ type FileCacheLoader struct {
 }
 
 // NewFileCacheLoader instantiates a new FileCacheLoader object that loads
-// that caches the configuration from the original "file" loader.
+// and caches the configuration from the original "file" loader.
 // The second parameter should be the same file as the original loader's one.
 func NewFileCacheLoader(loader Loader, filePath string) FileCacheLoader {
 	return FileCacheLoader{
