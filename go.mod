@@ -9,7 +9,7 @@ require (
 	github.com/magiconair/properties v1.8.6
 	github.com/pelletier/go-toml/v2 v2.0.6
 	github.com/spf13/cast v1.5.0
-	go.etcd.io/etcd/api/v3 v3.5.5
+	go.etcd.io/etcd/api/v3 v3.5.6
 	go.etcd.io/etcd/client/v3 v3.5.5
 	google.golang.org/grpc v1.50.1
 	gopkg.in/ini.v1 v1.67.0
