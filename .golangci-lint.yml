@@ -15,11 +15,11 @@ linters:
     - goconst
     - gocritic
     - godot
+    - lll
     - misspell
     - nlreturn
     - noctx
     - whitespace
-    - lll
 
 issues:
   exclude-use-default: false

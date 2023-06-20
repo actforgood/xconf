@@ -26,7 +26,7 @@ func testAlterValueLoaderSuccess(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"foo": "foo val",
 			"bar": "bar val",
 			"baz": 100,
@@ -34,7 +34,7 @@ func testAlterValueLoaderSuccess(t *testing.T) {
 		})
 		subject = xconf.AlterValueLoader(
 			loader,
-			func(value interface{}) interface{} { return value.(string) + " - modified" },
+			func(value any) any { return value.(string) + " - modified" },
 			"foo", "bar", "this-key-does-not-exist",
 		)
 	)
@@ -46,7 +46,7 @@ func testAlterValueLoaderSuccess(t *testing.T) {
 	assertNil(t, err)
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"foo": "foo val - modified",
 			"bar": "bar val - modified",
 			"baz": 100,
@@ -62,12 +62,12 @@ func testAlterValueLoaderReturnsErrFromDecoratedLoader(t *testing.T) {
 	// arrange
 	var (
 		expectedErr = errors.New("intentionally triggered decorated loader error")
-		loader      = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		loader      = xconf.LoaderFunc(func() (map[string]any, error) {
 			return nil, expectedErr
 		})
 		subject = xconf.AlterValueLoader(
 			loader,
-			func(value interface{}) interface{} { return value },
+			func(value any) any { return value },
 			"foo", "bar",
 		)
 	)
@@ -85,24 +85,24 @@ func testAlterValueLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"string": "some string",
 			"slice":  []string{"foo", "bar", "baz"},
-			"map":    map[string]interface{}{"foo": "bar"},
+			"map":    map[string]any{"foo": "bar"},
 		})
 		subject = xconf.AlterValueLoader(
 			loader,
-			func(value interface{}) interface{} {
-				value.(map[string]interface{})["foo"] = "f_o_o"
+			func(value any) any {
+				value.(map[string]any)["foo"] = "f_o_o"
 
 				return value
 			},
 			"map",
 		)
-		expectedConfig = map[string]interface{}{
+		expectedConfig = map[string]any{
 			"string": "some string",
 			"slice":  []string{"foo", "bar", "baz"},
-			"map":    map[string]interface{}{"foo": "f_o_o"},
+			"map":    map[string]any{"foo": "f_o_o"},
 		}
 	)
 
@@ -116,7 +116,7 @@ func testAlterValueLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	// modify first returned value, expect second returned value to be initial one.
 	config1["int"] = 9999
 	config1["slice"].([]string)[0] = "test alter value slice"
-	config1["map"].(map[string]interface{})["foo"] = "test alter value map"
+	config1["map"].(map[string]any)["foo"] = "test alter value map"
 
 	// act
 	config2, err2 := subject.Load()
@@ -127,10 +127,10 @@ func testAlterValueLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"string": "some string",
 			"slice":  []string{"foo", "bar", "baz"},
-			"map":    map[string]interface{}{"foo": "f_o_o"},
+			"map":    map[string]any{"foo": "f_o_o"},
 		},
 		expectedConfig,
 	)
@@ -142,8 +142,8 @@ func TestToStringList(t *testing.T) {
 	// arrange
 	tests := [...]struct {
 		name           string
-		inputValue     interface{}
-		expectedResult interface{}
+		inputValue     any
+		expectedResult any
 	}{
 		{
 			name:           "value is single item list",
@@ -181,8 +181,8 @@ func TestToIntList(t *testing.T) {
 	// arrange
 	tests := [...]struct {
 		name           string
-		inputValue     interface{}
-		expectedResult interface{}
+		inputValue     any
+		expectedResult any
 	}{
 		{
 			name:           "value is single item list",
@@ -215,7 +215,7 @@ func TestToIntList(t *testing.T) {
 }
 
 func BenchmarkAlterValueLoader(b *testing.B) {
-	origLoader := xconf.PlainLoader(map[string]interface{}{
+	origLoader := xconf.PlainLoader(map[string]any{
 		"foo":           "foo val",
 		"bar":           100,
 		"shopping_list": "bread,eggs,milk",
@@ -238,7 +238,7 @@ func BenchmarkAlterValueLoader(b *testing.B) {
 }
 
 func ExampleAlterValueLoader() {
-	origLoader := xconf.PlainLoader(map[string]interface{}{
+	origLoader := xconf.PlainLoader(map[string]any{
 		"foo":           "foo val",
 		"bar":           100,
 		"shopping_list": "bread,eggs,milk",

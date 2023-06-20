@@ -77,7 +77,7 @@ network=$(docker inspect --format '{{json .NetworkSettings.Networks}}' "${hostNa
 echo ">>> network = ${network}"
 
 debug "Run Consul Docker Image"
-DOCKER_CONSUL_IMAGE_VER=consul:1.13.3
+DOCKER_CONSUL_IMAGE_VER=consul:1.15.3
 docker pull -q $DOCKER_CONSUL_IMAGE_VER
 docker run -d                       \
     --name=xconf-consul             \
@@ -87,7 +87,8 @@ docker run -d                       \
     $DOCKER_CONSUL_IMAGE_VER
 
 debug "Run Etcd Docker Image"
-DOCKER_ETCD_IMAGE_VER=quay.io/coreos/etcd:v3.5.5
+ETCD_VER=v3.5.9
+DOCKER_ETCD_IMAGE_VER=quay.io/coreos/etcd:${ETCD_VER}
 docker pull -q $DOCKER_ETCD_IMAGE_VER
 docker run -d               \
     --name=xconf-etcd       \
@@ -103,7 +104,8 @@ fi
 docker build -q                                                 \
     -f "${GITHUB_WORKSPACE}/scripts/Dockerfile.etcdtls.github"  \
     -t xconf_etcds_image                                        \
-    "$GITHUB_WORKSPACE"
+    --build-arg ETCD_VER=${ETCD_VER}                            \
+    "${GITHUB_WORKSPACE}"
 docker run -d                       \
     --name=xconf-etcds              \
     -p 2389:2389                    \

@@ -16,11 +16,11 @@ import (
 	"github.com/actforgood/xconf"
 )
 
-var jsonConfigMap = map[string]interface{}{
+var jsonConfigMap = map[string]any{
 	"json_foo":           "bar",
 	"json_year":          float64(2022),
 	"json_temperature":   37.5,
-	"json_shopping_list": []interface{}{"bread", "milk", "eggs"},
+	"json_shopping_list": []any{"bread", "milk", "eggs"},
 }
 
 const jsonFilePath = "testdata/config.json"
@@ -87,10 +87,10 @@ func testJSONReaderLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 }`
 		reader         = bytes.NewReader([]byte(content))
 		subject        = xconf.JSONReaderLoader(reader)
-		expectedConfig = map[string]interface{}{
+		expectedConfig = map[string]any{
 			"json_string": "some string",
-			"json_slice":  []interface{}{"foo", "bar", "baz"},
-			"json_map":    map[string]interface{}{"foo": "bar"},
+			"json_slice":  []any{"foo", "bar", "baz"},
+			"json_map":    map[string]any{"foo": "bar"},
 		}
 	)
 
@@ -104,8 +104,8 @@ func testJSONReaderLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	// modify first returned value, expect second returned value to be initial one.
 	config1["json_int"] = 2222
 	config1["json_string"] = "test json string"
-	config1["json_slice"].([]interface{})[0] = "test json slice"
-	config1["json_map"].(map[string]interface{})["foo"] = "test json map"
+	config1["json_slice"].([]any)[0] = "test json slice"
+	config1["json_map"].(map[string]any)["foo"] = "test json map"
 
 	// act
 	config2, err2 := subject.Load()
@@ -116,10 +116,10 @@ func testJSONReaderLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"json_string": "some string",
-			"json_slice":  []interface{}{"foo", "bar", "baz"},
-			"json_map":    map[string]interface{}{"foo": "bar"},
+			"json_slice":  []any{"foo", "bar", "baz"},
+			"json_map":    map[string]any{"foo": "bar"},
 		},
 		expectedConfig,
 	)
@@ -199,7 +199,7 @@ func testJSONFileLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	// modify first returned value, expect second returned value to be initial one.
 	config1["json_foo"] = "test json string modified"
 	config1["json_year"] = float64(2099)
-	config1["json_shopping_list"].([]interface{})[0] = "test json slice modified"
+	config1["json_shopping_list"].([]any)[0] = "test json slice modified"
 
 	// act
 	config2, err2 := subject.Load()
@@ -210,11 +210,11 @@ func testJSONFileLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"json_foo":           "bar",
 			"json_year":          float64(2022),
 			"json_temperature":   37.5,
-			"json_shopping_list": []interface{}{"bread", "milk", "eggs"},
+			"json_shopping_list": []any{"bread", "milk", "eggs"},
 		},
 		jsonConfigMap,
 	)

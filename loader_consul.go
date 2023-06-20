@@ -121,7 +121,7 @@ func NewConsulLoader(key string, opts ...ConsulLoaderOption) ConsulLoader {
 
 // Load returns a configuration key-value map from Consul KV Store, or an error
 // if something bad happens along the process.
-func (loader ConsulLoader) Load() (map[string]interface{}, error) {
+func (loader ConsulLoader) Load() (map[string]any, error) {
 	endpoint := loader.reqInfo.baseURL + "/v1/kv/" + loader.key
 
 	// build the request
@@ -152,13 +152,13 @@ func (loader ConsulLoader) Load() (map[string]interface{}, error) {
 }
 
 // consulKVPairsLoad loads config from a Key's Value given the format provided.
-func (loader ConsulLoader) kvPairsLoad(kvPairs []consulKVPair) (map[string]interface{}, error) {
+func (loader ConsulLoader) kvPairsLoad(kvPairs []consulKVPair) (map[string]any, error) {
 	if configMap := loader.cache.load(kvPairs); configMap != nil {
 		return configMap, nil
 	}
 
 	var (
-		configMap  map[string]interface{}
+		configMap  map[string]any
 		versionIDs map[string]int64
 	)
 	for idx, kvPair := range kvPairs {
@@ -398,13 +398,13 @@ func ConsulLoaderWithValueFormat(valueFormat string) ConsulLoaderOption {
 
 // consulCache holds caching info.
 type consulCache struct {
-	configMap  map[string]interface{} // cached config map.
-	versionIDs map[string]int64       // map of key and its version ID.
-	mu         sync.RWMutex           // concurrency semaphore
+	configMap  map[string]any   // cached config map.
+	versionIDs map[string]int64 // map of key and its version ID.
+	mu         sync.RWMutex     // concurrency semaphore
 }
 
 // save stores configuration key-value map and the key-version map.
-func (cache *consulCache) save(configMap map[string]interface{}, versionIDs map[string]int64) {
+func (cache *consulCache) save(configMap map[string]any, versionIDs map[string]int64) {
 	if cache == nil { // cache is optional on loaders.
 		return
 	}
@@ -417,7 +417,7 @@ func (cache *consulCache) save(configMap map[string]interface{}, versionIDs map[
 // load retrieves configuration key-value map comparing each key's version ID.
 // If a single key's version ID mismatches, nil is returned, meaning configuration
 // map should be loaded from original source.
-func (cache *consulCache) load(kvPairs []consulKVPair) map[string]interface{} {
+func (cache *consulCache) load(kvPairs []consulKVPair) map[string]any {
 	if cache == nil { // cache is optional on loaders.
 		return nil
 	}

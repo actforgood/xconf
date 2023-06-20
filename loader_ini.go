@@ -37,24 +37,24 @@ func NewIniFileLoader(filePath string, opts ...IniFileLoaderOption) IniFileLoade
 
 // Load returns a configuration key-value map from a INI file,
 // or an error if something bad happens along the process.
-func (loader IniFileLoader) Load() (map[string]interface{}, error) {
+func (loader IniFileLoader) Load() (map[string]any, error) {
 	cfg, err := ini.LoadSources(loader.loadOpts, loader.filePath)
 	if err != nil {
 		return nil, err
 	}
 
-	configMap := make(map[string]interface{})
+	configMap := make(map[string]any)
 	sections := cfg.Sections()
 	for _, section := range sections {
 		sectionKeys := section.Keys()
 		if section.Name() != ini.DefaultSection {
-			configMap[section.Name()] = make(map[string]interface{}, len(sectionKeys))
+			configMap[section.Name()] = make(map[string]any, len(sectionKeys))
 		}
 		for _, key := range sectionKeys {
 			if section.Name() == ini.DefaultSection {
 				configMap[key.Name()] = key.Value()
 			} else {
-				configMap[section.Name()].(map[string]interface{})[key.Name()] = key.Value()
+				configMap[section.Name()].(map[string]any)[key.Name()] = key.Value()
 			}
 		}
 	}

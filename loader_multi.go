@@ -60,12 +60,12 @@ func NewMultiLoader(allowKeyOverwrite bool, loaders ...Loader) MultiLoader {
 
 // Load returns a merged configuration key-value map of all encapsulated loaders,
 // or an error if something bad happens along the process.
-func (loader MultiLoader) Load() (map[string]interface{}, error) {
+func (loader MultiLoader) Load() (map[string]any, error) {
 	var (
 		wg        sync.WaitGroup
 		mu        sync.Mutex
 		results   = make([]loadResult, len(loader.loaders))
-		configMap map[string]interface{}
+		configMap map[string]any
 		unqKeys   = make(map[string]struct{})
 		mErr      *xerr.MultiError
 		startIdx  int
@@ -85,7 +85,7 @@ func (loader MultiLoader) Load() (map[string]interface{}, error) {
 		configMap = results[0].configMap
 		startIdx = 1
 	} else {
-		configMap = make(map[string]interface{})
+		configMap = make(map[string]any)
 		startIdx = 0
 	}
 
@@ -123,8 +123,8 @@ func (loader MultiLoader) Load() (map[string]interface{}, error) {
 
 // loadResult encapsulates the result from a Loader.
 type loadResult struct {
-	configMap map[string]interface{} // configMap is the loaded key-value configuration.
-	err       error                  // err is the error returned from Loader, if any.
+	configMap map[string]any // configMap is the loaded key-value configuration.
+	err       error          // err is the error returned from Loader, if any.
 }
 
 // loadAsync calls a Loader asynchronous.

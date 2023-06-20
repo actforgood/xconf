@@ -22,7 +22,7 @@ func TestMockConfig(t *testing.T) {
 		100, "not a string key", // test that this is skipped, as key is not string.
 		"odd number of elements", // test that this is skipped, as elements no. is odd.
 	)
-	subject.SetGetCallback(func(key string, def ...interface{}) {
+	subject.SetGetCallback(func(key string, def ...any) {
 		switch subject.GetCallsCount() {
 		case 1:
 			assertEqual(t, "foo", key)

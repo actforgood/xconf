@@ -14,12 +14,12 @@ package xconf
 // in order to specify default configurations.
 //
 // - to provide any application hardcoded configs.
-func PlainLoader(configMap map[string]interface{}) Loader {
+func PlainLoader(configMap map[string]any) Loader {
 	// make a copy to preserve state at current time.
 	// (prevents user modification of configMap from outside while using the loader).
 	configMapCopy := DeepCopyConfigMap(configMap)
 
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		return DeepCopyConfigMap(configMapCopy), nil // make a copy for an eventual (safe) later mutation.
 	})
 }

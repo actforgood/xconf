@@ -16,7 +16,7 @@ var ErrAliasPairBroken = errors.New("alias - missing key")
 // The second parameter represents a list of alias and keys they're for
 // under the form "aliasForKey1, key1, aliasForKey2, key2".
 func AliasLoader(loader Loader, aliasKeyKey ...string) Loader {
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		if len(aliasKeyKey)%2 == 1 {
 			return nil, ErrAliasPairBroken
 		}

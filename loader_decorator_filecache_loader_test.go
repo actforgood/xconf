@@ -39,13 +39,13 @@ func testFileCacheLoaderSuccess(t *testing.T) {
 	defer tearDownTmpFile(filePath)
 
 	fileLoaderCallsCnt := 0
-	fileLoader := xconf.LoaderFunc(func() (map[string]interface{}, error) {
+	fileLoader := xconf.LoaderFunc(func() (map[string]any, error) {
 		fileLoaderCallsCnt++
 		if fileLoaderCallsCnt == 1 {
-			return map[string]interface{}{"foo": "bar"}, nil
+			return map[string]any{"foo": "bar"}, nil
 		}
 
-		return map[string]interface{}{"foo": "baz", "year": 2022}, nil
+		return map[string]any{"foo": "baz", "year": 2022}, nil
 	})
 	subject := xconf.NewFileCacheLoader(fileLoader, filePath)
 
@@ -53,13 +53,13 @@ func testFileCacheLoaderSuccess(t *testing.T) {
 	config, err := subject.Load()
 	requireNil(t, err)
 	assertEqual(t, 1, fileLoaderCallsCnt)
-	assertEqual(t, map[string]interface{}{"foo": "bar"}, config)
+	assertEqual(t, map[string]any{"foo": "bar"}, config)
 
 	// act & assert - second time result should be taken from cache
 	config, err = subject.Load()
 	requireNil(t, err)
 	assertEqual(t, 1, fileLoaderCallsCnt) // still 1
-	assertEqual(t, map[string]interface{}{"foo": "bar"}, config)
+	assertEqual(t, map[string]any{"foo": "bar"}, config)
 
 	// modify the file
 	time.Sleep(time.Second)
@@ -72,7 +72,7 @@ func testFileCacheLoaderSuccess(t *testing.T) {
 	config, err = subject.Load()
 	requireNil(t, err)
 	assertEqual(t, 2, fileLoaderCallsCnt)
-	assertEqual(t, map[string]interface{}{"foo": "baz", "year": 2022}, config)
+	assertEqual(t, map[string]any{"foo": "baz", "year": 2022}, config)
 }
 
 func testFileCacheLoaderReturnsFstatError(t *testing.T) {
@@ -81,7 +81,7 @@ func testFileCacheLoaderReturnsFstatError(t *testing.T) {
 	// arrange
 	var (
 		expectedErr = os.ErrNotExist
-		fileLoader  = xconf.PlainLoader(map[string]interface{}{
+		fileLoader  = xconf.PlainLoader(map[string]any{
 			"foo": "bar",
 		})
 		subject = xconf.NewFileCacheLoader(
@@ -104,7 +104,7 @@ func testFileCacheLoaderReturnsErrFromDecoratedLoader(t *testing.T) {
 	// arrange
 	var (
 		expectedErr = errors.New("intentionally triggered decorated loader error")
-		fileLoader  = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		fileLoader  = xconf.LoaderFunc(func() (map[string]any, error) {
 			return nil, expectedErr
 		})
 		subject = xconf.NewFileCacheLoader(fileLoader, jsonFilePath)
@@ -123,16 +123,16 @@ func testFileCacheLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	// arrange
 	var (
-		fileLoader = xconf.PlainLoader(map[string]interface{}{
+		fileLoader = xconf.PlainLoader(map[string]any{
 			"filecache_string": "some string",
-			"filecache_slice":  []interface{}{"foo", "bar", "baz"},
-			"filecache_map":    map[string]interface{}{"foo": "bar"},
+			"filecache_slice":  []any{"foo", "bar", "baz"},
+			"filecache_map":    map[string]any{"foo": "bar"},
 		})
 		subject        = xconf.NewFileCacheLoader(fileLoader, jsonFilePath)
-		expectedConfig = map[string]interface{}{
+		expectedConfig = map[string]any{
 			"filecache_string": "some string",
-			"filecache_slice":  []interface{}{"foo", "bar", "baz"},
-			"filecache_map":    map[string]interface{}{"foo": "bar"},
+			"filecache_slice":  []any{"foo", "bar", "baz"},
+			"filecache_map":    map[string]any{"foo": "bar"},
 		}
 	)
 
@@ -146,8 +146,8 @@ func testFileCacheLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	// modify first returned value, expect second returned value to be initial one.
 	config1["filecache_int"] = 4444
 	config1["filecache_string"] = "test filecache string"
-	config1["filecache_slice"].([]interface{})[0] = "test filecache slice"
-	config1["filecache_map"].(map[string]interface{})["foo"] = "test filecache map"
+	config1["filecache_slice"].([]any)[0] = "test filecache slice"
+	config1["filecache_map"].(map[string]any)["foo"] = "test filecache map"
 
 	// act
 	config2, err2 := subject.Load()
@@ -158,10 +158,10 @@ func testFileCacheLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"filecache_string": "some string",
-			"filecache_slice":  []interface{}{"foo", "bar", "baz"},
-			"filecache_map":    map[string]interface{}{"foo": "bar"},
+			"filecache_slice":  []any{"foo", "bar", "baz"},
+			"filecache_map":    map[string]any{"foo": "bar"},
 		},
 		expectedConfig,
 	)
@@ -320,7 +320,7 @@ func ExampleFileCacheLoader() {
 			xconf.JSONFileLoader(filePath),
 			filePath,
 		)
-		configMap map[string]interface{}
+		configMap map[string]any
 		err       error
 	)
 

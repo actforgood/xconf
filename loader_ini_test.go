@@ -14,12 +14,12 @@ import (
 	"gopkg.in/ini.v1"
 )
 
-var iniConfigMap = map[string]interface{}{
+var iniConfigMap = map[string]any{
 	"ini_foo": "bar",
-	"time": map[string]interface{}{
+	"time": map[string]any{
 		"ini_year": "2022",
 	},
-	"temperature": map[string]interface{}{
+	"temperature": map[string]any{
 		"ini_celsius":    "37.5",
 		"ini_fahrenheit": "99.5",
 	},
@@ -131,12 +131,12 @@ func testIniFileLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"ini_foo": "bar",
-			"time": map[string]interface{}{
+			"time": map[string]any{
 				"ini_year": "2022",
 			},
-			"temperature": map[string]interface{}{
+			"temperature": map[string]any{
 				"ini_celsius":    "37.5",
 				"ini_fahrenheit": "99.5",
 			},
@@ -167,8 +167,8 @@ func ExampleIniFileLoader() {
 		panic(err)
 	}
 	fmt.Println(configMap["ini_foo"])
-	fmt.Println(configMap["temperature"].(map[string]interface{})["ini_celsius"])
-	fmt.Println(configMap["temperature"].(map[string]interface{})["ini_fahrenheit"])
+	fmt.Println(configMap["temperature"].(map[string]any)["ini_celsius"])
+	fmt.Println(configMap["temperature"].(map[string]any)["ini_fahrenheit"])
 
 	// Unordered output:
 	// bar

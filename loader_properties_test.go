@@ -13,7 +13,7 @@ import (
 	"github.com/actforgood/xconf"
 )
 
-var propertiesConfigMap = map[string]interface{}{
+var propertiesConfigMap = map[string]any{
 	"properties_foo":         "bar",
 	"properties_baz":         "bar",
 	"properties_year":        "2022",
@@ -105,7 +105,7 @@ func testPropertiesFileLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"properties_foo":         "bar",
 			"properties_baz":         "bar",
 			"properties_year":        "2022",
@@ -193,7 +193,7 @@ properties_temperature=37.5`
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"properties_foo":         "bar",
 			"properties_baz":         "bar",
 			"properties_year":        "2022",

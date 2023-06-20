@@ -14,7 +14,7 @@ import (
 	"github.com/actforgood/xconf"
 )
 
-var flagSetConfigMap = map[string]interface{}{
+var flagSetConfigMap = map[string]any{
 	"flag_foo":           "bar",
 	"flag_year":          "2022",
 	"flag_temperature":   "37.5",
@@ -60,7 +60,7 @@ func testFlagSetLoaderVisitOnlySet(t *testing.T) {
 	assertNil(t, err)
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"flag_foo":         "bar",
 			"flag_temperature": "37.5",
 		},
@@ -96,7 +96,7 @@ func testFlagSetLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"flag_foo":           "bar",
 			"flag_year":          "2022",
 			"flag_temperature":   "37.5",

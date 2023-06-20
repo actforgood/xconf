@@ -16,11 +16,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var yamlConfigMap = map[string]interface{}{
+var yamlConfigMap = map[string]any{
 	"yaml_foo":           "bar",
 	"yaml_year":          2022,
 	"yaml_temperature":   37.5,
-	"yaml_shopping_list": []interface{}{"bread", "milk", "eggs"},
+	"yaml_shopping_list": []any{"bread", "milk", "eggs"},
 }
 
 const yamlFilePath = "testdata/config.yaml"
@@ -93,11 +93,11 @@ yaml_string_map:
 yaml_interface_map:
   1: one
 `
-		expectedConfig = map[string]interface{}{
+		expectedConfig = map[string]any{
 			"yaml_string":        "some string",
-			"yaml_slice":         []interface{}{"foo", "bar", "baz"},
-			"yaml_string_map":    map[string]interface{}{"foo": "bar"},
-			"yaml_interface_map": map[interface{}]interface{}{1: "one"},
+			"yaml_slice":         []any{"foo", "bar", "baz"},
+			"yaml_string_map":    map[string]any{"foo": "bar"},
+			"yaml_interface_map": map[any]any{1: "one"},
 		}
 		reader  = bytes.NewReader([]byte(content))
 		subject = xconf.YAMLReaderLoader(reader)
@@ -113,9 +113,9 @@ yaml_interface_map:
 	// modify first returned value, expect second returned value to be initial one.
 	config1["yaml_int"] = 1111
 	config1["yaml_string"] = "test yaml string"
-	config1["yaml_slice"].([]interface{})[0] = "test yaml slice"
-	config1["yaml_string_map"].(map[string]interface{})["foo"] = "test yaml map"
-	config1["yaml_interface_map"].(map[interface{}]interface{})[1] = "test yaml map"
+	config1["yaml_slice"].([]any)[0] = "test yaml slice"
+	config1["yaml_string_map"].(map[string]any)["foo"] = "test yaml map"
+	config1["yaml_interface_map"].(map[any]any)[1] = "test yaml map"
 
 	// act
 	config2, err2 := subject.Load()
@@ -126,11 +126,11 @@ yaml_interface_map:
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"yaml_string":        "some string",
-			"yaml_slice":         []interface{}{"foo", "bar", "baz"},
-			"yaml_string_map":    map[string]interface{}{"foo": "bar"},
-			"yaml_interface_map": map[interface{}]interface{}{1: "one"},
+			"yaml_slice":         []any{"foo", "bar", "baz"},
+			"yaml_string_map":    map[string]any{"foo": "bar"},
+			"yaml_interface_map": map[any]any{1: "one"},
 		},
 		expectedConfig,
 	)
@@ -210,7 +210,7 @@ func testYAMLFileLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	// modify first returned value, expect second returned value to be initial one.
 	config1["yaml_foo"] = "test yaml string modified"
 	config1["yaml_year"] = 2099
-	config1["yaml_shopping_list"].([]interface{})[0] = "test yaml slice modified"
+	config1["yaml_shopping_list"].([]any)[0] = "test yaml slice modified"
 
 	// act
 	config2, err2 := subject.Load()
@@ -221,11 +221,11 @@ func testYAMLFileLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"yaml_foo":           "bar",
 			"yaml_year":          2022,
 			"yaml_temperature":   37.5,
-			"yaml_shopping_list": []interface{}{"bread", "milk", "eggs"},
+			"yaml_shopping_list": []any{"bread", "milk", "eggs"},
 		},
 		yamlConfigMap,
 	)

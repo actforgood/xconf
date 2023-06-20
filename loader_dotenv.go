@@ -15,7 +15,7 @@ import (
 // DotEnvFileLoader loads .env configuration from a file.
 // The location of .env content based file is given as parameter.
 func DotEnvFileLoader(filePath string) Loader {
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		f, err := os.Open(filePath)
 		if err != nil {
 			return nil, err
@@ -28,7 +28,7 @@ func DotEnvFileLoader(filePath string) Loader {
 
 // DotEnvReaderLoader loads .env configuration from an [io.Reader].
 func DotEnvReaderLoader(reader io.Reader) Loader {
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		if seekReader, ok := reader.(io.Seeker); ok {
 			_, _ = seekReader.Seek(0, io.SeekStart) // move to the beginning in case of a re-load needed.
 		}
@@ -37,7 +37,7 @@ func DotEnvReaderLoader(reader io.Reader) Loader {
 			return nil, err
 		}
 
-		configMap := make(map[string]interface{}, len(envs))
+		configMap := make(map[string]any, len(envs))
 		for key, value := range envs {
 			configMap[key] = value
 		}

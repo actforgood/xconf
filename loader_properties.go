@@ -14,7 +14,7 @@ import (
 // PropertiesFileLoader loads Java Properties configuration from a file.
 // The location of properties content based file is given as parameter.
 func PropertiesFileLoader(filePath string) Loader {
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		content, err := os.ReadFile(filePath)
 		if err != nil {
 			return nil, err
@@ -26,7 +26,7 @@ func PropertiesFileLoader(filePath string) Loader {
 
 // PropertiesBytesLoader loads Properties configuration from bytes.
 func PropertiesBytesLoader(propertiesContent []byte) Loader {
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		loader := properties.Loader{
 			Encoding:         properties.UTF8,
 			DisableExpansion: false,
@@ -37,7 +37,7 @@ func PropertiesBytesLoader(propertiesContent []byte) Loader {
 		}
 		keys := cfg.Keys()
 
-		configMap := make(map[string]interface{}, len(keys))
+		configMap := make(map[string]any, len(keys))
 		for _, key := range keys {
 			value, _ := cfg.Get(key)
 			configMap[key] = value

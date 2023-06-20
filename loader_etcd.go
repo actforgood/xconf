@@ -65,7 +65,7 @@ func NewEtcdLoader(key string, opts ...EtcdLoaderOption) EtcdLoader {
 
 // Load returns a configuration key-value map from etcd, or an error
 // if something bad happens along the process.
-func (loader EtcdLoader) Load() (map[string]interface{}, error) {
+func (loader EtcdLoader) Load() (map[string]any, error) {
 	return loader.strategy.Load()
 }
 
@@ -191,7 +191,7 @@ type etcdSimpleLoadStrategy struct {
 }
 
 // Load retrieves configuration by a simple client call.
-func (loaderStrategy etcdSimpleLoadStrategy) Load() (map[string]interface{}, error) {
+func (loaderStrategy etcdSimpleLoadStrategy) Load() (map[string]any, error) {
 	cli, err := clientv3.New(loaderStrategy.info.clientCfg)
 	if err != nil {
 		return nil, err
@@ -211,8 +211,8 @@ func (loaderStrategy etcdSimpleLoadStrategy) Load() (map[string]interface{}, err
 }
 
 // etcdKVPairsLoad loads config from a Key's Value given the format provided.
-func etcdKVPairsLoad(kvPairs []*mvccpb.KeyValue, format string) (map[string]interface{}, error) {
-	var configMap map[string]interface{}
+func etcdKVPairsLoad(kvPairs []*mvccpb.KeyValue, format string) (map[string]any, error) {
+	var configMap map[string]any
 	for idx, kvPair := range kvPairs {
 		currentKeyConfigMap, err := getRemoteKVPairConfigMap(
 			string(kvPair.Key),
@@ -242,16 +242,16 @@ func etcdKVPairsLoad(kvPairs []*mvccpb.KeyValue, format string) (map[string]inte
 // key changes asynchronously.
 type etcdWatcherLoadStrategy struct {
 	info      *etcdStrategyInfo
-	configMap map[string]interface{} // "live" configuration map
-	client    *clientv3.Client       // underlying client
-	mErr      *xerr.MultiError       // error(s) occurred during watching, between 2 Loads.
-	mu        sync.RWMutex           // concurrency semaphore
-	wg        sync.WaitGroup         // wait group to wait for watching goroutine to finish
+	configMap map[string]any   // "live" configuration map
+	client    *clientv3.Client // underlying client
+	mErr      *xerr.MultiError // error(s) occurred during watching, between 2 Loads.
+	mu        sync.RWMutex     // concurrency semaphore
+	wg        sync.WaitGroup   // wait group to wait for watching goroutine to finish
 }
 
 // Load returns a copy of the stored configuration map,
 // or an error if something bad happens along the process.
-func (loaderStrategy *etcdWatcherLoadStrategy) Load() (map[string]interface{}, error) {
+func (loaderStrategy *etcdWatcherLoadStrategy) Load() (map[string]any, error) {
 	if err := loaderStrategy.init(); err != nil {
 		return nil, err
 	}

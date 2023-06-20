@@ -92,7 +92,7 @@ func TestEtcdLoader_withWatcher_success(t *testing.T) {
 	assertNil(t, err)
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"ETCD_TEST_INTEGRATION_WATCH_FOO": "foo",
 			"ETCD_TEST_INTEGRATION_WATCH_BAR": "bar",
 		},
@@ -109,7 +109,7 @@ func TestEtcdLoader_withWatcher_success(t *testing.T) {
 	if _, err := setUpClient.Put(ctx, "ETCD_TEST_INTEGRATION_WATCH_BAZ", "baz"); err != nil {
 		t.Fatal("prerequisites failed: could not create 'baz' key:", err)
 	}
-	expectedNewConfig := map[string]interface{}{
+	expectedNewConfig := map[string]any{
 		"ETCD_TEST_INTEGRATION_WATCH_FOO": "foo - updated",
 		"ETCD_TEST_INTEGRATION_WATCH_BAZ": "baz", // new key
 	}
@@ -167,7 +167,7 @@ func TestEtcdLoader_withWatcher_error(t *testing.T) {
 	config, err := subject.Load()
 
 	assertNil(t, err)
-	assertEqual(t, map[string]interface{}{"etcd_foo": "bar"}, config)
+	assertEqual(t, map[string]any{"etcd_foo": "bar"}, config)
 
 	// we update foo, with corrupted json
 	if _, err := setUpClient.Put(ctx, "ETCD_TEST_INTEGRATION_WATCH_FOO_JSON", "{corrupted json"); err != nil {
@@ -184,7 +184,7 @@ func TestEtcdLoader_withWatcher_error(t *testing.T) {
 
 		if err != nil || i == maxTry {
 			// old "version" is returned, but also error.
-			assertEqual(t, map[string]interface{}{"etcd_foo": "bar"}, config)
+			assertEqual(t, map[string]any{"etcd_foo": "bar"}, config)
 			var jsonErr *json.SyntaxError
 			assertTrue(t, errors.As(err, &jsonErr))
 
@@ -208,7 +208,7 @@ func TestEtcdLoader_withWatcher_error(t *testing.T) {
 
 		if err == nil || i == maxTry {
 			assertNil(t, err)
-			assertEqual(t, map[string]interface{}{"etcd_foo": "baz"}, config)
+			assertEqual(t, map[string]any{"etcd_foo": "baz"}, config)
 
 			break
 		}
@@ -269,7 +269,7 @@ func TestEtcdLoader_withTLS_integration(t *testing.T) {
 }
 
 // getEtcdExpectedConfigMapIntegration returns expected config maps for integration tests.
-func getEtcdExpectedConfigMapIntegration(format string, withPrefix bool) map[string]interface{} {
+func getEtcdExpectedConfigMapIntegration(format string, withPrefix bool) map[string]any {
 	return getConsulExpectedConfigMapIntegration(format, withPrefix) // same as consul...
 }
 

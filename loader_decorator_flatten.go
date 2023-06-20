@@ -51,7 +51,7 @@ func NewFlattenLoader(loader Loader, opts ...FlattenLoaderOption) FlattenLoader 
 
 // Load returns a configuration key-value map from original loader, enriched with
 // shortcuts to leaves' information in nested configuration key(s).
-func (decorator FlattenLoader) Load() (map[string]interface{}, error) {
+func (decorator FlattenLoader) Load() (map[string]any, error) {
 	configMap, err := decorator.loader.Load()
 	if err != nil {
 		return configMap, err
@@ -78,12 +78,12 @@ func (decorator FlattenLoader) getFlatKey(lvl uint, prevKey, currKey string) str
 func (decorator FlattenLoader) flattenConfigMap(
 	lvl uint,
 	prevKey string,
-	currConfigMap map[string]interface{},
-	finalConfigMap map[string]interface{},
+	currConfigMap map[string]any,
+	finalConfigMap map[string]any,
 ) {
 	for key, value := range currConfigMap {
 		switch val := value.(type) {
-		case map[string]interface{}:
+		case map[string]any:
 			decorator.flattenConfigMap(
 				lvl+1,
 				decorator.getFlatKey(lvl, prevKey, key),
@@ -94,7 +94,7 @@ func (decorator FlattenLoader) flattenConfigMap(
 			if lvl == 0 && decorator.flatOnly {
 				delete(finalConfigMap, key) // don't preserve original (nested configuration) keys
 			}
-		case map[interface{}]interface{}:
+		case map[any]any:
 			cfgMap := cast.ToStringMap(val)
 			decorator.flattenConfigMap(
 				lvl+1,

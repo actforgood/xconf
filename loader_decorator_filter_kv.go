@@ -21,7 +21,7 @@ const (
 type FilterKV interface {
 	// IsAllowed returns true if a key-value is eligible to be returned
 	// in the configuration map.
-	IsAllowed(key string, value interface{}) bool
+	IsAllowed(key string, value any) bool
 
 	// Type returns filter's type (FilterTypeWhitelist / FilterTypeBlacklist).
 	Type() FilterType
@@ -35,13 +35,13 @@ type FilterKV interface {
 //
 // Example:
 //
-//	xconf.FilterKVWhitelistFunc(func(key string, _ interface{}) bool {
+//	xconf.FilterKVWhitelistFunc(func(key string, _ any) bool {
 //		return key == "KEEP_ME_1" || key == "KEEP_ME_2"
 //	})
-type FilterKVWhitelistFunc func(key string, value interface{}) bool
+type FilterKVWhitelistFunc func(key string, value any) bool
 
 // IsAllowed returns true if a key-value is whitelisted.
-func (filter FilterKVWhitelistFunc) IsAllowed(key string, value interface{}) bool {
+func (filter FilterKVWhitelistFunc) IsAllowed(key string, value any) bool {
 	return filter(key, value)
 }
 
@@ -58,13 +58,13 @@ func (filter FilterKVWhitelistFunc) Type() FilterType {
 //
 // Example:
 //
-//	xconf.FilterKVBlacklistFunc(func(key string, _ interface{}) bool {
+//	xconf.FilterKVBlacklistFunc(func(key string, _ any) bool {
 //		return key == "DENY_ME_1" || key == "DENY_ME_2"
 //	})
-type FilterKVBlacklistFunc func(key string, value interface{}) bool
+type FilterKVBlacklistFunc func(key string, value any) bool
 
 // IsAllowed returns false if a key-value is blacklisted.
-func (filter FilterKVBlacklistFunc) IsAllowed(key string, value interface{}) bool {
+func (filter FilterKVBlacklistFunc) IsAllowed(key string, value any) bool {
 	return !filter(key, value)
 }
 
@@ -87,7 +87,7 @@ func FilterKVLoader(loader Loader, filters ...FilterKV) Loader {
 	// make 2 buckets of filters.
 	blacklistFilters, whitelistFilters := filterBuckets(filters...)
 
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		configMap, err := loader.Load()
 		if err != nil {
 			return configMap, err
@@ -142,8 +142,8 @@ func filterBuckets(filters ...FilterKV) ([]FilterKV, []FilterKV) {
 //
 //	xconf.FilterKVWhitelistFunc(xconf.FilterKeyWithPrefix(prefix))
 //	xconf.FilterKVBlacklistFunc(xconf.FilterKeyWithPrefix(prefix))
-func FilterKeyWithPrefix(prefix string) func(key string, _ interface{}) bool {
-	return func(key string, _ interface{}) bool {
+func FilterKeyWithPrefix(prefix string) func(key string, _ any) bool {
+	return func(key string, _ any) bool {
 		return strings.HasPrefix(key, prefix)
 	}
 }
@@ -153,8 +153,8 @@ func FilterKeyWithPrefix(prefix string) func(key string, _ interface{}) bool {
 //
 //	xconf.FilterKVWhitelistFunc(xconf.FilterKeyWithSuffix(suffix))
 //	xconf.FilterKVBlacklistFunc(xconf.FilterKeyWithSuffix(suffix))
-func FilterKeyWithSuffix(suffix string) func(key string, _ interface{}) bool {
-	return func(key string, _ interface{}) bool {
+func FilterKeyWithSuffix(suffix string) func(key string, _ any) bool {
+	return func(key string, _ any) bool {
 		return strings.HasSuffix(key, suffix)
 	}
 }
@@ -164,8 +164,8 @@ func FilterKeyWithSuffix(suffix string) func(key string, _ interface{}) bool {
 //
 //	xconf.FilterKVWhitelistFunc(xconf.FilterExactKeys(key1, key2))
 //	xconf.FilterKVBlacklistFunc(xconf.FilterExactKeys(key1, key2))
-func FilterExactKeys(keys ...string) func(key string, _ interface{}) bool {
-	return func(key string, _ interface{}) bool {
+func FilterExactKeys(keys ...string) func(key string, _ any) bool {
+	return func(key string, _ any) bool {
 		for _, k := range keys {
 			if key == k {
 				return true
@@ -180,7 +180,7 @@ func FilterExactKeys(keys ...string) func(key string, _ interface{}) bool {
 // It can be used as a [FilterKV] like:
 //
 //	xconf.FilterKVBlacklistFunc(xconf.FilterEmptyValue)
-func FilterEmptyValue(_ string, value interface{}) bool {
+func FilterEmptyValue(_ string, value any) bool {
 	if value == nil {
 		return true
 	}

@@ -12,8 +12,8 @@ if [ "$local" != "local" ]; then
     exit 0 # we're not locally
 fi
 
-DOCKER_CONSUL_IMAGE="consul:1.13.3"
-DOCKER_ETCD_IMAGE="quay.io/coreos/etcd:v3.5.5"
+DOCKER_CONSUL_IMAGE="consul:1.15.3"
+DOCKER_ETCD_IMAGE="quay.io/coreos/etcd:v3.5.9"
 SCRIPT_PATH=$(dirname "$(readlink -f "$0")")
 
 # setUpLocalDocker ensures docker containers are up and running.

@@ -28,20 +28,20 @@ func testFilterKVLoaderWithMixedFilters(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"FOO_1": "whitelisted by filter 1",
 			"FOO_2": "whitelisted by filter 1",
 			"FOO_3": "whitelisted by filter 2",
 			"FOO_4": "blacklisted by filter 3",
 			"FOO_5": "ignored, not blacklisted and not whitelisted",
 		})
-		filter1 = xconf.FilterKVWhitelistFunc(func(key string, _ interface{}) bool {
+		filter1 = xconf.FilterKVWhitelistFunc(func(key string, _ any) bool {
 			return key == "FOO_1" || key == "FOO_2"
 		})
-		filter2 = xconf.FilterKVWhitelistFunc(func(_ string, value interface{}) bool {
+		filter2 = xconf.FilterKVWhitelistFunc(func(_ string, value any) bool {
 			return value.(string) == "whitelisted by filter 2"
 		})
-		filter3 = xconf.FilterKVBlacklistFunc(func(key string, _ interface{}) bool {
+		filter3 = xconf.FilterKVBlacklistFunc(func(key string, _ any) bool {
 			return key == "FOO_4"
 		})
 		subject = xconf.FilterKVLoader(loader, filter1, filter2, filter3)
@@ -54,7 +54,7 @@ func testFilterKVLoaderWithMixedFilters(t *testing.T) {
 	assertNil(t, err)
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"FOO_1": "whitelisted by filter 1",
 			"FOO_2": "whitelisted by filter 1",
 			"FOO_3": "whitelisted by filter 2",
@@ -68,17 +68,17 @@ func testFilterKVLoaderOnlyWithWhitelistFilters(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"FOO1": "whitelisted by filter 1",
 			"FOO2": "whitelisted by filter 1",
 			"FOO3": "whitelisted by filter 2",
 			"FOO4": "ignored, not blacklisted and not whitelisted",
 			"FOO5": "ignored, not blacklisted and not whitelisted",
 		})
-		filter1 = xconf.FilterKVWhitelistFunc(func(key string, _ interface{}) bool {
+		filter1 = xconf.FilterKVWhitelistFunc(func(key string, _ any) bool {
 			return key == "FOO1" || key == "FOO2"
 		})
-		filter2 = xconf.FilterKVWhitelistFunc(func(_ string, value interface{}) bool {
+		filter2 = xconf.FilterKVWhitelistFunc(func(_ string, value any) bool {
 			return value.(string) == "whitelisted by filter 2"
 		})
 		subject = xconf.FilterKVLoader(loader, filter1, filter2)
@@ -91,7 +91,7 @@ func testFilterKVLoaderOnlyWithWhitelistFilters(t *testing.T) {
 	assertNil(t, err)
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"FOO1": "whitelisted by filter 1",
 			"FOO2": "whitelisted by filter 1",
 			"FOO3": "whitelisted by filter 2",
@@ -105,17 +105,17 @@ func testFilterKVLoaderOnlyWithBlacklistFilters(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"FOO1": "blacklisted by filter 1",
 			"FOO2": "blacklisted by filter 1",
 			"FOO3": "blacklisted by filter 2",
 			"FOO4": "remains, not blacklisted",
 			"FOO5": "remains, not blacklisted",
 		})
-		filter1 = xconf.FilterKVBlacklistFunc(func(key string, _ interface{}) bool {
+		filter1 = xconf.FilterKVBlacklistFunc(func(key string, _ any) bool {
 			return key == "FOO1" || key == "FOO2"
 		})
-		filter2 = xconf.FilterKVBlacklistFunc(func(_ string, value interface{}) bool {
+		filter2 = xconf.FilterKVBlacklistFunc(func(_ string, value any) bool {
 			return value.(string) == "blacklisted by filter 2"
 		})
 		subject = xconf.FilterKVLoader(loader, filter1, filter2)
@@ -128,7 +128,7 @@ func testFilterKVLoaderOnlyWithBlacklistFilters(t *testing.T) {
 	assertNil(t, err)
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"FOO4": "remains, not blacklisted",
 			"FOO5": "remains, not blacklisted",
 		},
@@ -142,10 +142,10 @@ func testFilterKVLoaderReturnsErrFromDecoratedLoader(t *testing.T) {
 	// arrange
 	var (
 		expectedErr = errors.New("intentionally triggered decorated loader err")
-		loader      = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		loader      = xconf.LoaderFunc(func() (map[string]any, error) {
 			return nil, expectedErr
 		})
-		filter = xconf.FilterKVBlacklistFunc(func(key string, _ interface{}) bool {
+		filter = xconf.FilterKVBlacklistFunc(func(key string, _ any) bool {
 			return key == "whatever"
 		})
 		subject = xconf.FilterKVLoader(loader, filter)
@@ -164,23 +164,23 @@ func testFilterKVLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"filter_string":        "some string",
 			"filter_int":           567,
-			"filter_slice":         []interface{}{"foo", "bar", "baz"},
-			"filter_string_map":    map[string]interface{}{"foo": "bar"},
-			"filter_interface_map": map[interface{}]interface{}{1: "one"},
+			"filter_slice":         []any{"foo", "bar", "baz"},
+			"filter_string_map":    map[string]any{"foo": "bar"},
+			"filter_interface_map": map[any]any{1: "one"},
 		})
-		filter = xconf.FilterKVWhitelistFunc(func(key string, _ interface{}) bool {
+		filter = xconf.FilterKVWhitelistFunc(func(key string, _ any) bool {
 			return key == "filter_string" || key == "filter_slice" ||
 				key == "filter_string_map" || key == "filter_interface_map"
 		})
 		subject        = xconf.FilterKVLoader(loader, filter)
-		expectedConfig = map[string]interface{}{
+		expectedConfig = map[string]any{
 			"filter_string":        "some string",
-			"filter_slice":         []interface{}{"foo", "bar", "baz"},
-			"filter_string_map":    map[string]interface{}{"foo": "bar"},
-			"filter_interface_map": map[interface{}]interface{}{1: "one"},
+			"filter_slice":         []any{"foo", "bar", "baz"},
+			"filter_string_map":    map[string]any{"foo": "bar"},
+			"filter_interface_map": map[any]any{1: "one"},
 		}
 	)
 
@@ -194,9 +194,9 @@ func testFilterKVLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	// modify first returned value, expect second returned value to be initial one.
 	config1["filter_int"] = 1111
 	config1["filter_string"] = "test filter string"
-	config1["filter_slice"].([]interface{})[0] = "test filter slice"
-	config1["filter_string_map"].(map[string]interface{})["foo"] = "test filter map"
-	config1["filter_interface_map"].(map[interface{}]interface{})[1] = "test filter map"
+	config1["filter_slice"].([]any)[0] = "test filter slice"
+	config1["filter_string_map"].(map[string]any)["foo"] = "test filter map"
+	config1["filter_interface_map"].(map[any]any)[1] = "test filter map"
 
 	// act
 	config2, err2 := subject.Load()
@@ -207,11 +207,11 @@ func testFilterKVLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"filter_string":        "some string",
-			"filter_slice":         []interface{}{"foo", "bar", "baz"},
-			"filter_string_map":    map[string]interface{}{"foo": "bar"},
-			"filter_interface_map": map[interface{}]interface{}{1: "one"},
+			"filter_slice":         []any{"foo", "bar", "baz"},
+			"filter_string_map":    map[string]any{"foo": "bar"},
+			"filter_interface_map": map[any]any{1: "one"},
 		},
 		expectedConfig,
 	)
@@ -225,7 +225,7 @@ func TestFilterKeyWithPrefix(t *testing.T) {
 		name           string
 		prefix         string
 		inputKey       string
-		inputValue     interface{}
+		inputValue     any
 		expectedResult bool
 	}{
 		{
@@ -286,7 +286,7 @@ func TestFilterKeyWithSuffix(t *testing.T) {
 		name           string
 		suffix         string
 		inputKey       string
-		inputValue     interface{}
+		inputValue     any
 		expectedResult bool
 	}{
 		{
@@ -346,7 +346,7 @@ func TestFilterEmptyValue(t *testing.T) {
 	tests := [...]struct {
 		name           string
 		inputKey       string
-		inputValue     interface{}
+		inputValue     any
 		expectedResult bool
 	}{
 		{
@@ -402,7 +402,7 @@ func TestFilterExactKeys(t *testing.T) {
 		name           string
 		keys           []string
 		inputKey       string
-		inputValue     interface{}
+		inputValue     any
 		expectedResult bool
 	}{
 		{
@@ -449,20 +449,20 @@ func TestFilterExactKeys(t *testing.T) {
 }
 
 func BenchmarkFilterKVLoader(b *testing.B) {
-	loader := xconf.PlainLoader(map[string]interface{}{
+	loader := xconf.PlainLoader(map[string]any{
 		"FOO_1": "bar 1",
 		"FOO_2": "bar 2",
 		"FOO_3": "bar 3",
 		"FOO_4": "bar 4",
 		"FOO_5": "bar 5",
 	})
-	filter1 := xconf.FilterKVWhitelistFunc(func(key string, _ interface{}) bool {
+	filter1 := xconf.FilterKVWhitelistFunc(func(key string, _ any) bool {
 		return key == "FOO_1" || key == "FOO_2"
 	})
-	filter2 := xconf.FilterKVWhitelistFunc(func(_ string, value interface{}) bool {
+	filter2 := xconf.FilterKVWhitelistFunc(func(_ string, value any) bool {
 		return value.(string) == "bar 3"
 	})
-	filter3 := xconf.FilterKVBlacklistFunc(func(key string, _ interface{}) bool {
+	filter3 := xconf.FilterKVBlacklistFunc(func(key string, _ any) bool {
 		return key == "FOO_4"
 	})
 	subject := xconf.FilterKVLoader(loader, filter1, filter2, filter3)
@@ -476,7 +476,7 @@ func BenchmarkFilterKVLoader(b *testing.B) {
 }
 
 func ExampleFilterEmptyValue() {
-	origLoader := xconf.PlainLoader(map[string]interface{}{
+	origLoader := xconf.PlainLoader(map[string]any{
 		"redis_dial_timeout": "5s",
 		"redis_dsn":          "",
 	})
@@ -494,7 +494,7 @@ func ExampleFilterEmptyValue() {
 }
 
 func ExampleFilterKeyWithSuffix() {
-	origLoader := xconf.PlainLoader(map[string]interface{}{
+	origLoader := xconf.PlainLoader(map[string]any{
 		"REDIS_SERVICE_HOST": "10.0.0.11",
 		"REDIS_SERVICE_PORT": "6379",
 		"OS":                 "Windows",
@@ -517,7 +517,7 @@ func ExampleFilterKeyWithSuffix() {
 }
 
 func ExampleFilterKeyWithPrefix() {
-	origLoader := xconf.PlainLoader(map[string]interface{}{
+	origLoader := xconf.PlainLoader(map[string]any{
 		"APP_FOO_1": "bar 1",
 		"APP_FOO_2": "bar 2",
 		"OS":        "Windows",
@@ -538,7 +538,7 @@ func ExampleFilterKeyWithPrefix() {
 }
 
 func ExampleFilterExactKeys() {
-	origLoader := xconf.PlainLoader(map[string]interface{}{
+	origLoader := xconf.PlainLoader(map[string]any{
 		"FOO": "foo value",
 		"BAR": "bar value",
 		"BAZ": "baz value",
@@ -563,7 +563,7 @@ func ExampleFilterKVLoader() {
 	// prefixed with APP_ and we want to allow them,
 	// we also want to allow K8s services,
 	// we also want to get rid of empty value configs.
-	origLoader := xconf.PlainLoader(map[string]interface{}{
+	origLoader := xconf.PlainLoader(map[string]any{
 		"APP_FOO_1":          "bar 1",     // whitelisted
 		"APP_FOO_2":          "bar 2",     // whitelisted
 		"APP_FOO_3":          "",          // blacklisted

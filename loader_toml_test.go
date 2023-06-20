@@ -17,19 +17,19 @@ import (
 	"github.com/pelletier/go-toml/v2"
 )
 
-var tomlConfigMap = map[string]interface{}{
+var tomlConfigMap = map[string]any{
 	"toml_foo":           "bar",
 	"toml_year":          int64(2022),
 	"toml_temperature":   37.5,
-	"toml_shopping_list": []interface{}{"bread", "milk", "eggs"},
+	"toml_shopping_list": []any{"bread", "milk", "eggs"},
 	"toml_enabled":       true,
 	"toml_dob":           time.Date(1990, 5, 28, 7, 32, 0, 0, time.FixedZone("", 2*3600)),
-	"toml_servers": map[string]interface{}{
-		"alpha": map[string]interface{}{
+	"toml_servers": map[string]any{
+		"alpha": map[string]any{
 			"ip":   "10.0.0.1",
 			"role": "frontend",
 		},
-		"beta": map[string]interface{}{
+		"beta": map[string]any{
 			"ip":   "10.0.0.2",
 			"role": "backend",
 		},
@@ -113,10 +113,10 @@ toml_slice = ["foo", "bar", "baz"]
 [toml_string_map]
   foo = "bar"
 `
-		expectedConfig = map[string]interface{}{
+		expectedConfig = map[string]any{
 			"toml_string":     "some string",
-			"toml_slice":      []interface{}{"foo", "bar", "baz"},
-			"toml_string_map": map[string]interface{}{"foo": "bar"},
+			"toml_slice":      []any{"foo", "bar", "baz"},
+			"toml_string_map": map[string]any{"foo": "bar"},
 		}
 		reader  = bytes.NewReader([]byte(content))
 		subject = xconf.TOMLReaderLoader(reader)
@@ -132,8 +132,8 @@ toml_slice = ["foo", "bar", "baz"]
 	// modify first returned value, expect second returned value to be initial one.
 	config1["toml_int"] = 88
 	config1["toml_string"] = "test toml string"
-	config1["toml_slice"].([]interface{})[0] = "test toml slice"
-	config1["toml_string_map"].(map[string]interface{})["foo"] = "test toml map"
+	config1["toml_slice"].([]any)[0] = "test toml slice"
+	config1["toml_string_map"].(map[string]any)["foo"] = "test toml map"
 
 	// act
 	config2, err2 := subject.Load()
@@ -144,10 +144,10 @@ toml_slice = ["foo", "bar", "baz"]
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"toml_string":     "some string",
-			"toml_slice":      []interface{}{"foo", "bar", "baz"},
-			"toml_string_map": map[string]interface{}{"foo": "bar"},
+			"toml_slice":      []any{"foo", "bar", "baz"},
+			"toml_string_map": map[string]any{"foo": "bar"},
 		},
 		expectedConfig,
 	)
@@ -227,7 +227,7 @@ func testTOMLFileLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	// modify first returned value, expect second returned value to be initial one.
 	config1["toml_foo"] = "test toml string modified"
 	config1["toml_year"] = 2099
-	config1["toml_shopping_list"].([]interface{})[0] = "test toml slice modified"
+	config1["toml_shopping_list"].([]any)[0] = "test toml slice modified"
 
 	// act
 	config2, err2 := subject.Load()
@@ -238,19 +238,19 @@ func testTOMLFileLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"toml_foo":           "bar",
 			"toml_year":          int64(2022),
 			"toml_temperature":   37.5,
-			"toml_shopping_list": []interface{}{"bread", "milk", "eggs"},
+			"toml_shopping_list": []any{"bread", "milk", "eggs"},
 			"toml_enabled":       true,
 			"toml_dob":           time.Date(1990, 5, 28, 7, 32, 0, 0, time.FixedZone("", 2*3600)),
-			"toml_servers": map[string]interface{}{
-				"alpha": map[string]interface{}{
+			"toml_servers": map[string]any{
+				"alpha": map[string]any{
 					"ip":   "10.0.0.1",
 					"role": "frontend",
 				},
-				"beta": map[string]interface{}{
+				"beta": map[string]any{
 					"ip":   "10.0.0.2",
 					"role": "backend",
 				},

@@ -6,12 +6,12 @@
 package xconf
 
 // DeepCopyConfigMap is a utility function to make a deep "copy"/clone of a config map.
-func DeepCopyConfigMap(src map[string]interface{}) map[string]interface{} {
+func DeepCopyConfigMap(src map[string]any) map[string]any {
 	// Note: Implementation is opinionated to basic types/types produced by current loaders/decoders.
-	// In json you can have as value a nested structure which ends up being a map[string]interface{}.
-	// In yaml you can have as value a nested structure which ends up being either a map[string]interface{},
-	// or map[interface{}]interface{}.
-	// In json and yaml array-values end up being []interface{}.
+	// In json you can have as value a nested structure which ends up being a map[string]any.
+	// In yaml you can have as value a nested structure which ends up being either a map[string]any,
+	// or map[any]any.
+	// In json and yaml array-values end up being []any.
 	// Otherwise (env/properties/ini) values resume to strings.
 	// The PlainLoader is more flexible (nothing stops you from assigning to a key a pointer to a struct for example
 	// - but it's your call if you do that).
@@ -20,11 +20,11 @@ func DeepCopyConfigMap(src map[string]interface{}) map[string]interface{} {
 	// results were not satisfying. For cached loaders, for example, in some cases,
 	// benchmarks were actually worse than not having the cache in the first place because
 	// of gob based deep copy strategy.
-	dst := make(map[string]interface{}, len(src))
+	dst := make(map[string]any, len(src))
 
 	for key, value := range src {
 		switch val := value.(type) {
-		case []interface{}:
+		case []any:
 			dst[key] = deepCopyInterfaceSlice(val)
 		case []string:
 			sliceCopy := make([]string, len(val))
@@ -34,9 +34,9 @@ func DeepCopyConfigMap(src map[string]interface{}) map[string]interface{} {
 			sliceCopy := make([]int, len(val))
 			copy(sliceCopy, val)
 			dst[key] = sliceCopy
-		case map[string]interface{}:
+		case map[string]any:
 			dst[key] = DeepCopyConfigMap(val)
-		case map[interface{}]interface{}:
+		case map[any]any:
 			dst[key] = deepCopyInterfaceMap(val)
 		default:
 			dst[key] = value
@@ -46,14 +46,14 @@ func DeepCopyConfigMap(src map[string]interface{}) map[string]interface{} {
 	return dst
 }
 
-// deepCopyInterfaceMap makes a deep "copy" of a map[interface{}]interface{}.
+// deepCopyInterfaceMap makes a deep "copy" of a map[any]any.
 // This kind of map is produced by YAML decoder.
-func deepCopyInterfaceMap(src map[interface{}]interface{}) map[interface{}]interface{} {
-	dst := make(map[interface{}]interface{}, len(src))
+func deepCopyInterfaceMap(src map[any]any) map[any]any {
+	dst := make(map[any]any, len(src))
 
 	for key, value := range src {
 		switch val := value.(type) {
-		case []interface{}:
+		case []any:
 			dst[key] = deepCopyInterfaceSlice(val)
 		case []string:
 			sliceCopy := make([]string, len(val))
@@ -63,9 +63,9 @@ func deepCopyInterfaceMap(src map[interface{}]interface{}) map[interface{}]inter
 			sliceCopy := make([]int, len(val))
 			copy(sliceCopy, val)
 			dst[key] = sliceCopy
-		case map[string]interface{}:
+		case map[string]any:
 			dst[key] = DeepCopyConfigMap(val)
-		case map[interface{}]interface{}:
+		case map[any]any:
 			dst[key] = deepCopyInterfaceMap(val)
 		default:
 			dst[key] = value
@@ -75,13 +75,13 @@ func deepCopyInterfaceMap(src map[interface{}]interface{}) map[interface{}]inter
 	return dst
 }
 
-// deepCopyInterfaceSlice makes a deep "copy" of a []interface{}.
-func deepCopyInterfaceSlice(src []interface{}) []interface{} {
-	dst := make([]interface{}, len(src))
+// deepCopyInterfaceSlice makes a deep "copy" of a []any.
+func deepCopyInterfaceSlice(src []any) []any {
+	dst := make([]any, len(src))
 
 	for key, value := range src {
 		switch val := value.(type) {
-		case []interface{}:
+		case []any:
 			dst[key] = deepCopyInterfaceSlice(val)
 		case []string:
 			sliceCopy := make([]string, len(val))
@@ -91,9 +91,9 @@ func deepCopyInterfaceSlice(src []interface{}) []interface{} {
 			sliceCopy := make([]int, len(val))
 			copy(sliceCopy, val)
 			dst[key] = sliceCopy
-		case map[string]interface{}:
+		case map[string]any:
 			dst[key] = DeepCopyConfigMap(val)
-		case map[interface{}]interface{}:
+		case map[any]any:
 			dst[key] = deepCopyInterfaceMap(val)
 		default:
 			dst[key] = value
