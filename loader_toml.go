@@ -15,7 +15,7 @@ import (
 // TOMLFileLoader loads TOML configuration from a file.
 // The location of TOML content based file is given as parameter.
 func TOMLFileLoader(filePath string) Loader {
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		f, err := os.Open(filePath)
 		if err != nil {
 			return nil, err
@@ -28,11 +28,11 @@ func TOMLFileLoader(filePath string) Loader {
 
 // TOMLReaderLoader loads TOML configuration from an [io.Reader].
 func TOMLReaderLoader(reader io.Reader) Loader {
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		if seekReader, ok := reader.(io.Seeker); ok {
 			_, _ = seekReader.Seek(0, io.SeekStart) // move to the beginning in case of a re-load needed.
 		}
-		var configMap map[string]interface{}
+		var configMap map[string]any
 		dec := toml.NewDecoder(reader)
 		if err := dec.Decode(&configMap); err != nil {
 			return nil, err

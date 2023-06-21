@@ -23,7 +23,7 @@ type Config interface {
 	// value in case key is not found. It also has a role in inferring
 	// the type of key's value (if it exists) and thus key's value
 	// will be casted to default's value type.
-	Get(key string, def ...interface{}) interface{}
+	Get(key string, def ...any) any
 }
 
 // DefaultConfig is the default implementation for the Config contract.
@@ -38,7 +38,7 @@ type defaultConfig struct {
 	// loader to retrieve configuration from.
 	loader Loader
 	// configMap the loaded key-value configuration map.
-	configMap map[string]interface{}
+	configMap map[string]any
 	// observers contain the list of registered observers for changed keys.
 	observers []ConfigObserver
 	// refreshInterval represents the interval to reload the configMap.
@@ -100,7 +100,7 @@ func NewDefaultConfig(loader Loader, opts ...DefaultConfigOption) (*DefaultConfi
 // Only basic types (string, bool, int, uint, float, and their flavours),
 // time.Duration, time.Time, []int, []string are covered.
 // If a cast error occurs, the defaultValue is returned.
-func (cfg *defaultConfig) Get(key string, def ...interface{}) interface{} {
+func (cfg *defaultConfig) Get(key string, def ...any) any {
 	if cfg.ignoreCaseSensitivity {
 		key = strings.ToUpper(key)
 	}
@@ -161,7 +161,7 @@ func (cfg *defaultConfig) setConfigMap() error {
 
 // notifyObservers computes changed (updated/deleted/new) keys on a config reload,
 // and notifies registered observers about them, if there are any changed keys and observers.
-func (cfg *defaultConfig) notifyObservers(oldConfigMap, newConfigMap map[string]interface{}) {
+func (cfg *defaultConfig) notifyObservers(oldConfigMap, newConfigMap map[string]any) {
 	cfg.mu.RLock()
 	defer cfg.mu.RUnlock()
 
@@ -232,9 +232,9 @@ func (cfg *DefaultConfig) Close() error {
 // Only basic types (string, bool, int, uint, float, and their flavours),
 // time.Duration, time.Time, []int, []string are covered.
 // If a cast error occurs, the defaultValue is returned.
-func castValueByDefault(value, defaultValue interface{}) interface{} {
+func castValueByDefault(value, defaultValue any) any {
 	var (
-		castValue interface{}
+		castValue any
 		castErr   error
 	)
 	switch defaultValue.(type) {
@@ -286,7 +286,7 @@ func castValueByDefault(value, defaultValue interface{}) interface{} {
 }
 
 // toUppercaseConfigMap transforms all (first level) keys to uppercase.
-func toUppercaseConfigMap(configMap map[string]interface{}) {
+func toUppercaseConfigMap(configMap map[string]any) {
 	for key, value := range configMap {
 		delete(configMap, key)
 		// Note: here if a duplicate key exists, it will get overwritten.

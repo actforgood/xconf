@@ -28,7 +28,7 @@ func testIgnoreErrorLoaderErrorIsIgnored(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		loader = xconf.LoaderFunc(func() (map[string]any, error) {
 			return nil, os.ErrNotExist
 		})
 		subject = xconf.IgnoreErrorLoader(loader, os.ErrInvalid, os.ErrNotExist)
@@ -39,7 +39,7 @@ func testIgnoreErrorLoaderErrorIsIgnored(t *testing.T) {
 
 	// assert
 	assertNil(t, err)
-	assertEqual(t, map[string]interface{}{}, config)
+	assertEqual(t, map[string]any{}, config)
 }
 
 func testIgnoreErrorLoaderErrorIsNotIgnored(t *testing.T) {
@@ -48,7 +48,7 @@ func testIgnoreErrorLoaderErrorIsNotIgnored(t *testing.T) {
 	// arrange
 	var (
 		expectedErr = errors.New("intentionally triggered some other type of error")
-		loader      = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		loader      = xconf.LoaderFunc(func() (map[string]any, error) {
 			return nil, expectedErr
 		})
 		subject = xconf.IgnoreErrorLoader(loader, os.ErrInvalid, os.ErrNotExist)
@@ -67,7 +67,7 @@ func testIgnoreErrorLoaderWithNoError(t *testing.T) {
 
 	// arrange
 	var (
-		expectedConfig = map[string]interface{}{
+		expectedConfig = map[string]any{
 			"foo": "bar",
 		}
 		loader  = xconf.PlainLoader(expectedConfig)
@@ -87,11 +87,11 @@ func testIgnoreErrorLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		loader = xconf.LoaderFunc(func() (map[string]any, error) {
 			return nil, os.ErrNotExist
 		})
 		subject        = xconf.IgnoreErrorLoader(loader, os.ErrInvalid, os.ErrNotExist)
-		expectedConfig = map[string]interface{}{}
+		expectedConfig = map[string]any{}
 	)
 
 	// act
@@ -113,13 +113,13 @@ func testIgnoreErrorLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{},
+		map[string]any{},
 		expectedConfig,
 	)
 }
 
 func BenchmarkIgnoreErrorLoader(b *testing.B) {
-	loader := xconf.LoaderFunc(func() (map[string]interface{}, error) {
+	loader := xconf.LoaderFunc(func() (map[string]any, error) {
 		return nil, os.ErrNotExist
 	})
 	subject := xconf.IgnoreErrorLoader(loader, os.ErrInvalid, os.ErrNotExist)
@@ -138,7 +138,7 @@ func ExampleIgnoreErrorLoader() {
 	// and eventually from a JSON configuration file.
 	loader := xconf.NewMultiLoader(
 		true, // allow keys overwrite
-		xconf.PlainLoader(map[string]interface{}{
+		xconf.PlainLoader(map[string]any{
 			"APP_FOO_1": "bar 1",
 			"APP_FOO_2": "bar 2",
 		}),

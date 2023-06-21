@@ -13,13 +13,13 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go-version: [1.18.x, 1.19.x]
+        go-version: [1.19.x, 1.20.x]
         platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     
     steps:
     - name: Install Go
-      uses: actions/setup-go@v3
+      uses: actions/setup-go@v4
       with:
         go-version: ${{ matrix.go-version }}
 
@@ -48,7 +48,7 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
 
-    container: golang:1.19.3-bullseye
+    container: golang:1.20.5-bullseye
 
     steps:
     - name: Checkout code

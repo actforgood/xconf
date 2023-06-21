@@ -85,31 +85,31 @@ func testConsulLoaderIntegration(format, key string, withPrefix bool, qDataCente
 }
 
 // getConsulExpectedConfigMapIntegration returns expected config maps for integration tests.
-func getConsulExpectedConfigMapIntegration(format string, withPrefix bool) map[string]interface{} {
-	var expectedConfigMap map[string]interface{}
+func getConsulExpectedConfigMapIntegration(format string, withPrefix bool) map[string]any {
+	var expectedConfigMap map[string]any
 	switch format {
 	case xconf.RemoteValueJSON:
-		expectedConfigMap = map[string]interface{}{
+		expectedConfigMap = map[string]any{
 			"foo":           "bar",
 			"year":          float64(2022),
 			"temperature":   37.5,
-			"shopping_list": []interface{}{"bread", "milk", "eggs"},
+			"shopping_list": []any{"bread", "milk", "eggs"},
 		}
 		if withPrefix {
 			expectedConfigMap["abc"] = "xyz" // nolint
 		}
 	case xconf.RemoteValueYAML:
-		expectedConfigMap = map[string]interface{}{
+		expectedConfigMap = map[string]any{
 			"foo":           "bar",
 			"year":          2022,
 			"temperature":   37.5,
-			"shopping_list": []interface{}{"bread", "milk", "eggs"},
+			"shopping_list": []any{"bread", "milk", "eggs"},
 		}
 		if withPrefix {
 			expectedConfigMap["abc"] = "xyz"
 		}
 	case xconf.RemoteValuePlain:
-		expectedConfigMap = map[string]interface{}{"plain-key": "1000"}
+		expectedConfigMap = map[string]any{"plain-key": "1000"}
 		if withPrefix {
 			expectedConfigMap["plain-key/subkey"] = "30s"
 		}

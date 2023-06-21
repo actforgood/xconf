@@ -35,7 +35,7 @@ func NewFileCacheLoader(loader Loader, filePath string) FileCacheLoader {
 // Load returns decorated loader's key-value configuration map.
 // If the file was modified since last load, that file will be read and parsed again,
 // if not, the previous, already processed, configuration map will be returned.
-func (decorator FileCacheLoader) Load() (map[string]interface{}, error) {
+func (decorator FileCacheLoader) Load() (map[string]any, error) {
 	fInfo, err := os.Stat(decorator.filePath)
 	if err != nil {
 		return nil, err
@@ -58,13 +58,13 @@ func (decorator FileCacheLoader) Load() (map[string]interface{}, error) {
 
 // fileCache holds caching info.
 type fileCache struct {
-	configMap    map[string]interface{} // cached config map.
-	lastModified time.Time              // file's last modified time.
-	mu           sync.RWMutex           // concurrency semaphore
+	configMap    map[string]any // cached config map.
+	lastModified time.Time      // file's last modified time.
+	mu           sync.RWMutex   // concurrency semaphore
 }
 
 // save stores configuration key-value map and file's last modified time.
-func (cache *fileCache) save(configMap map[string]interface{}, lastModified time.Time) {
+func (cache *fileCache) save(configMap map[string]any, lastModified time.Time) {
 	cache.mu.Lock()
 	cache.configMap = DeepCopyConfigMap(configMap)
 	cache.lastModified = lastModified
@@ -72,7 +72,7 @@ func (cache *fileCache) save(configMap map[string]interface{}, lastModified time
 }
 
 // load retrieves configuration key-value map comparing file's modified time.
-func (cache *fileCache) load(currentLastModified time.Time) map[string]interface{} {
+func (cache *fileCache) load(currentLastModified time.Time) map[string]any {
 	cache.mu.RLock()
 	defer cache.mu.RUnlock()
 

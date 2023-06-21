@@ -16,42 +16,42 @@ func TestDeepCopyConfigMap(t *testing.T) {
 
 	// arrange
 	var (
-		input = map[string]interface{}{
+		input = map[string]any{
 			"string":          "a string",
 			"int":             1234,
 			"float":           1234.56,
-			"slice_interface": []interface{}{"a", "b", "c"},
-			"slice_interface_deep": []interface{}{
-				[]interface{}{"x", "y", "z"},
+			"slice_interface": []any{"a", "b", "c"},
+			"slice_interface_deep": []any{
+				[]any{"x", "y", "z"},
 				[]string{"x", "y", "z"},
 				[]int{1, 2, 3},
-				map[string]interface{}{"foo": "bar"},
-				map[interface{}]interface{}{"foo": "bar"},
+				map[string]any{"foo": "bar"},
+				map[any]any{"foo": "bar"},
 			},
 			"slice_int":    []int{1, 2, 3},
 			"slice_string": []string{"a", "b", "c"},
-			"map_string": map[string]interface{}{
+			"map_string": map[string]any{
 				"x": "X",
 				"y": "Y",
 				"z": "Z",
 			},
-			"map_string_deep": map[string]interface{}{
-				"slice": []interface{}{"foo", "bar", "baz"},
-				"map": map[string]interface{}{
+			"map_string_deep": map[string]any{
+				"slice": []any{"foo", "bar", "baz"},
+				"map": map[string]any{
 					"en": "Hello",
 					"es": "Ola",
 				},
 			},
-			"map_interface": map[interface{}]interface{}{
+			"map_interface": map[any]any{
 				"x": "X",
 				"y": "Y",
 				"z": "Z",
 			},
-			"map_interface_deep": map[interface{}]interface{}{
-				"slice_interface": []interface{}{"foo", "bar", "baz"},
+			"map_interface_deep": map[any]any{
+				"slice_interface": []any{"foo", "bar", "baz"},
 				"slice_string":    []string{"foo", "bar", "baz"},
 				"slice_int":       []int{1, 2, 3},
-				"map": map[interface{}]interface{}{
+				"map": map[any]any{
 					"en": "Hello",
 					"es": "Ola",
 				},
@@ -74,19 +74,19 @@ func TestDeepCopyConfigMap(t *testing.T) {
 		result["float"] = 9876.54
 		assertEqual(t, 1234.56, input["float"])
 
-		result["slice_interface"].([]interface{})[0] = "aaa"
-		assertEqual(t, "a", input["slice_interface"].([]interface{})[0])
+		result["slice_interface"].([]any)[0] = "aaa"
+		assertEqual(t, "a", input["slice_interface"].([]any)[0])
 
-		result["slice_interface_deep"].([]interface{})[0].([]interface{})[2] = "zzz"
-		assertEqual(t, "z", input["slice_interface_deep"].([]interface{})[0].([]interface{})[2])
-		result["slice_interface_deep"].([]interface{})[1].([]string)[2] = "zzz"
-		assertEqual(t, "z", input["slice_interface_deep"].([]interface{})[1].([]string)[2])
-		result["slice_interface_deep"].([]interface{})[2].([]int)[2] = 333
-		assertEqual(t, 3, input["slice_interface_deep"].([]interface{})[2].([]int)[2])
-		result["slice_interface_deep"].([]interface{})[3].(map[string]interface{})["foo"] = "B_A_R"
-		assertEqual(t, "bar", input["slice_interface_deep"].([]interface{})[3].(map[string]interface{})["foo"])
-		result["slice_interface_deep"].([]interface{})[4].(map[interface{}]interface{})["foo"] = "B_A_R"
-		assertEqual(t, "bar", input["slice_interface_deep"].([]interface{})[4].(map[interface{}]interface{})["foo"])
+		result["slice_interface_deep"].([]any)[0].([]any)[2] = "zzz"
+		assertEqual(t, "z", input["slice_interface_deep"].([]any)[0].([]any)[2])
+		result["slice_interface_deep"].([]any)[1].([]string)[2] = "zzz"
+		assertEqual(t, "z", input["slice_interface_deep"].([]any)[1].([]string)[2])
+		result["slice_interface_deep"].([]any)[2].([]int)[2] = 333
+		assertEqual(t, 3, input["slice_interface_deep"].([]any)[2].([]int)[2])
+		result["slice_interface_deep"].([]any)[3].(map[string]any)["foo"] = "B_A_R"
+		assertEqual(t, "bar", input["slice_interface_deep"].([]any)[3].(map[string]any)["foo"])
+		result["slice_interface_deep"].([]any)[4].(map[any]any)["foo"] = "B_A_R"
+		assertEqual(t, "bar", input["slice_interface_deep"].([]any)[4].(map[any]any)["foo"])
 
 		result["slice_int"].([]int)[0] = 111
 		assertEqual(t, 1, input["slice_int"].([]int)[0])
@@ -94,38 +94,38 @@ func TestDeepCopyConfigMap(t *testing.T) {
 		result["slice_string"].([]string)[0] = "aaa"
 		assertEqual(t, "a", input["slice_string"].([]string)[0])
 
-		result["map_string"].(map[string]interface{})["z"] = "ZZZ"
-		assertEqual(t, "Z", input["map_string"].(map[string]interface{})["z"])
+		result["map_string"].(map[string]any)["z"] = "ZZZ"
+		assertEqual(t, "Z", input["map_string"].(map[string]any)["z"])
 
-		result["map_string_deep"].(map[string]interface{})["slice"].([]interface{})[0] = "F_O_O"
-		assertEqual(t, "foo", input["map_string_deep"].(map[string]interface{})["slice"].([]interface{})[0])
-		result["map_string_deep"].(map[string]interface{})["map"].(map[string]interface{})["en"] = "Hi"
-		assertEqual(t, "Hello", input["map_string_deep"].(map[string]interface{})["map"].(map[string]interface{})["en"])
+		result["map_string_deep"].(map[string]any)["slice"].([]any)[0] = "F_O_O"
+		assertEqual(t, "foo", input["map_string_deep"].(map[string]any)["slice"].([]any)[0])
+		result["map_string_deep"].(map[string]any)["map"].(map[string]any)["en"] = "Hi"
+		assertEqual(t, "Hello", input["map_string_deep"].(map[string]any)["map"].(map[string]any)["en"])
 
-		result["map_interface"].(map[interface{}]interface{})["z"] = "ZZZ"
-		assertEqual(t, "Z", input["map_interface"].(map[interface{}]interface{})["z"])
+		result["map_interface"].(map[any]any)["z"] = "ZZZ"
+		assertEqual(t, "Z", input["map_interface"].(map[any]any)["z"])
 
-		result["map_interface_deep"].(map[interface{}]interface{})["slice_interface"].([]interface{})[0] = "FoO"
-		assertEqual(t, "foo", input["map_interface_deep"].(map[interface{}]interface{})["slice_interface"].([]interface{})[0])
-		result["map_interface_deep"].(map[interface{}]interface{})["slice_string"].([]string)[0] = "fOO"
-		assertEqual(t, "foo", input["map_interface_deep"].(map[interface{}]interface{})["slice_string"].([]string)[0])
-		result["map_interface_deep"].(map[interface{}]interface{})["slice_int"].([]int)[0] = 111
-		assertEqual(t, 1, input["map_interface_deep"].(map[interface{}]interface{})["slice_int"].([]int)[0])
-		result["map_interface_deep"].(map[interface{}]interface{})["map"].(map[interface{}]interface{})["en"] = "Hi"
+		result["map_interface_deep"].(map[any]any)["slice_interface"].([]any)[0] = "FoO"
+		assertEqual(t, "foo", input["map_interface_deep"].(map[any]any)["slice_interface"].([]any)[0])
+		result["map_interface_deep"].(map[any]any)["slice_string"].([]string)[0] = "fOO"
+		assertEqual(t, "foo", input["map_interface_deep"].(map[any]any)["slice_string"].([]string)[0])
+		result["map_interface_deep"].(map[any]any)["slice_int"].([]int)[0] = 111
+		assertEqual(t, 1, input["map_interface_deep"].(map[any]any)["slice_int"].([]int)[0])
+		result["map_interface_deep"].(map[any]any)["map"].(map[any]any)["en"] = "Hi"
 		assertEqual(t,
 			"Hello",
-			input["map_interface_deep"].(map[interface{}]interface{})["map"].(map[interface{}]interface{})["en"],
+			input["map_interface_deep"].(map[any]any)["map"].(map[any]any)["en"],
 		)
 	}
 }
 
 func BenchmarkDeepCopyConfigMap(b *testing.B) {
-	input := map[string]interface{}{
+	input := map[string]any{
 		"foo":           "bar",
 		"year":          2022,
 		"temperature":   37.5,
-		"shopping_list": []interface{}{"bread", "milk", "eggs"},
-		"timeouts":      []interface{}{10, 15, 20},
+		"shopping_list": []any{"bread", "milk", "eggs"},
+		"timeouts":      []any{10, 15, 20},
 	}
 	b.ReportAllocs()
 	b.ResetTimer()

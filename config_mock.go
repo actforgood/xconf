@@ -14,8 +14,8 @@ import (
 type MockConfig struct {
 	cfg         *DefaultConfig
 	getCallsCnt uint32
-	getCallback func(key string, def ...interface{})
-	configMap   map[string]interface{}
+	getCallback func(key string, def ...any)
+	configMap   map[string]any
 	mu          *sync.Mutex
 }
 
@@ -28,9 +28,9 @@ type MockConfig struct {
 //		"foo", "bar",
 //		"year", 2022,
 //	)
-func NewMockConfig(kv ...interface{}) *MockConfig {
+func NewMockConfig(kv ...any) *MockConfig {
 	mock := &MockConfig{
-		configMap: make(map[string]interface{}),
+		configMap: make(map[string]any),
 		mu:        new(sync.Mutex),
 	}
 	mock.SetKeyValues(kv...)
@@ -39,7 +39,7 @@ func NewMockConfig(kv ...interface{}) *MockConfig {
 }
 
 // Get mock logic.
-func (mock *MockConfig) Get(key string, def ...interface{}) interface{} {
+func (mock *MockConfig) Get(key string, def ...any) any {
 	atomic.AddUint32(&mock.getCallsCnt, 1)
 	if mock.getCallback != nil {
 		mock.getCallback(key, def...)
@@ -50,7 +50,7 @@ func (mock *MockConfig) Get(key string, def ...interface{}) interface{} {
 
 // SetKeyValues sets/resets given key-values.
 // Make sure you pass an even number of elements and that the keys are strings.
-func (mock *MockConfig) SetKeyValues(kv ...interface{}) {
+func (mock *MockConfig) SetKeyValues(kv ...any) {
 	kvLen := len(kv)
 	if len(kv)%2 == 1 {
 		kvLen-- // skip last element
@@ -75,7 +75,7 @@ func (mock *MockConfig) SetKeyValues(kv ...interface{}) {
 //
 // Usage example:
 //
-//	mock.SetGetCallback(func(key string, def ...interface{}) {
+//	mock.SetGetCallback(func(key string, def ...any) {
 //		switch mock.GetCallsCount() {
 //		case 1:
 //			if key != "expectedKeyAtCall1" {
@@ -87,7 +87,7 @@ func (mock *MockConfig) SetKeyValues(kv ...interface{}) {
 //			}
 //		}
 //	})
-func (mock *MockConfig) SetGetCallback(callback func(key string, def ...interface{})) {
+func (mock *MockConfig) SetGetCallback(callback func(key string, def ...any)) {
 	mock.getCallback = callback
 }
 

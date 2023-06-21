@@ -36,7 +36,7 @@ func FileLoader(filePath string) Loader {
 		return PropertiesFileLoader(filePath)
 	}
 
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		return nil, ErrUnknownConfigFileExt
 	})
 }

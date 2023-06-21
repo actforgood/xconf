@@ -19,13 +19,13 @@ func FlagSetLoader(flgSet *flag.FlagSet, visitAll ...bool) Loader {
 	if len(visitAll) > 0 {
 		all = visitAll[0]
 	}
-	configMap := make(map[string]interface{})
+	configMap := make(map[string]any)
 	storeFlagsIntoMap := func(f *flag.Flag) {
 		configMap[f.Name] = f.Value.String()
 	}
 	var initialized int32
 
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		if flgSet.Parsed() && atomic.CompareAndSwapInt32(&initialized, 0, 1) {
 			if all {
 				flgSet.VisitAll(storeFlagsIntoMap)

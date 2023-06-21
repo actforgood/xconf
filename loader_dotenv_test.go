@@ -14,7 +14,7 @@ import (
 	"github.com/actforgood/xconf"
 )
 
-var dotEnvConfigMap = map[string]interface{}{
+var dotEnvConfigMap = map[string]any{
 	"DOTENV_FOO":           "bar",
 	"DOTENV_YEAR":          "2022",
 	"DOTENV_TEMPERATURE":   "37.5",
@@ -57,7 +57,8 @@ func testDotEnvReaderLoaderWithInvalidContent(t *testing.T) {
 
 	// arrange
 	var (
-		content = "invalid .env content"
+		content = `foo
+invalid dot env content`
 		reader  = bytes.NewReader([]byte(content))
 		subject = xconf.DotEnvReaderLoader(reader)
 	)
@@ -79,7 +80,7 @@ func testDotEnvReaderLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 DOTENV_YEAR=2022`
 		reader         = bytes.NewReader([]byte(content))
 		subject        = xconf.DotEnvReaderLoader(reader)
-		expectedConfig = map[string]interface{}{
+		expectedConfig = map[string]any{
 			"DOTENV_FOO":  "bar",
 			"DOTENV_YEAR": "2022",
 		}
@@ -106,7 +107,7 @@ DOTENV_YEAR=2022`
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"DOTENV_FOO":  "bar",
 			"DOTENV_YEAR": "2022",
 		},
@@ -198,7 +199,7 @@ func testDotEnvFileLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"DOTENV_FOO":           "bar",
 			"DOTENV_YEAR":          "2022",
 			"DOTENV_TEMPERATURE":   "37.5",

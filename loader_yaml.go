@@ -15,7 +15,7 @@ import (
 // YAMLFileLoader loads YAML configuration from a file.
 // The location of YAML content based file is given as parameter.
 func YAMLFileLoader(filePath string) Loader {
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		f, err := os.Open(filePath)
 		if err != nil {
 			return nil, err
@@ -28,11 +28,11 @@ func YAMLFileLoader(filePath string) Loader {
 
 // YAMLReaderLoader loads YAML configuration from an [io.Reader].
 func YAMLReaderLoader(reader io.Reader) Loader {
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		if seekReader, ok := reader.(io.Seeker); ok {
 			_, _ = seekReader.Seek(0, io.SeekStart) // move to the beginning in case of a re-load needed.
 		}
-		var configMap map[string]interface{}
+		var configMap map[string]any
 		dec := yaml.NewDecoder(reader)
 		if err := dec.Decode(&configMap); err != nil {
 			return nil, err

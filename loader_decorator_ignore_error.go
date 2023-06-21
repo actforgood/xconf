@@ -14,12 +14,12 @@ import (
 // You can ignore, for example, [os.ErrNotExist] for a file based Loader if that file is not
 // mandatory to exist, or Consul's [ErrConsulKeyNotFound], etc.
 func IgnoreErrorLoader(loader Loader, errs ...error) Loader {
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		configMap, err := loader.Load()
 		if err != nil {
 			for _, ignoreErr := range errs {
 				if errors.Is(err, ignoreErr) {
-					return map[string]interface{}{}, nil
+					return map[string]any{}, nil
 				}
 			}
 		}

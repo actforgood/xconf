@@ -36,7 +36,7 @@ func testNewDefaultConfigReturnsValidObject(t *testing.T) {
 	var (
 		_       xconf.Config = (*xconf.DefaultConfig)(nil) // check also implemented interfaces
 		_       io.Closer    = (*xconf.DefaultConfig)(nil)
-		loader               = xconf.PlainLoader(map[string]interface{}{"foo": "bar"})
+		loader               = xconf.PlainLoader(map[string]any{"foo": "bar"})
 		subject              = xconf.NewDefaultConfig
 	)
 
@@ -56,7 +56,7 @@ func testNewDefaultConfigReturnsError(t *testing.T) {
 	// arrange
 	var (
 		expectedErr = errors.New("intentionally triggered test error")
-		loader      = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		loader      = xconf.LoaderFunc(func() (map[string]any, error) {
 			return nil, expectedErr
 		})
 		subject = xconf.NewDefaultConfig
@@ -77,13 +77,13 @@ func testNewDefaultConfigFinalizerIsCalled(t *testing.T) {
 	// arrange
 	var (
 		callsCnt uint32
-		loader   = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		loader   = xconf.LoaderFunc(func() (map[string]any, error) {
 			atomic.AddUint32(&callsCnt, 1)
 			if atomic.LoadUint32(&callsCnt) == 1 {
-				return map[string]interface{}{"foo": "bar"}, nil
+				return map[string]any{"foo": "bar"}, nil
 			}
 
-			return map[string]interface{}{"foo": "baz"}, nil
+			return map[string]any{"foo": "baz"}, nil
 		})
 		_, err = xconf.NewDefaultConfig(
 			loader,
@@ -133,7 +133,7 @@ func testDefaultConfigGetKeyNoDefault(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"foo":  "bar",
 			"Foo":  "Bar",
 			"year": 2022,
@@ -161,7 +161,7 @@ func testDefaultConfigGetKeyWithDefault(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"foo":  "bar",
 			"Foo":  "Bar",
 			"year": 2022,
@@ -189,7 +189,7 @@ func testDefaultConfigGetKeyCaseInsensitive(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"foo":  "bar",
 			"year": 2022,
 		})
@@ -217,13 +217,13 @@ func testDefaultConfigGetKeyReloaded(t *testing.T) {
 	// arrange
 	var (
 		callsCnt uint32
-		loader   = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		loader   = xconf.LoaderFunc(func() (map[string]any, error) {
 			atomic.AddUint32(&callsCnt, 1)
 			if atomic.LoadUint32(&callsCnt) == 1 {
-				return map[string]interface{}{"foo": "bar"}, nil
+				return map[string]any{"foo": "bar"}, nil
 			}
 
-			return map[string]interface{}{"foo": "baz"}, nil
+			return map[string]any{"foo": "baz"}, nil
 		})
 		subject, err = xconf.NewDefaultConfig(
 			loader,
@@ -256,13 +256,13 @@ func testDefaultConfigWithReloadErrorHandler(t *testing.T) {
 	var (
 		loaderCallsCnt uint32
 		expectedErr    = errors.New("intentionally triggered Load error")
-		loader         = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		loader         = xconf.LoaderFunc(func() (map[string]any, error) {
 			atomic.AddUint32(&loaderCallsCnt, 1)
 			if atomic.LoadUint32(&loaderCallsCnt) == 2 {
 				return nil, expectedErr
 			}
 
-			return map[string]interface{}{"foo": "bar"}, nil
+			return map[string]any{"foo": "bar"}, nil
 		})
 		errHandlerCallsCnt uint32
 		errHandler         = func(err error) {
@@ -303,38 +303,38 @@ func testDefaultConfigGetStringKey(t *testing.T) {
 	tests := [...]struct {
 		name           string
 		loader         xconf.Loader
-		expectedResult interface{}
+		expectedResult any
 	}{
 		{
 			name:           "string value",
-			loader:         xconf.PlainLoader(map[string]interface{}{"test-string-key": "bar"}),
+			loader:         xconf.PlainLoader(map[string]any{"test-string-key": "bar"}),
 			expectedResult: "bar",
 		},
 		{
 			name:           "int value",
-			loader:         xconf.PlainLoader(map[string]interface{}{"test-string-key": 1234}),
+			loader:         xconf.PlainLoader(map[string]any{"test-string-key": 1234}),
 			expectedResult: "1234",
 		},
 		{
 			name:           "uint value",
-			loader:         xconf.PlainLoader(map[string]interface{}{"test-string-key": uint(1234)}),
+			loader:         xconf.PlainLoader(map[string]any{"test-string-key": uint(1234)}),
 			expectedResult: "1234",
 		},
 		{
 			name:           "float value",
-			loader:         xconf.PlainLoader(map[string]interface{}{"test-string-key": 1234.56}),
+			loader:         xconf.PlainLoader(map[string]any{"test-string-key": 1234.56}),
 			expectedResult: "1234.56",
 		},
 		{
 			name:           "bool value",
-			loader:         xconf.PlainLoader(map[string]interface{}{"test-string-key": true}),
+			loader:         xconf.PlainLoader(map[string]any{"test-string-key": true}),
 			expectedResult: "true",
 		},
 		{
 			name: "non-convertible value return default",
-			loader: xconf.LoaderFunc(func() (map[string]interface{}, error) {
+			loader: xconf.LoaderFunc(func() (map[string]any, error) {
 				// Note: this case should never arise, no current implemented loaders can produce such a value.
-				return map[string]interface{}{"test-string-key": func() {}}, nil
+				return map[string]any{"test-string-key": func() {}}, nil
 			}),
 			expectedResult: defaultValue,
 		},
@@ -366,8 +366,8 @@ func testDefaultConfigGetIntKey(t *testing.T) {
 	defaultValue := 999
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "int value",
@@ -410,7 +410,7 @@ func testDefaultConfigGetIntKey(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-int-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-int-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -434,8 +434,8 @@ func testDefaultConfigGetInt64Key(t *testing.T) {
 	defaultValue := int64(999)
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "int64 value",
@@ -483,7 +483,7 @@ func testDefaultConfigGetInt64Key(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-int64-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-int64-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -507,8 +507,8 @@ func testDefaultConfigGetInt32Key(t *testing.T) {
 	defaultValue := int32(999)
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "int32 value",
@@ -556,7 +556,7 @@ func testDefaultConfigGetInt32Key(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-int32-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-int32-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -580,8 +580,8 @@ func testDefaultConfigGetInt16Key(t *testing.T) {
 	defaultValue := int16(999)
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "int16 value",
@@ -629,7 +629,7 @@ func testDefaultConfigGetInt16Key(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-int16-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-int16-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -653,8 +653,8 @@ func testDefaultConfigGetInt8Key(t *testing.T) {
 	defaultValue := int8(99)
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "int8 value",
@@ -702,7 +702,7 @@ func testDefaultConfigGetInt8Key(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-int8-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-int8-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -726,8 +726,8 @@ func testDefaultConfigGetUintKey(t *testing.T) {
 	defaultValue := uint(999)
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "uint value",
@@ -770,7 +770,7 @@ func testDefaultConfigGetUintKey(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-uint-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-uint-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -794,8 +794,8 @@ func testDefaultConfigGetUint64Key(t *testing.T) {
 	defaultValue := uint64(999)
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "uint64 value",
@@ -843,7 +843,7 @@ func testDefaultConfigGetUint64Key(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-uint64-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-uint64-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -867,8 +867,8 @@ func testDefaultConfigGetUint32Key(t *testing.T) {
 	defaultValue := uint32(999)
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "uint32 value",
@@ -916,7 +916,7 @@ func testDefaultConfigGetUint32Key(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-uint32-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-uint32-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -940,8 +940,8 @@ func testDefaultConfigGetUint16Key(t *testing.T) {
 	defaultValue := uint16(999)
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "uint16 value",
@@ -989,7 +989,7 @@ func testDefaultConfigGetUint16Key(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-uint16-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-uint16-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -1013,8 +1013,8 @@ func testDefaultConfigGetUint8Key(t *testing.T) {
 	defaultValue := uint8(99)
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "uint8 value",
@@ -1062,7 +1062,7 @@ func testDefaultConfigGetUint8Key(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-uint8-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-uint8-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -1086,8 +1086,8 @@ func testDefaultConfigGetFloat64Key(t *testing.T) {
 	defaultValue := 999.99
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "float64 value",
@@ -1135,7 +1135,7 @@ func testDefaultConfigGetFloat64Key(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-float64-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-float64-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -1159,8 +1159,8 @@ func testDefaultConfigGetFloat32Key(t *testing.T) {
 	defaultValue := float32(999.99)
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "float32 value",
@@ -1208,7 +1208,7 @@ func testDefaultConfigGetFloat32Key(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-float32-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-float32-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -1232,8 +1232,8 @@ func testDefaultConfigGetBoolKey(t *testing.T) {
 	defaultValue := true
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "bool value - true",
@@ -1296,7 +1296,7 @@ func testDefaultConfigGetBoolKey(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-bool-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-bool-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -1320,8 +1320,8 @@ func testDefaultConfigGetDurationKey(t *testing.T) {
 	defaultValue := 4 * time.Hour
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "duration value",
@@ -1349,7 +1349,7 @@ func testDefaultConfigGetDurationKey(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-duration-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-duration-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -1373,8 +1373,8 @@ func testDefaultConfigGetTimeKey(t *testing.T) {
 	defaultValue := time.Date(2022, 5, 23, 22, 10, 35, 0, time.UTC) // 23 May 2022 22:10:35
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "time value",
@@ -1412,7 +1412,7 @@ func testDefaultConfigGetTimeKey(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-time-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-time-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -1437,8 +1437,8 @@ func testDefaultConfigGetStringSliceKey(t *testing.T) {
 	defaultValue := []string{"dog", "fox"}
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "string slice value",
@@ -1447,7 +1447,7 @@ func testDefaultConfigGetStringSliceKey(t *testing.T) {
 		},
 		{
 			name:           "interface slice value",
-			value:          []interface{}{"foo", "bar", "baz"},
+			value:          []any{"foo", "bar", "baz"},
 			expectedResult: []string{"foo", "bar", "baz"},
 		},
 		{
@@ -1466,7 +1466,7 @@ func testDefaultConfigGetStringSliceKey(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-string-slice-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-string-slice-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -1490,8 +1490,8 @@ func testDefaultConfigGetIntSliceKey(t *testing.T) {
 	defaultValue := []int{99, 100}
 	tests := [...]struct {
 		name           string
-		value          interface{}
-		expectedResult interface{}
+		value          any
+		expectedResult any
 	}{
 		{
 			name:           "int slice value",
@@ -1500,12 +1500,12 @@ func testDefaultConfigGetIntSliceKey(t *testing.T) {
 		},
 		{
 			name:           "interface slice int value",
-			value:          []interface{}{1, 2, 3},
+			value:          []any{1, 2, 3},
 			expectedResult: []int{1, 2, 3},
 		},
 		{
 			name:           "interface slice string value",
-			value:          []interface{}{"1", "2", "3"},
+			value:          []any{"1", "2", "3"},
 			expectedResult: []int{1, 2, 3},
 		},
 		{
@@ -1524,7 +1524,7 @@ func testDefaultConfigGetIntSliceKey(t *testing.T) {
 		test := testData // capture range variable
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
-				xconf.PlainLoader(map[string]interface{}{"test-int-slice-key": test.value}),
+				xconf.PlainLoader(map[string]any{"test-int-slice-key": test.value}),
 			)
 			requireNil(t, err)
 
@@ -1546,7 +1546,7 @@ func testDefaultConfigGetKeyWithNotCoveredDefaultValueType(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"foo": 999,
 		})
 		subject, err = xconf.NewDefaultConfig(loader)
@@ -1669,7 +1669,7 @@ func TestDefaultConfig_concurrency(t *testing.T) {
 		loader    = xconf.AliasLoader(
 			xconf.NewMultiLoader(
 				true,
-				xconf.PlainLoader(map[string]interface{}{
+				xconf.PlainLoader(map[string]any{
 					"USER": "John Doe",
 					"TMP":  os.TempDir(),
 				}),
@@ -1768,7 +1768,7 @@ func benchmarkDefaultConfigGet(withReload, withDefValue bool) func(b *testing.B)
 	return func(b *testing.B) {
 		b.Helper()
 		var (
-			loader = xconf.PlainLoader(map[string]interface{}{
+			loader = xconf.PlainLoader(map[string]any{
 				"foo": "bar",
 			})
 			opts []xconf.DefaultConfigOption

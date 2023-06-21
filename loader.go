@@ -17,16 +17,16 @@ type Loader interface {
 	// from concurrency point of view / data integrity point of view;
 	// in other words, Loader should return a disposable config map -
 	// see also DeepCopyConfigMap utility and current usages as example).
-	Load() (map[string]interface{}, error)
+	Load() (map[string]any, error)
 }
 
 // The LoaderFunc type is an adapter to allow the use of
 // ordinary functions as Loaders. If fn is a function
 // with the appropriate signature, LoaderFunc(fn) is a
 // Loader that calls fn.
-type LoaderFunc func() (map[string]interface{}, error)
+type LoaderFunc func() (map[string]any, error)
 
 // Load calls fn().
-func (fn LoaderFunc) Load() (map[string]interface{}, error) {
+func (fn LoaderFunc) Load() (map[string]any, error) {
 	return fn()
 }

@@ -24,7 +24,7 @@ func ExampleLogLevelProvider() {
 
 	// initialize Config object,
 	// loader can be any other Loader, used this for the sake of simplicity and readability.
-	loader := xconf.PlainLoader(map[string]interface{}{
+	loader := xconf.PlainLoader(map[string]any{
 		logLevelKey: "INFO",
 	})
 	config, _ := xconf.NewDefaultConfig( // treat the error on live code!
@@ -36,7 +36,7 @@ func ExampleLogLevelProvider() {
 	// initialize the logger with min level taken from Config.
 	opts := xlog.NewCommonOpts()
 	opts.MinLevel = xconf.LogLevelProvider(config, logLevelKey, defaultLogLevel, opts.LevelLabels)
-	opts.Time = func() interface{} { // mock time for output check
+	opts.Time = func() any { // mock time for output check
 		return "2022-06-21T17:17:20Z"
 	}
 	opts.Source = xlog.SourceProvider(4, 1) // keep only filename for output check
@@ -60,7 +60,7 @@ func ExampleLogErrorHandler() {
 
 	// initialize Config object,
 	// loader can be any other Loader, used this for the sake of simplicity and readability.
-	loader := xconf.PlainLoader(map[string]interface{}{
+	loader := xconf.PlainLoader(map[string]any{
 		"foo": "bar",
 	})
 	loggerGetter := func() xlog.Logger { return logger }
@@ -90,7 +90,7 @@ func testLogLevelProviderWithExistingKey(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"APP_LOG_LEVEL": "DEBUG",
 			"foo":           "bar",
 		})
@@ -119,7 +119,7 @@ func testLogLevelProviderWithDefaultLevel(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"foo": "bar",
 		})
 		config, _      = xconf.NewDefaultConfig(loader)
@@ -153,7 +153,7 @@ func TestLogErrorHandler(t *testing.T) {
 		err          = errors.New("reload test error")
 	)
 	defer logger.Close()
-	logger.SetLogCallback(xlog.LevelError, func(keyValues ...interface{}) {
+	logger.SetLogCallback(xlog.LevelError, func(keyValues ...any) {
 		if assertEqual(t, 4, len(keyValues)) {
 			assertEqual(t, xlog.MessageKey, keyValues[0])
 			if msg, ok := keyValues[1].(string); assertTrue(t, ok) {

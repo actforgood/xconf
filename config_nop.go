@@ -9,7 +9,7 @@ package xconf
 type NopConfig struct{}
 
 // Get returns default value, if present, or nil.
-func (NopConfig) Get(_ string, def ...interface{}) interface{} {
+func (NopConfig) Get(_ string, def ...any) any {
 	if len(def) > 0 {
 		return def[0]
 	}

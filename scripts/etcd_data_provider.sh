@@ -26,9 +26,9 @@ for key in "${KEYS[@]}"
 do
 	echo "${key}"
     value=$(cat "${SCRIPT_PATH}/../testdata/integration/${DATA_FILES[$i]}")
-    out=$(docker exec xconf-etcd /bin/sh -c "export ETCDCTL_API=3 && /usr/local/bin/etcdctl put ${key} '${value}'" 2>&1)
+    out=$(docker exec xconf-etcd /usr/local/bin/etcdctl put "${key}" "${value}" 2>&1)
     checkEtcdSaveKeyResponse "$out"
-    out=$(docker exec xconf-etcds /bin/sh -c "export ETCDCTL_API=3 && /usr/local/bin/etcdctl --cacert=/certs/ca_cert.pem --endpoints=localhost:2389 put ${key} '${value}'" 2>&1)
+    out=$(docker exec xconf-etcds /usr/local/bin/etcdctl --cacert=/certs/ca_cert.pem --endpoints=localhost:2389 put "${key}" "${value}" 2>&1)
     checkEtcdSaveKeyResponse "$out"
     i=$i+1
 done

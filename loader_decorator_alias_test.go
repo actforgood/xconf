@@ -27,7 +27,7 @@ func testAliasLoaderSuccess(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"foo": 12345,
 			"bar": "bar val",
 		})
@@ -47,7 +47,7 @@ func testAliasLoaderSuccess(t *testing.T) {
 	assertNil(t, err)
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"foo":         12345,
 			"bar":         "bar val",
 			"alias_1_foo": 12345,
@@ -64,7 +64,7 @@ func testAliasLoaderReturnsErrAliasPairBroken(t *testing.T) {
 	// arrange
 	var (
 		expectedErr = xconf.ErrAliasPairBroken
-		loader      = xconf.PlainLoader(map[string]interface{}{
+		loader      = xconf.PlainLoader(map[string]any{
 			"foo": 12345,
 			"bar": "bar val",
 		})
@@ -89,7 +89,7 @@ func testAliasLoaderReturnsErrFromDecoratedLoader(t *testing.T) {
 	// arrange
 	var (
 		expectedErr = errors.New("intentionally triggered decorated loader error")
-		loader      = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		loader      = xconf.LoaderFunc(func() (map[string]any, error) {
 			return nil, expectedErr
 		})
 		subject = xconf.AliasLoader(
@@ -111,22 +111,22 @@ func testAliasLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"string": "some string",
 			"slice":  []string{"foo", "bar", "baz"},
-			"map":    map[string]interface{}{"foo": "bar"},
+			"map":    map[string]any{"foo": "bar"},
 		})
 		subject = xconf.AliasLoader(
 			loader,
 			"alias_slice", "slice",
 			"alias_map", "map",
 		)
-		expectedConfig = map[string]interface{}{
+		expectedConfig = map[string]any{
 			"string":      "some string",
 			"slice":       []string{"foo", "bar", "baz"},
-			"map":         map[string]interface{}{"foo": "bar"},
+			"map":         map[string]any{"foo": "bar"},
 			"alias_slice": []string{"foo", "bar", "baz"},
-			"alias_map":   map[string]interface{}{"foo": "bar"},
+			"alias_map":   map[string]any{"foo": "bar"},
 		}
 	)
 
@@ -140,7 +140,7 @@ func testAliasLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	// modify first returned value, expect second returned value to be initial one.
 	config1["int"] = 5555
 	config1["slice"].([]string)[0] = "test slice"
-	config1["map"].(map[string]interface{})["foo"] = "test map"
+	config1["map"].(map[string]any)["foo"] = "test map"
 	config1["alias_slice"].([]string)[1] = "test alias slice"
 
 	// act
@@ -152,19 +152,19 @@ func testAliasLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"string":      "some string",
 			"slice":       []string{"foo", "bar", "baz"},
-			"map":         map[string]interface{}{"foo": "bar"},
+			"map":         map[string]any{"foo": "bar"},
 			"alias_slice": []string{"foo", "bar", "baz"},
-			"alias_map":   map[string]interface{}{"foo": "bar"},
+			"alias_map":   map[string]any{"foo": "bar"},
 		},
 		expectedConfig,
 	)
 }
 
 func BenchmarkAliasLoader(b *testing.B) {
-	origLoader := xconf.PlainLoader(map[string]interface{}{
+	origLoader := xconf.PlainLoader(map[string]any{
 		"foo": "foo val",
 		"baz": "baz val",
 	})
@@ -182,7 +182,7 @@ func BenchmarkAliasLoader(b *testing.B) {
 }
 
 func ExampleAliasLoader() {
-	origLoader := xconf.PlainLoader(map[string]interface{}{
+	origLoader := xconf.PlainLoader(map[string]any{
 		"foo": "foo val",
 		"bar": "bar val",
 		"baz": "baz val",

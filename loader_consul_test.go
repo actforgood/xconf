@@ -494,11 +494,11 @@ func testConsulLoaderWithCache(t *testing.T) {
 	assertNil(t, err)
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"consul_json_foo":           "bar",
 			"consul_json_year":          float64(2022),
 			"consul_json_temperature":   37.5,
-			"consul_json_shopping_list": []interface{}{"bread", "milk", "eggs"},
+			"consul_json_shopping_list": []any{"bread", "milk", "eggs"},
 			"consul_json_abc":           "ABC", // this was updated
 		},
 		config,
@@ -535,7 +535,7 @@ func testConsulLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	// modify first returned value, expect second returned value to be initial one.
 	config1["consul_yaml_int"] = 7777
 	config1["consul_yaml_foo"] = "modified consul string"
-	config1["consul_yaml_shopping_list"].([]interface{})[0] = "modified consul slice"
+	config1["consul_yaml_shopping_list"].([]any)[0] = "modified consul slice"
 
 	// act
 	config2, err2 := subject.Load()
@@ -546,11 +546,11 @@ func testConsulLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"consul_yaml_foo":           "bar",
 			"consul_yaml_year":          2022,
 			"consul_yaml_temperature":   37.5,
-			"consul_yaml_shopping_list": []interface{}{"bread", "milk", "eggs"},
+			"consul_yaml_shopping_list": []any{"bread", "milk", "eggs"},
 			"consul_yaml_abc":           "xyz",
 		},
 		expectedConfig,
@@ -580,32 +580,32 @@ func startConsulKVMockServer(t *testing.T, key, content string, withPrefix bool)
 
 // getConsulExpectedConfigMapByFormatAndPrefix returns expected config maps
 // (correlated with consulResponseContent variable).
-func getConsulExpectedConfigMapByFormatAndPrefix(format string, withPrefix bool) map[string]interface{} {
-	var expectedConfigMap map[string]interface{}
+func getConsulExpectedConfigMapByFormatAndPrefix(format string, withPrefix bool) map[string]any {
+	var expectedConfigMap map[string]any
 	const subkeyVal = "xyz"
 	switch format {
 	case xconf.RemoteValueJSON:
-		expectedConfigMap = map[string]interface{}{
+		expectedConfigMap = map[string]any{
 			"consul_json_foo":           "bar",
 			"consul_json_year":          float64(2022),
 			"consul_json_temperature":   37.5,
-			"consul_json_shopping_list": []interface{}{"bread", "milk", "eggs"},
+			"consul_json_shopping_list": []any{"bread", "milk", "eggs"},
 		}
 		if withPrefix {
 			expectedConfigMap["consul_json_abc"] = subkeyVal
 		}
 	case xconf.RemoteValueYAML:
-		expectedConfigMap = map[string]interface{}{
+		expectedConfigMap = map[string]any{
 			"consul_yaml_foo":           "bar",
 			"consul_yaml_year":          2022,
 			"consul_yaml_temperature":   37.5,
-			"consul_yaml_shopping_list": []interface{}{"bread", "milk", "eggs"},
+			"consul_yaml_shopping_list": []any{"bread", "milk", "eggs"},
 		}
 		if withPrefix {
 			expectedConfigMap["consul_yaml_abc"] = subkeyVal
 		}
 	case xconf.RemoteValuePlain:
-		expectedConfigMap = map[string]interface{}{"consul_plain_key": "1000"}
+		expectedConfigMap = map[string]any{"consul_plain_key": "1000"}
 		if withPrefix {
 			expectedConfigMap["consul_plain_key/subkey"] = subkeyVal
 		}

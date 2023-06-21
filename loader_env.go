@@ -11,10 +11,10 @@ import (
 
 // EnvLoader loads configuration from OS's ENV.
 func EnvLoader() Loader {
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		envs := os.Environ()
 
-		configMap := make(map[string]interface{}, len(envs))
+		configMap := make(map[string]any, len(envs))
 		const kvSeparator = '='
 		for _, env := range envs {
 			for i := 0; i < len(env); i++ {

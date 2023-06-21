@@ -12,12 +12,12 @@ import (
 )
 
 // AlterValueFunc is a function that manipulates a config's value.
-type AlterValueFunc func(value interface{}) interface{}
+type AlterValueFunc func(value any) any
 
 // AlterValueLoader decorates another loader to manipulate a config's value.
 // The transformation function is applied to all passed keys.
 func AlterValueLoader(loader Loader, transformation AlterValueFunc, keys ...string) Loader {
-	return LoaderFunc(func() (map[string]interface{}, error) {
+	return LoaderFunc(func() (map[string]any, error) {
 		configMap, err := loader.Load()
 		if err != nil {
 			return configMap, err
@@ -40,7 +40,7 @@ func AlterValueLoader(loader Loader, transformation AlterValueFunc, keys ...stri
 //
 // Example: "bread,eggs,milk" => ["bread", "eggs", "milk"].
 func ToStringList(sep string) AlterValueFunc {
-	return func(value interface{}) interface{} {
+	return func(value any) any {
 		if strValue, ok := value.(string); ok {
 			return strings.Split(strValue, sep)
 		}
@@ -56,7 +56,7 @@ func ToStringList(sep string) AlterValueFunc {
 //
 // Example: "10,100,1000" => [10, 100, 1000].
 func ToIntList(sep string) AlterValueFunc {
-	return func(value interface{}) interface{} {
+	return func(value any) any {
 		if strValue, ok := value.(string); ok {
 			return cast.ToIntSlice(strings.Split(strValue, sep))
 		}

@@ -57,7 +57,7 @@ The main configuration contract this package provides looks like:
 
 ```go
 type Config interface {
-	Get(key string, def ...interface{}) interface{}
+	Get(key string, def ...any) any
 }
 ```
 with a default implementation obtained with:
@@ -144,7 +144,7 @@ const (
 type RedisClient interface {
 	Ping() error
 	Get(key string) (string, error)
-	Set(key string, value interface{}, expiration time.Duration) (string, error)
+	Set(key string, value any, expiration time.Duration) (string, error)
 	Close() error
 }
 
@@ -246,7 +246,7 @@ func main() {
 	}		
 }`
 		dbConfig    DBConfig               // the struct to populate with configuration
-		dbConfigMap map[string]interface{} // the configuration map for "db" key
+		dbConfigMap map[string]any // the configuration map for "db" key
 		loader      = xconf.JSONReaderLoader(bytes.NewReader([]byte(jsonConfig)))
 	)
 
@@ -255,7 +255,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	dbConfigMap = configMap["db"].(map[string]interface{})
+	dbConfigMap = configMap["db"].(map[string]any)
 	if err := mapstructure.Decode(dbConfigMap, &dbConfig); err != nil {
 		panic(err)
 	}
@@ -266,7 +266,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	dbConfigMap = config.Get("db").(map[string]interface{})
+	dbConfigMap = config.Get("db").(map[string]any)
 	if err := mapstructure.Decode(dbConfigMap, &dbConfig); err != nil {
 		panic(err)
 	}
@@ -283,7 +283,7 @@ Things that can be added to package, extended:
 - Add also a writer/persister functionality (currently you can only read configurations) to different sources and formats (JSONFileWriter/YAMLFileWriter/EtcdWriter/ConsulWriter/...) implementing a common contract like:
 ```go
 type ConfigWriter interface {
-	Write(configMap map[string]interface{}) error
+	Write(configMap map[string]any) error
 }
 ```
 - Add a typed struct with methods like `GetString`, `GetInt`...

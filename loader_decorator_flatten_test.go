@@ -17,8 +17,8 @@ import (
 func TestFlattenLoader(t *testing.T) {
 	t.Parallel()
 
-	t.Run("success - flat keys from map[string]interface{}", testFlattenLoaderWithFlatKeysFromNestedStringMap)
-	t.Run("success - flat keys from map[interface{}]interface{}", testFlattenLoaderWithFlatKeysFromNestedInterfaceMap)
+	t.Run("success - flat keys from map[string]any", testFlattenLoaderWithFlatKeysFromNestedStringMap)
+	t.Run("success - flat keys from map[any]any", testFlattenLoaderWithFlatKeysFromNestedInterfaceMap)
 	t.Run("success - with loader options", testFlattenLoaderWithOptions)
 	t.Run("error - original, decorated loader", testFlattenLoaderReturnsErrFromDecoratedLoader)
 	t.Run("success - safe-mutable config map", testFlattenLoaderReturnsSafeMutableConfigMap)
@@ -30,7 +30,7 @@ func testFlattenLoaderReturnsErrFromDecoratedLoader(t *testing.T) {
 	// arrange
 	var (
 		expectedErr = errors.New("intentionally triggered decorated loader error")
-		loader      = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		loader      = xconf.LoaderFunc(func() (map[string]any, error) {
 			return nil, expectedErr
 		})
 		subject = xconf.NewFlattenLoader(loader)
@@ -80,22 +80,22 @@ func testFlattenLoaderWithFlatKeysFromNestedStringMap(t *testing.T) {
 	assertNil(t, err)
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"foo": "bar",
-			"db": map[string]interface{}{
-				"mysql": map[string]interface{}{
+			"db": map[string]any{
+				"mysql": map[string]any{
 					"host": "192.168.10.10",
 					"port": float64(3306),
 				},
-				"postgresql": map[string]interface{}{
+				"postgresql": map[string]any{
 					"host": "192.168.10.11",
 					"port": float64(5432),
 				},
 				"adapter": "mysql",
 			},
-			"a": map[string]interface{}{
-				"b": map[string]interface{}{
-					"c": map[string]interface{}{
+			"a": map[string]any{
+				"b": map[string]any{
+					"c": map[string]any{
 						"d": "e",
 					},
 				},
@@ -142,22 +142,22 @@ foo: bar
 	assertNil(t, err)
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"foo": "bar",
-			"db": map[string]interface{}{
-				"mysql": map[string]interface{}{
+			"db": map[string]any{
+				"mysql": map[string]any{
 					"host": "192.168.10.10",
 					"port": 3306,
 				},
-				"postgresql": map[string]interface{}{
+				"postgresql": map[string]any{
 					"host": "192.168.10.11",
 					"port": 5432,
 				},
 				"adapter": "mysql",
 			},
-			"1": map[interface{}]interface{}{
-				2: map[interface{}]interface{}{
-					3: map[interface{}]interface{}{
+			"1": map[any]any{
+				2: map[any]any{
+					3: map[any]any{
 						4: 5,
 					},
 				},
@@ -178,22 +178,22 @@ func testFlattenLoaderWithOptions(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"foo": "bar",
-			"db": map[string]interface{}{
-				"mysql": map[string]interface{}{
+			"db": map[string]any{
+				"mysql": map[string]any{
 					"host": "192.168.10.10",
 					"port": 3306,
 				},
-				"postgresql": map[interface{}]interface{}{
+				"postgresql": map[any]any{
 					"host": "192.168.10.11",
 					"port": 5432,
 				},
 				"adapter": "mysql",
 			},
-			"a": map[interface{}]interface{}{
-				"b": map[string]interface{}{
-					"c": map[interface{}]interface{}{
+			"a": map[any]any{
+				"b": map[string]any{
+					"c": map[any]any{
 						"d": "e",
 					},
 				},
@@ -213,7 +213,7 @@ func testFlattenLoaderWithOptions(t *testing.T) {
 	assertNil(t, err)
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"foo":                "bar",
 			"a^b^c^d":            "e",
 			"db^adapter":         "mysql",
@@ -231,44 +231,44 @@ func testFlattenLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	// arrange
 	var (
-		loader = xconf.PlainLoader(map[string]interface{}{
+		loader = xconf.PlainLoader(map[string]any{
 			"foo": "bar",
-			"db": map[string]interface{}{
-				"mysql": map[string]interface{}{
+			"db": map[string]any{
+				"mysql": map[string]any{
 					"host": "192.168.10.10",
 					"port": 3306,
 				},
-				"postgresql": map[string]interface{}{
+				"postgresql": map[string]any{
 					"host": "192.168.10.11",
 					"port": 5432,
 				},
 				"adapter": "mysql",
 			},
-			"a": map[interface{}]interface{}{
-				"b": map[interface{}]interface{}{
-					"c": map[interface{}]interface{}{
+			"a": map[any]any{
+				"b": map[any]any{
+					"c": map[any]any{
 						"d": "e",
 					},
 				},
 			},
 		})
 		subject        = xconf.NewFlattenLoader(loader)
-		expectedConfig = map[string]interface{}{
+		expectedConfig = map[string]any{
 			"foo": "bar",
-			"db": map[string]interface{}{
-				"mysql": map[string]interface{}{
+			"db": map[string]any{
+				"mysql": map[string]any{
 					"host": "192.168.10.10",
 					"port": 3306,
 				},
-				"postgresql": map[string]interface{}{
+				"postgresql": map[string]any{
 					"host": "192.168.10.11",
 					"port": 5432,
 				},
 				"adapter": "mysql",
 			},
-			"a": map[interface{}]interface{}{
-				"b": map[interface{}]interface{}{
-					"c": map[interface{}]interface{}{
+			"a": map[any]any{
+				"b": map[any]any{
+					"c": map[any]any{
 						"d": "e",
 					},
 				},
@@ -291,7 +291,7 @@ func testFlattenLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	// modify first returned value, expect second returned value to be initial one.
 	config1["foo"] = "fooooooo"
-	config1["db"].(map[string]interface{})["mysql"].(map[string]interface{})["port"] = 3307
+	config1["db"].(map[string]any)["mysql"].(map[string]any)["port"] = 3307
 	config1["a.b.c.d"] = "EEE"
 
 	// act
@@ -303,22 +303,22 @@ func testFlattenLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"foo": "bar",
-			"db": map[string]interface{}{
-				"mysql": map[string]interface{}{
+			"db": map[string]any{
+				"mysql": map[string]any{
 					"host": "192.168.10.10",
 					"port": 3306,
 				},
-				"postgresql": map[string]interface{}{
+				"postgresql": map[string]any{
 					"host": "192.168.10.11",
 					"port": 5432,
 				},
 				"adapter": "mysql",
 			},
-			"a": map[interface{}]interface{}{
-				"b": map[interface{}]interface{}{
-					"c": map[interface{}]interface{}{
+			"a": map[any]any{
+				"b": map[any]any{
+					"c": map[any]any{
 						"d": "e",
 					},
 				},
@@ -335,10 +335,10 @@ func testFlattenLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 }
 
 func BenchmarkFlattenLoader(b *testing.B) {
-	origLoader := xconf.PlainLoader(map[string]interface{}{
+	origLoader := xconf.PlainLoader(map[string]any{
 		"foo": "bar",
-		"db": map[string]interface{}{
-			"mysql": map[string]interface{}{
+		"db": map[string]any{
+			"mysql": map[string]any{
 				"host": "127.0.0.1",
 				"port": 3306,
 			},
@@ -378,7 +378,7 @@ func ExampleFlattenLoader() {
 	}
 
 	fmt.Println(configMap["foo"])
-	fmt.Println(configMap["db"].(map[string]interface{})["mysql"].(map[string]interface{})["host"])
+	fmt.Println(configMap["db"].(map[string]any)["mysql"].(map[string]any)["host"])
 	fmt.Println(configMap["db.mysql.host"]) // much easier way to access information compared to previous statement.
 
 	// Output:

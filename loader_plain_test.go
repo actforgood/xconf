@@ -23,7 +23,7 @@ func testPlainLoaderSuccess(t *testing.T) {
 
 	// arrange
 	var (
-		expectedConfig = map[string]interface{}{
+		expectedConfig = map[string]any{
 			"plain_foo":           "bar",
 			"plain_year":          2022,
 			"plain_temperature":   37.5,
@@ -45,10 +45,10 @@ func testPlainLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	// arrange
 	var (
-		expectedConfig = map[string]interface{}{
+		expectedConfig = map[string]any{
 			"plain_string": "some string",
 			"plain_slice":  []string{"foo", "bar", "baz"},
-			"plain_map":    map[string]interface{}{"foo": "bar"},
+			"plain_map":    map[string]any{"foo": "bar"},
 		}
 		subject = xconf.PlainLoader(expectedConfig)
 	)
@@ -64,7 +64,7 @@ func testPlainLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	config1["plain_int"] = 12345
 	config1["plain_string"] = "test plain string"
 	config1["plain_slice"].([]string)[0] = "test plain slice"
-	config1["plain_map"].(map[string]interface{})["foo"] = "test plain map"
+	config1["plain_map"].(map[string]any)["foo"] = "test plain map"
 
 	// act
 	config2, err2 := subject.Load()
@@ -75,10 +75,10 @@ func testPlainLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"plain_string": "some string",
 			"plain_slice":  []string{"foo", "bar", "baz"},
-			"plain_map":    map[string]interface{}{"foo": "bar"},
+			"plain_map":    map[string]any{"foo": "bar"},
 		},
 		expectedConfig,
 	)

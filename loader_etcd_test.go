@@ -529,7 +529,7 @@ func testEtcdLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	// modify first returned value, expect second returned value to be initial one.
 	config1["etcd_yaml_int"] = 8888
 	config1["etcd_yaml_foo"] = "modified etcd string"
-	config1["etcd_yaml_shopping_list"].([]interface{})[0] = "modified etcd slice"
+	config1["etcd_yaml_shopping_list"].([]any)[0] = "modified etcd slice"
 
 	// act
 	config2, err2 := subject.Load()
@@ -540,11 +540,11 @@ func testEtcdLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"etcd_yaml_foo":           "bar",
 			"etcd_yaml_year":          2022,
 			"etcd_yaml_temperature":   37.5,
-			"etcd_yaml_shopping_list": []interface{}{"bread", "milk", "eggs"},
+			"etcd_yaml_shopping_list": []any{"bread", "milk", "eggs"},
 			"etcd_yaml_abc":           "xyz",
 		},
 		expectedConfig,
@@ -553,32 +553,32 @@ func testEtcdLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 // getEtcdExpectedConfigMapByFormatAndPrefix returns expected config maps
 // (correlated with etcdResponseKeys variable).
-func getEtcdExpectedConfigMapByFormatAndPrefix(format string, withPrefix bool) map[string]interface{} {
-	var expectedConfigMap map[string]interface{}
+func getEtcdExpectedConfigMapByFormatAndPrefix(format string, withPrefix bool) map[string]any {
+	var expectedConfigMap map[string]any
 	const subkeyVal = "xyz"
 	switch format {
 	case xconf.RemoteValueJSON:
-		expectedConfigMap = map[string]interface{}{
+		expectedConfigMap = map[string]any{
 			"etcd_json_foo":           "bar",
 			"etcd_json_year":          float64(2022),
 			"etcd_json_temperature":   37.5,
-			"etcd_json_shopping_list": []interface{}{"bread", "milk", "eggs"},
+			"etcd_json_shopping_list": []any{"bread", "milk", "eggs"},
 		}
 		if withPrefix {
 			expectedConfigMap["etcd_json_abc"] = subkeyVal
 		}
 	case xconf.RemoteValueYAML:
-		expectedConfigMap = map[string]interface{}{
+		expectedConfigMap = map[string]any{
 			"etcd_yaml_foo":           "bar",
 			"etcd_yaml_year":          2022,
 			"etcd_yaml_temperature":   37.5,
-			"etcd_yaml_shopping_list": []interface{}{"bread", "milk", "eggs"},
+			"etcd_yaml_shopping_list": []any{"bread", "milk", "eggs"},
 		}
 		if withPrefix {
 			expectedConfigMap["etcd_yaml_abc"] = subkeyVal
 		}
 	case xconf.RemoteValuePlain:
-		expectedConfigMap = map[string]interface{}{"etcd_plain_key": "1000"}
+		expectedConfigMap = map[string]any{"etcd_plain_key": "1000"}
 		if withPrefix {
 			expectedConfigMap["etcd_plain_key/subkey"] = subkeyVal
 		}

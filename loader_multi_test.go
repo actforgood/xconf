@@ -27,18 +27,18 @@ func testMultiLoaderSuccess(t *testing.T) {
 
 	// arrange
 	var (
-		loader1 = xconf.PlainLoader(map[string]interface{}{
+		loader1 = xconf.PlainLoader(map[string]any{
 			"loader_1_foo": "foo - from Loader 1",
 			"loader_1_bar": "bar - from Loader 1",
 			"key":          "value - from Loader 1",
 		})
-		loader2 = xconf.PlainLoader(map[string]interface{}{
+		loader2 = xconf.PlainLoader(map[string]any{
 			"loader_2_foo": "foo - from Loader 2",
 			"loader_2_bar": "bar - from Loader 2",
 			"loader_1_bar": "bar - from Loader 2 - overwrite Loader 1",
 			"key":          "value - from Loader 2",
 		})
-		loader3 = xconf.PlainLoader(map[string]interface{}{
+		loader3 = xconf.PlainLoader(map[string]any{
 			"loader_3_foo": "foo - from Loader 3",
 			"loader_3_bar": "bar - from Loader 3",
 			"loader_2_bar": "bar - from Loader 3 - overwrite Loader 2",
@@ -54,7 +54,7 @@ func testMultiLoaderSuccess(t *testing.T) {
 	assertNil(t, err)
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"loader_1_foo": "foo - from Loader 1",
 			"loader_2_foo": "foo - from Loader 2",
 			"loader_3_foo": "foo - from Loader 3",
@@ -74,13 +74,13 @@ func testMultiLoaderReturnsLoadErr(t *testing.T) {
 	var (
 		expectedLoader1Err = errors.New("loader 1 intentionally triggered error")
 		expectedLoader3Err = errors.New("loader 3 intentionally triggered error")
-		loader1            = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		loader1            = xconf.LoaderFunc(func() (map[string]any, error) {
 			return nil, expectedLoader1Err
 		})
-		loader2 = xconf.PlainLoader(map[string]interface{}{
+		loader2 = xconf.PlainLoader(map[string]any{
 			"foo": "bar",
 		})
-		loader3 = xconf.LoaderFunc(func() (map[string]interface{}, error) {
+		loader3 = xconf.LoaderFunc(func() (map[string]any, error) {
 			return nil, expectedLoader3Err
 		})
 		subject = xconf.NewMultiLoader(false, loader1, loader2, loader3)
@@ -100,14 +100,14 @@ func testMultiLoaderReturnsKeyConflictErr(t *testing.T) {
 
 	// arrange
 	var (
-		loader1 = xconf.PlainLoader(map[string]interface{}{
+		loader1 = xconf.PlainLoader(map[string]any{
 			"foo": "bar",
 			"x":   "y",
 		})
-		loader2 = xconf.PlainLoader(map[string]interface{}{
+		loader2 = xconf.PlainLoader(map[string]any{
 			"foo": "same key as for Loader 1",
 		})
-		loader3 = xconf.PlainLoader(map[string]interface{}{
+		loader3 = xconf.PlainLoader(map[string]any{
 			"abc": "xyz",
 		})
 		subject = xconf.NewMultiLoader(false, loader1, loader2, loader3)
@@ -130,20 +130,20 @@ func testMultiLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	// arrange
 	var (
-		loader1 = xconf.PlainLoader(map[string]interface{}{
+		loader1 = xconf.PlainLoader(map[string]any{
 			"multi_string": "some string",
-			"multi_slice":  []interface{}{"foo", "bar", "baz"},
+			"multi_slice":  []any{"foo", "bar", "baz"},
 		})
-		loader2 = xconf.PlainLoader(map[string]interface{}{
-			"multi_map": map[string]interface{}{
+		loader2 = xconf.PlainLoader(map[string]any{
+			"multi_map": map[string]any{
 				"foo": "bar",
 			},
 		})
 		subject        = xconf.NewMultiLoader(true, loader1, loader2)
-		expectedConfig = map[string]interface{}{
+		expectedConfig = map[string]any{
 			"multi_string": "some string",
-			"multi_slice":  []interface{}{"foo", "bar", "baz"},
-			"multi_map":    map[string]interface{}{"foo": "bar"},
+			"multi_slice":  []any{"foo", "bar", "baz"},
+			"multi_map":    map[string]any{"foo": "bar"},
 		}
 	)
 
@@ -157,8 +157,8 @@ func testMultiLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 	// modify first returned value, expect second returned value to be initial one.
 	config1["multi_int"] = 3333
 	config1["multi_string"] = "test multi string"
-	config1["multi_slice"].([]interface{})[0] = "test multi slice"
-	config1["multi_map"].(map[string]interface{})["foo"] = "test multi map"
+	config1["multi_slice"].([]any)[0] = "test multi slice"
+	config1["multi_map"].(map[string]any)["foo"] = "test multi map"
 
 	// act
 	config2, err2 := subject.Load()
@@ -169,10 +169,10 @@ func testMultiLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 
 	assertEqual(
 		t,
-		map[string]interface{}{
+		map[string]any{
 			"multi_string": "some string",
-			"multi_slice":  []interface{}{"foo", "bar", "baz"},
-			"multi_map":    map[string]interface{}{"foo": "bar"},
+			"multi_slice":  []any{"foo", "bar", "baz"},
+			"multi_map":    map[string]any{"foo": "bar"},
 		},
 		expectedConfig,
 	)
@@ -181,13 +181,13 @@ func testMultiLoaderReturnsSafeMutableConfigMap(t *testing.T) {
 func benchmarkMultiLoader(allowKeyOverwrite bool) func(b *testing.B) {
 	return func(b *testing.B) {
 		b.Helper()
-		loader1 := xconf.PlainLoader(map[string]interface{}{
+		loader1 := xconf.PlainLoader(map[string]any{
 			"loader_1": "Loader 1",
 		})
-		loader2 := xconf.PlainLoader(map[string]interface{}{
+		loader2 := xconf.PlainLoader(map[string]any{
 			"loader_2": "Loader 2",
 		})
-		loader3 := xconf.PlainLoader(map[string]interface{}{
+		loader3 := xconf.PlainLoader(map[string]any{
 			"loader_3": "Loader 3",
 		})
 		subject := xconf.NewMultiLoader(allowKeyOverwrite, loader1, loader2, loader3)
@@ -215,7 +215,7 @@ func BenchmarkMultiLoader_withoutAllowingKeyOverwrite(b *testing.B) {
 func ExampleMultiLoader() {
 	loader := xconf.NewMultiLoader(
 		true, // allow key overwrite
-		xconf.PlainLoader(map[string]interface{}{
+		xconf.PlainLoader(map[string]any{
 			"json_foo":  "bar from plain, will get overwritten",
 			"yaml_foo":  "bar from plain, will get overwritten",
 			"plain_key": "plain value",

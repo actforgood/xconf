@@ -22,9 +22,9 @@ const (
 )
 
 // getRemoteKVPairConfigMap returns configuration map for a key, according to format.
-func getRemoteKVPairConfigMap(key string, value []byte, format string) (map[string]interface{}, error) {
+func getRemoteKVPairConfigMap(key string, value []byte, format string) (map[string]any, error) {
 	var (
-		configMap map[string]interface{}
+		configMap map[string]any
 		err       error
 	)
 	switch format {
@@ -37,7 +37,7 @@ func getRemoteKVPairConfigMap(key string, value []byte, format string) (map[stri
 			return nil, err
 		}
 	default: // plain
-		configMap = map[string]interface{}{
+		configMap = map[string]any{
 			key: string(bytes.TrimSpace(value)),
 		}
 	}
