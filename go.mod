@@ -11,7 +11,7 @@ require (
 	github.com/spf13/cast v1.5.1
 	go.etcd.io/etcd/api/v3 v3.5.9
 	go.etcd.io/etcd/client/v3 v3.5.9
-	google.golang.org/grpc v1.56.0
+	google.golang.org/grpc v1.56.1
 	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/yaml.v3 v3.0.1
 )
