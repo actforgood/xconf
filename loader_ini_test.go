@@ -56,7 +56,7 @@ func testIniFileLoaderWithInvalidFileContent(t *testing.T) {
 
 	// arrange
 	var (
-		filePath = iniFilePath + ".invalid"
+		filePath = iniFilePath + invalidFileExt
 		subject  = xconf.NewIniFileLoader(filePath)
 	)
 

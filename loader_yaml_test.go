@@ -164,7 +164,7 @@ func testYAMLFileLoaderWithInvalidFileContent(t *testing.T) {
 
 	// arrange
 	var (
-		filePath = yamlFilePath + ".invalid"
+		filePath = yamlFilePath + invalidFileExt
 		subject  = xconf.YAMLFileLoader(filePath)
 	)
 

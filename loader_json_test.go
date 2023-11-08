@@ -153,7 +153,7 @@ func testJSONFileLoaderWithInvalidFileContent(t *testing.T) {
 
 	// arrange
 	var (
-		filePath = jsonFilePath + ".invalid"
+		filePath = jsonFilePath + invalidFileExt
 		subject  = xconf.JSONFileLoader(filePath)
 	)
 

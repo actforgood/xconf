@@ -1,6 +1,6 @@
-FROM alpine:3.18.2
+FROM alpine:3.18.4
 
-ARG ETCD_VER=v3.5.9
+ARG ETCD_VER=v3.5.10
 ARG DOWNLOAD_URL=https://github.com/etcd-io/etcd/releases/download
 RUN mkdir -p /tmp/etcd-download
 RUN apk --no-cache add curl

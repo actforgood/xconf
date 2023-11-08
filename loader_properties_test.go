@@ -50,7 +50,7 @@ func testPropertiesFileLoaderWithInvalidFileContent(t *testing.T) {
 
 	// arrange
 	var (
-		filePath = propertiesFilePath + ".invalid"
+		filePath = propertiesFilePath + invalidFileExt
 		subject  = xconf.PropertiesFileLoader(filePath)
 	)
 

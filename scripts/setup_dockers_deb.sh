@@ -77,7 +77,7 @@ network=$(docker inspect --format '{{json .NetworkSettings.Networks}}' "${hostNa
 echo ">>> network = ${network}"
 
 debug "Run Consul Docker Image"
-DOCKER_CONSUL_IMAGE_VER=consul:1.15.3
+DOCKER_CONSUL_IMAGE_VER=consul:1.15.4
 docker pull -q $DOCKER_CONSUL_IMAGE_VER
 docker run -d                       \
     --name=xconf-consul             \
@@ -87,7 +87,7 @@ docker run -d                       \
     $DOCKER_CONSUL_IMAGE_VER
 
 debug "Run Etcd Docker Image"
-ETCD_VER=v3.5.9
+ETCD_VER=v3.5.10
 DOCKER_ETCD_IMAGE_VER=quay.io/coreos/etcd:${ETCD_VER}
 docker pull -q $DOCKER_ETCD_IMAGE_VER
 docker run -d               \

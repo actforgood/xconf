@@ -181,7 +181,7 @@ func testTOMLFileLoaderWithInvalidFileContent(t *testing.T) {
 
 	// arrange
 	var (
-		filePath = tomlFilePath + ".invalid"
+		filePath = tomlFilePath + invalidFileExt
 		subject  = xconf.TOMLFileLoader(filePath)
 	)
 

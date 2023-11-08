@@ -13,6 +13,8 @@ import (
 	"github.com/actforgood/xconf"
 )
 
+const invalidFileExt = ".invalid"
+
 func TestFileLoader(t *testing.T) {
 	t.Parallel()
 

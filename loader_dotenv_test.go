@@ -143,7 +143,7 @@ func testDotEnvFileLoaderWithInvalidFileContent(t *testing.T) {
 
 	// arrange
 	var (
-		filePath = dotEnvFilePath + ".invalid"
+		filePath = dotEnvFilePath + invalidFileExt
 		subject  = xconf.DotEnvFileLoader(filePath)
 	)
 
