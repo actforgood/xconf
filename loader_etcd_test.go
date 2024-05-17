@@ -385,7 +385,7 @@ func testEtcdLoaderWithAuth(t *testing.T) {
 	authenticateCallsCnt := 0
 	authUsr, authPwd := "john-doe", "some-secret-pwd"
 	authSvr := etcdAuthServer{
-		authenticateCallback: func(ctx context.Context, req *pb.AuthenticateRequest) (*pb.AuthenticateResponse, error) {
+		authenticateCallback: func(_ context.Context, req *pb.AuthenticateRequest) (*pb.AuthenticateResponse, error) {
 			authenticateCallsCnt++
 			assertEqual(t, authUsr, req.Name)
 			assertEqual(t, authPwd, req.Password)
@@ -401,7 +401,7 @@ func testEtcdLoaderWithAuth(t *testing.T) {
 	key := etcdKeys[format]
 	content := etcdResponseKeys[format][withPrefix]
 	kvSvr := etcdKVServer{
-		rangeCallback: func(ctx context.Context, req *pb.RangeRequest) (*pb.RangeResponse, error) {
+		rangeCallback: func(_ context.Context, req *pb.RangeRequest) (*pb.RangeResponse, error) {
 			assertEqual(t, key, string(req.Key))
 
 			return &pb.RangeResponse{
@@ -593,7 +593,7 @@ func benchmarkEtcdLoader(format string, withWatcher bool) func(b *testing.B) {
 		content := etcdResponseKeys[format][true]
 		key := etcdKeys[format]
 		kvSvr := etcdKVServer{
-			rangeCallback: func(ctx context.Context, rr *pb.RangeRequest) (*pb.RangeResponse, error) {
+			rangeCallback: func(_ context.Context, _ *pb.RangeRequest) (*pb.RangeResponse, error) {
 				return &pb.RangeResponse{
 					Kvs:   content,
 					More:  false,
