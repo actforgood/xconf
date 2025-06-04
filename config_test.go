@@ -340,8 +340,7 @@ func testDefaultConfigGetStringKey(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(test.loader)
 			requireNil(t, err)
@@ -406,8 +405,7 @@ func testDefaultConfigGetIntKey(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-int-key": test.value}),
@@ -479,8 +477,7 @@ func testDefaultConfigGetInt64Key(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-int64-key": test.value}),
@@ -552,8 +549,7 @@ func testDefaultConfigGetInt32Key(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-int32-key": test.value}),
@@ -625,8 +621,7 @@ func testDefaultConfigGetInt16Key(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-int16-key": test.value}),
@@ -698,8 +693,7 @@ func testDefaultConfigGetInt8Key(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-int8-key": test.value}),
@@ -766,8 +760,7 @@ func testDefaultConfigGetUintKey(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-uint-key": test.value}),
@@ -839,8 +832,7 @@ func testDefaultConfigGetUint64Key(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-uint64-key": test.value}),
@@ -912,8 +904,7 @@ func testDefaultConfigGetUint32Key(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-uint32-key": test.value}),
@@ -985,8 +976,7 @@ func testDefaultConfigGetUint16Key(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-uint16-key": test.value}),
@@ -1058,8 +1048,7 @@ func testDefaultConfigGetUint8Key(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-uint8-key": test.value}),
@@ -1131,8 +1120,7 @@ func testDefaultConfigGetFloat64Key(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-float64-key": test.value}),
@@ -1204,8 +1192,7 @@ func testDefaultConfigGetFloat32Key(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-float32-key": test.value}),
@@ -1292,8 +1279,7 @@ func testDefaultConfigGetBoolKey(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-bool-key": test.value}),
@@ -1345,8 +1331,7 @@ func testDefaultConfigGetDurationKey(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-duration-key": test.value}),
@@ -1408,8 +1393,7 @@ func testDefaultConfigGetTimeKey(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-time-key": test.value}),
@@ -1462,8 +1446,7 @@ func testDefaultConfigGetStringSliceKey(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-string-slice-key": test.value}),
@@ -1520,8 +1503,7 @@ func testDefaultConfigGetIntSliceKey(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject, err := xconf.NewDefaultConfig(
 				xconf.PlainLoader(map[string]any{"test-int-slice-key": test.value}),
@@ -1716,13 +1698,13 @@ func TestDefaultConfig_concurrency(t *testing.T) {
 	subject.RegisterObserver(getDummyConfigObserver(t, "observer #2"))
 
 	// act & assert
-	for i := 0; i < 500; i++ {
+	for range 500 {
 		wg.Add(1)
 		go func(cfg xconf.Config, waitGr *sync.WaitGroup) {
 			defer waitGr.Done()
 
 			// access 3 keys while config object may reload
-			for i := 0; i < 50; i++ {
+			for range 50 {
 				result := cfg.Get("DOTENV_FOO")
 				assertEqual(t, "bar", result)
 
@@ -1738,7 +1720,7 @@ func TestDefaultConfig_concurrency(t *testing.T) {
 	// start a goroutine that updates the custom env.
 	wg.Add(1)
 	go func(envName string, waitGr *sync.WaitGroup) {
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			envVal := "this is a test: " + strconv.FormatInt(time.Now().UnixNano(), 10)
 			_ = os.Setenv(envName, envVal)
 			time.Sleep(150 * time.Millisecond)

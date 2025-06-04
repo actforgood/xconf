@@ -46,8 +46,8 @@ func ExampleLogLevelProvider() {
 	)
 	defer logger.Close()
 
-	logger.Info(xlog.MessageKey, "log level is taken from xconf.Config")
-	logger.Debug(xlog.MessageKey, "this message should not end up being logged as min level is INFO")
+	logger.Info(xlog.MsgKey, "log level is taken from xconf.Config")
+	logger.Debug(xlog.MsgKey, "this message should not end up being logged as min level is INFO")
 
 	// Output:
 	// {"date":"2022-06-21T17:17:20Z","lvl":"INFO","msg":"log level is taken from xconf.Config","src":"/xlog_adapter_test.go:49"}
@@ -105,7 +105,7 @@ func testLogLevelProviderWithExistingKey(t *testing.T) {
 		expectedResult = xlog.LevelDebug
 	)
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		// act
 		result := subject()
 
@@ -133,7 +133,7 @@ func testLogLevelProviderWithDefaultLevel(t *testing.T) {
 		expectedResult = xlog.LevelInfo
 	)
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		// act
 		result := subject()
 
@@ -155,7 +155,7 @@ func TestLogErrorHandler(t *testing.T) {
 	defer logger.Close()
 	logger.SetLogCallback(xlog.LevelError, func(keyValues ...any) {
 		if assertEqual(t, 4, len(keyValues)) {
-			assertEqual(t, xlog.MessageKey, keyValues[0])
+			assertEqual(t, xlog.MsgKey, keyValues[0])
 			if msg, ok := keyValues[1].(string); assertTrue(t, ok) {
 				assertTrue(t, strings.Contains(msg, "could not reload configuration"))
 			}

@@ -153,8 +153,7 @@ func testFileLoaderWithUnknownExt(t *testing.T) {
 		},
 	}
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			subject := xconf.FileLoader(test.inputFilePath)
 

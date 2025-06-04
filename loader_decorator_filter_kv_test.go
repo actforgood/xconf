@@ -266,8 +266,7 @@ func TestFilterKeyWithPrefix(t *testing.T) {
 	}
 	subject := xconf.FilterKeyWithPrefix
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// act
 			result := subject(test.prefix)(test.inputKey, test.inputValue)
@@ -327,8 +326,7 @@ func TestFilterKeyWithSuffix(t *testing.T) {
 	}
 	subject := xconf.FilterKeyWithSuffix
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// act
 			result := subject(test.suffix)(test.inputKey, test.inputValue)
@@ -382,8 +380,7 @@ func TestFilterEmptyValue(t *testing.T) {
 	}
 	subject := xconf.FilterEmptyValue
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// act
 			result := subject(test.inputKey, test.inputValue)
@@ -436,8 +433,7 @@ func TestFilterExactKeys(t *testing.T) {
 	}
 	subject := xconf.FilterExactKeys
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// act
 			result := subject(test.keys...)(test.inputKey, test.inputValue)
@@ -470,7 +466,7 @@ func BenchmarkFilterKVLoader(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 
-	for n := 0; n < b.N; n++ {
+	for range b.N {
 		_, _ = subject.Load()
 	}
 }

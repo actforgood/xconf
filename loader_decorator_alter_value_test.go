@@ -163,8 +163,7 @@ func TestToStringList(t *testing.T) {
 	}
 	subject := xconf.ToStringList(",")
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// act
 			result := subject(test.inputValue)
@@ -202,8 +201,7 @@ func TestToIntList(t *testing.T) {
 	}
 	subject := xconf.ToIntList("::")
 
-	for _, testData := range tests {
-		test := testData // capture range variable
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// act
 			result := subject(test.inputValue)
@@ -229,7 +227,7 @@ func BenchmarkAlterValueLoader(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 
-	for n := 0; n < b.N; n++ {
+	for range b.N {
 		_, err := subject.Load()
 		if err != nil {
 			b.Error(err)

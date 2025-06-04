@@ -478,7 +478,7 @@ func testConsulLoaderWithCache(t *testing.T) {
 	assertEqual(t, expectedConfigMap, config)
 	assertEqual(t, 1, serverCallsCnt)
 
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		// act - now config should be taken from cache.
 		config, err = subject.Load()
 
@@ -639,7 +639,7 @@ func benchmarkConsulLoader(format string, withCache bool) func(b *testing.B) {
 		b.ReportAllocs()
 		b.ResetTimer()
 
-		for n := 0; n < b.N; n++ {
+		for range b.N {
 			_, err := subject.Load()
 			if err != nil {
 				b.Error(err)

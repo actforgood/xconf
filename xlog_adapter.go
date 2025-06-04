@@ -47,7 +47,7 @@ func flipLevelLabels(levelLabels map[xlog.Level]string) map[string]xlog.Level {
 func LogErrorHandler(loggerGetter func() xlog.Logger) func(error) {
 	return func(err error) {
 		loggerGetter().Error(
-			xlog.MessageKey, "[xconf] could not reload configuration",
+			xlog.MsgKey, "[xconf] could not reload configuration",
 			xlog.ErrorKey, xlog.StackErr(err),
 		)
 	}

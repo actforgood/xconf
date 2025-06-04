@@ -226,7 +226,7 @@ func BenchmarkJSONFileLoader(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 
-	for n := 0; n < b.N; n++ {
+	for range b.N {
 		_, err := subject.Load()
 		if err != nil {
 			b.Error(err)

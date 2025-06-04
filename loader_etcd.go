@@ -198,7 +198,7 @@ func (loaderStrategy etcdSimpleLoadStrategy) Load() (map[string]any, error) {
 	}
 	defer cli.Close()
 
-	resp, err := cli.KV.Get(
+	resp, err := cli.Get(
 		loaderStrategy.info.ctx,
 		loaderStrategy.info.key,
 		loaderStrategy.info.clientOpOpts...,
@@ -279,7 +279,7 @@ func (loaderStrategy *etcdWatcherLoadStrategy) init() error {
 		loaderStrategy.client = cli
 
 		// populate config for the first time.
-		resp, err := cli.KV.Get(
+		resp, err := cli.Get(
 			loaderStrategy.info.ctx,
 			loaderStrategy.info.key,
 			loaderStrategy.info.clientOpOpts...,

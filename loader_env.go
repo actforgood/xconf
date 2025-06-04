@@ -17,7 +17,7 @@ func EnvLoader() Loader {
 		configMap := make(map[string]any, len(envs))
 		const kvSeparator = '='
 		for _, env := range envs {
-			for i := 0; i < len(env); i++ {
+			for i := range len(env) {
 				if env[i] == kvSeparator {
 					configMap[env[:i]] = env[i+1:]
 

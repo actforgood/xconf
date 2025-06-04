@@ -32,11 +32,14 @@ func testFileCacheLoaderSuccess(t *testing.T) {
 
 	// arrange
 	// setup a file for which we will play with its modification time.
-	filePath, err := setUpTmpFile("xconf-filecacheloader-*.json", `{"foo":"bar"}`+"\n")
+	filePath, err := setUpTmpFile(
+		t.TempDir(),
+		"xconf-filecacheloader-*.json",
+		`{"foo":"bar"}`+"\n",
+	)
 	if err != nil {
 		t.Fatal("prerequisite failed:", err)
 	}
-	defer tearDownTmpFile(filePath)
 
 	fileLoaderCallsCnt := 0
 	fileLoader := xconf.LoaderFunc(func() (map[string]any, error) {
@@ -172,11 +175,14 @@ func TestFileCacheLoader_concurrency(t *testing.T) {
 
 	// arrange
 	// setup a file for which we will play with its modification time.
-	filePath, err := setUpTmpFile("xconf-filecacheloader-concurrency-*.json", `{"foo":"bar"}`+"\n")
+	filePath, err := setUpTmpFile(
+		t.TempDir(),
+		"xconf-filecacheloader-concurrency-*.json",
+		`{"foo":"bar"}`+"\n",
+	)
 	if err != nil {
 		t.Fatal("prerequisite failed:", err)
 	}
-	defer tearDownTmpFile(filePath)
 
 	// have a goroutine that constantly modifies the file
 	stopModify, stoppedModify := make(chan struct{}, 1), make(chan struct{}, 1)
@@ -204,13 +210,13 @@ func TestFileCacheLoader_concurrency(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// act & assert
-	for i := 0; i < goroutinesNo; i++ {
+	for range goroutinesNo {
 		wg.Add(1)
 		go func(loader xconf.Loader, waitGr *sync.WaitGroup) {
 			defer waitGr.Done()
 
 			// trigger load while another goroutine may modify the underlying file
-			for i := 0; i < 50; i++ {
+			for range 50 {
 				config, err := loader.Load()
 				if assertNil(t, err) {
 					assertEqual(t, 1, len(config))
@@ -231,8 +237,8 @@ func TestFileCacheLoader_concurrency(t *testing.T) {
 }
 
 // setUpTmpFile creates a file in the tmp directory.
-func setUpTmpFile(filePattern, content string) (string, error) {
-	f, err := os.CreateTemp("", filePattern)
+func setUpTmpFile(tmpDir, filePattern, content string) (string, error) {
+	f, err := os.CreateTemp(tmpDir, filePattern)
 	if err != nil {
 		return "", err
 	}
@@ -242,11 +248,6 @@ func setUpTmpFile(filePattern, content string) (string, error) {
 	}
 
 	return f.Name(), nil
-}
-
-// tearDownTmpFile deletes the file specified.
-func tearDownTmpFile(filePath string) {
-	_ = os.Remove(filePath)
 }
 
 // writeToFile writes given content to the specified file.
@@ -268,7 +269,7 @@ func benchmarkFileCacheLoader(loader xconf.Loader) func(b *testing.B) {
 		b.ReportAllocs()
 		b.ResetTimer()
 
-		for n := 0; n < b.N; n++ {
+		for range b.N {
 			_, err := loader.Load()
 			if err != nil {
 				b.Error(err)
@@ -324,7 +325,7 @@ func ExampleFileCacheLoader() {
 		err       error
 	)
 
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		// 1st time original loader will be called,
 		// 2nd and 3rd time, config will be retrieved from cache.
 		configMap, err = loader.Load()

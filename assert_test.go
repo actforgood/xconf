@@ -14,7 +14,7 @@ import (
 
 // assertEqual checks if 2 values are equal.
 // Returns successful assertion status.
-func assertEqual(t *testing.T, expected any, actual any) bool {
+func assertEqual(t *testing.T, expected, actual any) bool {
 	t.Helper()
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf(
