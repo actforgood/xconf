@@ -1,6 +1,6 @@
 module github.com/actforgood/xconf
 
-go 1.23.0
+go 1.24
 
 toolchain go1.24.3
 
@@ -11,8 +11,8 @@ require (
 	github.com/magiconair/properties v1.8.10
 	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/spf13/cast v1.9.2
-	go.etcd.io/etcd/api/v3 v3.6.0
-	go.etcd.io/etcd/client/v3 v3.6.0
+	go.etcd.io/etcd/api/v3 v3.6.5
+	go.etcd.io/etcd/client/v3 v3.6.5
 	google.golang.org/grpc v1.72.2
 	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -26,7 +26,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.3 // indirect
-	go.etcd.io/etcd/client/pkg/v3 v3.6.0 // indirect
+	go.etcd.io/etcd/client/pkg/v3 v3.6.5 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/net v0.40.0 // indirect
