@@ -294,8 +294,7 @@ func (loaderStrategy *etcdWatcherLoadStrategy) init() error {
 		loaderStrategy.configMap = configMap
 
 		// listen for changes.
-		loaderStrategy.wg.Add(1)
-		go loaderStrategy.watchKeysAsync()
+		loaderStrategy.wg.Go(loaderStrategy.watchKeysAsync)
 	}
 
 	return nil
@@ -303,8 +302,6 @@ func (loaderStrategy *etcdWatcherLoadStrategy) init() error {
 
 // watchKeysAsync listens for key(s) changes.
 func (loaderStrategy *etcdWatcherLoadStrategy) watchKeysAsync() {
-	defer loaderStrategy.wg.Done()
-
 	watchChan := loaderStrategy.client.Watch(
 		loaderStrategy.info.ctx,
 		loaderStrategy.info.key,

@@ -211,18 +211,15 @@ func TestFileCacheLoader_concurrency(t *testing.T) {
 
 	// act & assert
 	for range goroutinesNo {
-		wg.Add(1)
-		go func(loader xconf.Loader, waitGr *sync.WaitGroup) {
-			defer waitGr.Done()
-
+		wg.Go(func() {
 			// trigger load while another goroutine may modify the underlying file
 			for range 50 {
-				config, err := loader.Load()
+				config, err := subject.Load()
 				if assertNil(t, err) {
 					assertEqual(t, 1, len(config))
 				}
 			}
-		}(subject, &wg)
+		})
 	}
 
 	wg.Wait()         // wait for Loading goroutines to finish

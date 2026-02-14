@@ -19,7 +19,7 @@ func assertEqual(t *testing.T, expected, actual any) bool {
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf(
 			"\n\t"+`expected "%+v" (%T),`+
-				"\n\t"+`but got  "%+v" (%T)`+"\n",
+				"\n\t"+`but got "%+v" (%T)`+"\n",
 			expected, expected,
 			actual, actual,
 		)

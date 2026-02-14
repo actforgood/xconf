@@ -1589,15 +1589,11 @@ func TestDefaultConfig_RegisterObserver(t *testing.T) {
 	assertEqual(t, 0, observer2CallsCnt)
 
 	// prepare second act
-	if err := os.Setenv("XCONF_TEST_DEFAULT_CONFIG_FOO_UPDATED", "foo got updated"); err != nil {
-		t.Fatal("prerequisite failed:", err)
-	}
+	t.Setenv("XCONF_TEST_DEFAULT_CONFIG_FOO_UPDATED", "foo got updated")
 	if err := os.Unsetenv("XCONF_TEST_DEFAULT_CONFIG_FOO_DELETED"); err != nil {
 		t.Fatal("prerequisite failed:", err)
 	}
-	if err := os.Setenv("XCONF_TEST_DEFAULT_CONFIG_FOO_NEW", "foo to be added later"); err != nil {
-		t.Fatal("prerequisite failed:", err)
-	}
+	t.Setenv("XCONF_TEST_DEFAULT_CONFIG_FOO_NEW", "foo to be added later")
 	time.Sleep(300 * time.Millisecond)
 
 	// second act & assert
@@ -1641,8 +1637,6 @@ func configObserverFactory(t *testing.T, observerCallsCount *int) xconf.ConfigOb
 }
 
 func TestDefaultConfig_concurrency(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	flgSet, flgSetParseErr := setUpFlagSet()
 	requireNil(t, flgSetParseErr)
@@ -1699,36 +1693,31 @@ func TestDefaultConfig_concurrency(t *testing.T) {
 
 	// act & assert
 	for range 500 {
-		wg.Add(1)
-		go func(cfg xconf.Config, waitGr *sync.WaitGroup) {
-			defer waitGr.Done()
-
+		wg.Go(func() {
 			// access 3 keys while config object may reload
 			for range 50 {
-				result := cfg.Get("DOTENV_FOO")
+				result := subject.Get("DOTENV_FOO")
 				assertEqual(t, "bar", result)
 
-				result = cfg.Get("json_foo")
+				result = subject.Get("json_foo")
 				assertEqual(t, "bar", result)
 
-				result = cfg.Get("alias_for_json_foo", "default val")
+				result = subject.Get("alias_for_json_foo", "default val")
 				assertEqual(t, "bar", result)
+
+				_ = subject.Get(customEnv, "default val")
 			}
-		}(subject, &wg)
+		})
 	}
 
 	// start a goroutine that updates the custom env.
-	wg.Add(1)
-	go func(envName string, waitGr *sync.WaitGroup) {
+	wg.Go(func() {
 		for range 5 {
 			envVal := "this is a test: " + strconv.FormatInt(time.Now().UnixNano(), 10)
-			_ = os.Setenv(envName, envVal)
+			t.Setenv(customEnv, envVal)
 			time.Sleep(150 * time.Millisecond)
 		}
-
-		_ = os.Unsetenv(envName)
-		waitGr.Done()
-	}(customEnv, &wg)
+	})
 
 	wg.Wait()
 }

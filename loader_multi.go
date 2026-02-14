@@ -73,8 +73,9 @@ func (loader MultiLoader) Load() (map[string]any, error) {
 
 	// load async each loader.
 	for idx, loader := range loader.loaders {
-		wg.Add(1)
-		go loadAsync(loader, idx, &wg, &mu, results)
+		wg.Go(func() {
+			loadAsync(loader, idx, &mu, results)
+		})
 	}
 	wg.Wait()
 
@@ -132,7 +133,6 @@ type loadResult struct {
 func loadAsync(
 	loader Loader,
 	idx int,
-	wg *sync.WaitGroup,
 	mu *sync.Mutex,
 	results []loadResult,
 ) {
@@ -144,5 +144,4 @@ func loadAsync(
 	mu.Lock()
 	results[idx] = result
 	mu.Unlock()
-	wg.Done()
 }

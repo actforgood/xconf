@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go-version: [1.23.x, 1.24.x]
+        go-version: [1.25.x, 1.26.x]
         platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     
@@ -24,10 +24,10 @@ jobs:
         go-version: ${{ matrix.go-version }}
 
     - name: Checkout code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Load cached dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
@@ -48,7 +48,7 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
 
-    container: golang:1.24.3-bullseye
+    container: golang:1.26.0-trixie
 
     steps:
     - name: Checkout code
@@ -58,7 +58,7 @@ jobs:
       run: ./scripts/setup_dockers_deb.sh
 
     - name: Load cached dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -68,7 +68,7 @@ jobs:
     - name: Run integration tests
       run: |
         go mod download
-        make cover-integration
+        make setup cover-integration
       env:
           CONSUL_HTTP_ADDR: xconf-consul:8500
           ETCD_ENDPOINTS: xconf-etcd:2379
@@ -80,6 +80,6 @@ jobs:
     - name: Upload coverage to coveralls.io
       uses: coverallsapp/github-action@v2
       with:
-        file: cover-integration.out
+        file: bin/cover-integration.out
         flag-name: integration-test
         fail-on-error: false

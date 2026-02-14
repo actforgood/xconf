@@ -79,10 +79,9 @@ func NewDefaultConfig(loader Loader, opts ...DefaultConfigOption) (*DefaultConfi
 
 	if config.reloadInterval > 0 {
 		config.ticker = time.NewTicker(config.reloadInterval)
-		config.wg = new(sync.WaitGroup)
 		config.closed = make(chan struct{}, 1)
-		config.wg.Add(1)
-		go config.reloadAsync()
+		config.wg = new(sync.WaitGroup)
+		config.wg.Go(config.reloadAsync)
 		// register also a finalizer, just in case, user forgets to call Close().
 		// Note: user should do not rely on this, it's recommended to explicitly call Close().
 		runtime.SetFinalizer(config, (*DefaultConfig).Close)
@@ -192,8 +191,6 @@ func (cfg *defaultConfig) notifyObservers(oldConfigMap, newConfigMap map[string]
 // reloadAsync reloads the config map asynchronous, interval based.
 // Calling Close() will stop this goroutine.
 func (cfg *defaultConfig) reloadAsync() {
-	defer cfg.wg.Done()
-
 	for {
 		select {
 		case <-cfg.closed:

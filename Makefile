@@ -1,7 +1,7 @@
-LINTER_VERSION=v2.1.6
-LINTER=./bin/golangci-lint
+LINTER_VERSION=v2.9.0
+LINTER=bin/golangci-lint
 ifeq ($(OS),Windows_NT)
-	LINTER=./bin/golangci-lint.exe
+	LINTER=bin/golangci-lint.exe
 endif
 
 .PHONY: all
@@ -18,6 +18,7 @@ lint: ## Run linter and detect go mod tidy changes.
 
 .PHONY: setup
 setup: ## Download dependencies.
+	@mkdir -p bin
 	go mod download
 	@if [ ! -f "$(LINTER)" ]; then \
 		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s $(LINTER_VERSION); \
@@ -43,13 +44,13 @@ bench: ## Run benchmarks.
 
 .PHONY: cover
 cover: ## Run tests with coverage. Generates "cover.out" profile and its html representation.
-	go test -race -timeout=30s -coverprofile=cover.out -coverpkg=./... ./...
-	go tool cover -html=cover.out -o cover.html
+	go test -race -timeout=30s -coverprofile=bin/cover.out -coverpkg=./... ./...
+	go tool cover -html=bin/cover.out -o bin/cover.html
 
 .PHONY: cover-integration
 cover-integration: setup-test-integration-data ## Run integration tests with coverage. Generates "cover-integration.out" profile and its html representation.
-	go test -race -timeout=2m -tags=integration -coverprofile=cover-integration.out -coverpkg=./... ./...
-	go tool cover -html=cover-integration.out -o cover-integration.html
+	go test -race -timeout=2m -tags=integration -coverprofile=bin/cover-integration.out -coverpkg=./... ./...
+	go tool cover -html=bin/cover-integration.out -o bin/cover-integration.html
 
 .PHONY: tidy
 tidy: ## Simply runs 'go mod tidy'.
@@ -58,12 +59,7 @@ tidy: ## Simply runs 'go mod tidy'.
 .PHONY: clean
 clean: ## Clean up go tests cache and coverage generated files.
 	go clean -testcache
-	@for file in cover.html cover.out cover-integration.html cover-integration.out; do \
-		if [ -f $$file ]; then \
-			echo "rm -f $$file"; \
-			rm -f $$file; \
-		fi \
-	done
+	@rm -rf bin/cover*
 
 .PHONY: help
 # Absolutely awesome: https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
